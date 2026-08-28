@@ -78,19 +78,19 @@ export const projects: Project[] = [
 export const testimonials: Testimonial[] = [
   {
     id: "client-1",
-    name: "Maria Santos",
+    name: "M. Santos",
     role: "Small Business Owner",
     quote: "The app felt simple, fast, and easy to understand. It turned our ordering process into something customers could use without asking for help.",
   },
   {
     id: "client-2",
-    name: "Daniel Reyes",
+    name: "D. Reyes",
     role: "Project Collaborator",
     quote: "Jae is thoughtful with both design and implementation. The final interface looked polished while still keeping the user flow clear.",
   },
   {
     id: "client-3",
-    name: "Alyssa Cruz",
+    name: "A. Cruz",
     role: "Beta Tester",
     quote: "Everything was organized and responsive. The experience felt smooth on mobile, which made the project much easier to test.",
   },

@@ -44,12 +44,6 @@ const Navbar = () => {
   useEffect(() => {
     if (!isHome) return undefined;
 
-    const sections = HOME_SECTIONS
-      .map((id) => document.getElementById(id))
-      .filter((section): section is HTMLElement => Boolean(section));
-
-    if (!sections.length) return undefined;
-
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -64,8 +58,26 @@ const Navbar = () => {
       }
     );
 
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
+    const observedSections = new Set<HTMLElement>();
+    const observeAvailableSections = () => {
+      HOME_SECTIONS.forEach((id) => {
+        const section = document.getElementById(id);
+        if (!section || observedSections.has(section)) return;
+
+        observer.observe(section);
+        observedSections.add(section);
+      });
+    };
+
+    observeAvailableSections();
+
+    const sectionLoaderObserver = new MutationObserver(observeAvailableSections);
+    sectionLoaderObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      sectionLoaderObserver.disconnect();
+      observer.disconnect();
+    };
   }, [isHome]);
 
   const hrefFor = (sectionId: string, pageHref: string) => (isHome ? `/#${sectionId}` : pageHref);
