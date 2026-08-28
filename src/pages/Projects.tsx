@@ -5,7 +5,7 @@ import GitHubSection from "@/components/GitHubSection";
 
 const Projects = () => {
   useEffect(() => {
-    document.title = "Projects | Jay Esmalla";
+    document.title = "Projects | Jay Factolarin Esmalla";
   }, []);
   return (
     <PageLayout>

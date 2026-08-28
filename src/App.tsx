@@ -2,14 +2,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import Certifications from "./pages/Certifications";
-import Contact from "./pages/Contact";
 import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import Projects from "./pages/Projects";
-import Testimonials from "./pages/Testimonials";
+
+const Certifications = lazy(() => import("./pages/Certifications"));
+const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Projects = lazy(() => import("./pages/Projects"));
+const Testimonials = lazy(() => import("./pages/Testimonials"));
 
 const queryClient = new QueryClient();
 
@@ -47,17 +48,19 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ScrollToHash />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/about" element={<Navigate to="/#about" replace />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/certifications" element={<Certifications />} />
-          <Route path="/testimonials" element={<Testimonials />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<div className="min-h-screen bg-background" aria-label="Loading page" />}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<Navigate to="/#about" replace />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/certifications" element={<Certifications />} />
+            <Route path="/testimonials" element={<Testimonials />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

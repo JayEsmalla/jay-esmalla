@@ -176,7 +176,7 @@ const GitHubSection = () => {
           </div>
           <div className="flex flex-col justify-end gap-5">
             <p className="text-[15px] leading-[1.6] text-smoke">
-              Contribution data loads from the portfolio API when available, with a public GitHub fallback for local development.
+              Recent public activity across product work, technical experiments, and steady improvements to shipped repositories.
             </p>
             <a href={githubConfig.profileUrl} target="_blank" rel="noopener noreferrer" className="ghost-button w-fit">
               VIEW GITHUB <ArrowUpRight size={13} />

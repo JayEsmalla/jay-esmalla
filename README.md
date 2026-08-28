@@ -1,4 +1,4 @@
-# Jay Esmalla — Personal Portfolio
+# Jay Factolarin Esmalla — Personal Portfolio
 
 A dark editorial-tech portfolio built with React, TypeScript, Tailwind CSS, and Vite. The interface follows the design system documented in `design/DESIGN.md`: near-black surfaces, off-white typography, hairline borders, restrained gold icon accents, and minimal motion.
 

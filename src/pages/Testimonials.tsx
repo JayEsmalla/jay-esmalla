@@ -4,7 +4,7 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 
 const Testimonials = () => {
   useEffect(() => {
-    document.title = "Testimonials | Jay Esmalla";
+    document.title = "Testimonials | Jay Factolarin Esmalla";
   }, []);
   return (
     <PageLayout>

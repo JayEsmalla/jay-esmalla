@@ -4,7 +4,7 @@ import ContactSection from "@/components/ContactSection";
 
 const Contact = () => {
   useEffect(() => {
-    document.title = "Contact | Jay Esmalla";
+    document.title = "Contact | Jay Factolarin Esmalla";
   }, []);
   return (
     <PageLayout>

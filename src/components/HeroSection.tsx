@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const HERO_STATS = [
   { label: "3+ PROJECTS", detail: "Selected academic & independent work" },
   { label: "FLUTTER + REACT", detail: "Mobile and web development" },
-  { label: "AI / COMPUTER SCIENCE", detail: "UMTC · 3rd year" },
+  { label: "AI / COMPUTER SCIENCE", detail: "UMTC · 4th Year" },
 ];
 
 type PortraitState = "loading" | "ready" | "missing";
@@ -26,15 +26,15 @@ const HeroSection = () => {
           >
             <div className="status-badge mb-7 w-fit">
               <span className="status-dot" />
-              OPEN TO PROJECTS & COLLABORATION
+              OPEN TO INTERNSHIPS, ROLES & COLLABORATION
             </div>
 
-            <p className="meta-text mb-5 text-ash">FULL-STACK DEVELOPER · FLUTTER · REACT · TYPESCRIPT</p>
+            <p className="meta-text mb-5 text-ash">FLUTTER + REACT DEVELOPER · FULL-STACK PRODUCT BUILDER</p>
             <h1 className="display-title max-w-[760px] text-balance">
-              I build practical digital products with clear interfaces and dependable systems.
+              I build practical mobile and web products with clear interfaces and dependable systems.
             </h1>
             <p className="mt-7 max-w-[650px] text-[17px] leading-[1.65] text-smoke md:text-[19px]">
-              I&apos;m Jay Esmalla, a third-year Computer Science student majoring in Artificial Intelligence at the University of Mindanao Tagum College, focused on Flutter mobile apps and modern React & TypeScript web solutions.
+              I&apos;m Jay Factolarin Esmalla, a 4th-year Computer Science student majoring in Artificial Intelligence at the University of Mindanao Tagum College, focused on Flutter mobile apps and modern React & TypeScript web solutions.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -72,7 +72,7 @@ const HeroSection = () => {
                 )}
                 <img
                   src="/profile.webp"
-                  alt="Portrait of Jay Esmalla"
+                  alt="Portrait of Jay Factolarin Esmalla"
                   onLoad={() => setPortraitState("ready")}
                   onError={() => setPortraitState("missing")}
                   className={`absolute inset-0 h-full w-full object-cover object-center grayscale contrast-[1.04] brightness-[0.92] transition-[opacity,filter] duration-500 hover:grayscale-0 hover:brightness-100 ${
@@ -83,7 +83,7 @@ const HeroSection = () => {
 
               <div className="grid border-x border-b border-graphite sm:grid-cols-2">
                 <div className="px-4 py-4">
-                  <p className="meta-text text-smoke">JAY ESMALLA</p>
+                  <p className="meta-text text-smoke">JAY FACTOLARIN ESMALLA</p>
                   <p className="mt-1 text-[13px] text-chalk">Computer Science · AI</p>
                 </div>
                 <div className="border-t border-graphite px-4 py-4 sm:border-l sm:border-t-0 sm:text-right">

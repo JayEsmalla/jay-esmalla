@@ -155,7 +155,14 @@
   }
 
   .field-control {
-    @apply w-full rounded-[8px] border border-graphite bg-transparent px-4 py-3 text-[14px] text-chalk outline-none transition-colors placeholder:text-smoke/60 focus:border-iron;
+    @apply w-full rounded-[8px] border border-graphite bg-transparent px-4 py-3 text-[14px] text-chalk outline-none transition-colors placeholder:text-smoke/60 focus:border-ash focus-visible:ring-1 focus-visible:ring-ash;
+  }
+
+  .project-grid {
+    background-image:
+      linear-gradient(to right, rgb(33 33 33 / 0.72) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(33 33 33 / 0.72) 1px, transparent 1px);
+    background-size: 44px 44px;
   }
 
   /* Compatibility aliases for remaining utility-based components. */
@@ -182,4 +189,15 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .text-balance { text-wrap: balance; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

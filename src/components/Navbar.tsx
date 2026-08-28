@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const NAV_ITEMS = [
-  { label: "ABOUT", sectionId: "about", pageHref: "/#about" },
   { label: "WORK", sectionId: "projects", pageHref: "/projects" },
+  { label: "ABOUT", sectionId: "about", pageHref: "/#about" },
   { label: "CREDENTIALS", sectionId: "certifications", pageHref: "/certifications" },
   { label: "TESTIMONIALS", sectionId: "testimonials", pageHref: "/testimonials" },
 ];
 
-const HOME_SECTIONS = ["home", "about", "projects", "github", "certifications", "testimonials", "contact"];
+const HOME_SECTIONS = ["home", "projects", "about", "github", "certifications", "testimonials", "contact"];
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -92,12 +92,13 @@ const Navbar = () => {
         <Link
           to="/"
           className="group flex items-center gap-3 text-[18px] font-normal tracking-[-0.02em] text-chalk"
-          aria-label="Jay Esmalla home"
+          aria-label="Jay Factolarin Esmalla home"
         >
           <span className="grid h-7 w-7 place-items-center rounded-full border border-graphite text-[10px] text-smoke transition-colors group-hover:border-iron group-hover:text-chalk">
             JE
           </span>
-          <span>Jay Esmalla</span>
+          <span className="sm:hidden">Jay F. Esmalla</span>
+          <span className="hidden sm:inline">Jay Factolarin Esmalla</span>
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary navigation">

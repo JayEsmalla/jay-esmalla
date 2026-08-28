@@ -4,7 +4,7 @@ import CertificationsSection from "@/components/CertificationsSection";
 
 const Certifications = () => {
   useEffect(() => {
-    document.title = "Certifications | Jay Esmalla";
+    document.title = "Certifications | Jay Factolarin Esmalla";
   }, []);
   return (
     <PageLayout>

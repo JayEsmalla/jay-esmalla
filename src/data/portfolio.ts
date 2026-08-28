@@ -5,7 +5,9 @@ export interface Project {
   category: "flutter" | "web" | "other";
   technologies: string[];
   image: string;
-  thumbnail?: "auth-gate";
+  preview: "screen" | "mobile-flow" | "order-flow";
+  previewLabel: string;
+  proofPoints: string[];
   liveUrl?: string;
   githubUrl?: string;
   role: string;
@@ -32,10 +34,11 @@ export const projects: Project[] = [
     title: "LolasKusina",
     description: "A food package ordering system for browsing catering options, placing orders, and managing customer requests.",
     category: "web",
-    technologies: ["PHP", "Python", "CSS", "JavaScript", "Batchfile", "Dockerfile", "Shell"],
+    technologies: ["PHP", "JavaScript", "Python", "Docker"],
     image: "/lolas-kusina-auth-gate.webp",
-    thumbnail: "auth-gate",
-    githubUrl: "https://github.com/JayEsmalla/LolasKusina",
+    preview: "screen",
+    previewLabel: "AUTHENTICATION & ORDER ENTRY",
+    proofPoints: ["Guest browsing", "Package booking", "Order history"],
     role: "Lead Web Developer & System Architect",
     problemSolved: "Managing custom catering orders, menu packages, and client requests manually was prone to errors, communication delays, and order mix-ups for the local kitchen.",
     outcome: "Built a structured ordering and management workflow that centralizes menu packages, customer requests, and order handling in one system.",
@@ -46,23 +49,29 @@ export const projects: Project[] = [
     description: "A peer-to-peer thrift marketplace for listing pre-loved items, discovering local finds, and connecting buyers with sellers.",
     category: "flutter",
     technologies: ["Flutter", "Dart", "Firebase", "Marketplace"],
-    image: "/placeholder.svg",
-    githubUrl: "https://github.com/JayEsmalla/Thryfto",
+    image: "",
+    preview: "mobile-flow",
+    previewLabel: "COMMUNITY MARKETPLACE FLOW",
+    proofPoints: ["Real-time feed", "Listing uploads", "Buyer-seller chat"],
+    githubUrl: "https://github.com/JayEsmalla/thryfto-app",
     role: "Full-Stack Mobile Developer",
     problemSolved: "Existing peer-to-peer thrift sales on social media lacked structure, searchability, and secure communication channels, causing friction for both buyers and sellers.",
     outcome: "Developed a cross-platform marketplace with structured listings, discovery tools, Firebase-backed interactions, and features designed around local peer-to-peer thrift transactions.",
   },
   {
-    id: "rimcraft",
-    title: "RimCraft",
-    description: "A rim customization web app for previewing wheel styles, finishes, and wide-rim fitment before checkout.",
+    id: "rimworks",
+    title: "RimWorks PH",
+    description: "A full-stack custom rim ordering platform for browsing products, configuring an order, uploading payment proof, and tracking fulfillment.",
     category: "web",
-    technologies: ["React", "TypeScript", "Tailwind", "Configurator"],
-    image: "/placeholder.svg",
-    githubUrl: "https://github.com/JayEsmalla/RimCraft",
-    role: "Frontend UI/UX Developer",
-    problemSolved: "Automotive enthusiasts need a clearer way to preview wheel styles, finishes, and fitment choices before committing to a configuration.",
-    outcome: "Created an interactive wheel configurator with dynamic style and finish controls so users can explore customization options before making a selection.",
+    technologies: ["React", "TypeScript", "Supabase", "Tailwind CSS"],
+    image: "",
+    preview: "order-flow",
+    previewLabel: "CUSTOM ORDER WORKFLOW",
+    proofPoints: ["Product filtering", "Payment proof", "Status tracking"],
+    githubUrl: "https://github.com/JayEsmalla/rim-works",
+    role: "Full-Stack Web Developer",
+    problemSolved: "Custom rim buyers and shop staff needed one clear workflow for product discovery, order configuration, downpayment review, and fulfillment tracking.",
+    outcome: "Built customer and staff experiences around a shared Supabase backend, including role-based access, order snapshots, payment-proof uploads, and status history.",
   },
 ];
 
@@ -104,7 +113,7 @@ export const skills: Skill[] = [
 
 export const socialLinks = {
   github: "https://github.com/JayEsmalla",
-  linkedin: "",
+  linkedin: "https://www.linkedin.com/in/jay-esmalla-1703bb381/",
   twitter: "",
   email: "jaesmalla1@gmail.com",
 };

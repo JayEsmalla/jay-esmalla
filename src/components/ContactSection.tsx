@@ -7,7 +7,7 @@ const initialForm = { name: "", email: "", subject: "", message: "" };
 
 const SOCIALS = [
   { icon: Github, href: socialLinks.github, label: "GitHub", sub: "@JayEsmalla" },
-  { icon: Linkedin, href: socialLinks.linkedin, label: "LinkedIn", sub: "Jay Esmalla" },
+  { icon: Linkedin, href: socialLinks.linkedin, label: "LinkedIn", sub: "Jay Factolarin Esmalla" },
   { icon: Facebook, href: "https://www.facebook.com/jaecoleeee/", label: "Facebook", sub: "@jaecoleeee" },
   { icon: Mail, href: `mailto:${socialLinks.email}`, label: "Email", sub: socialLinks.email },
 ].filter(({ href }) => href && href !== "https://linkedin.com");

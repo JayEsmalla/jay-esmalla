@@ -8,7 +8,7 @@ const Footer = () => (
       <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-[14px] text-chalk">{socialLinks.email}</p>
-          <p className="meta-text mt-2 text-smoke">© {new Date().getFullYear()} JAY ESMALLA · TAGUM CITY, PH</p>
+          <p className="meta-text mt-2 text-smoke">© {new Date().getFullYear()} JAY FACTOLARIN ESMALLA · TAGUM CITY, PH</p>
         </div>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] text-smoke">
           <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-chalk">
