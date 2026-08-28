@@ -12,7 +12,11 @@ describe("portfolio credibility links", () => {
   it("uses the provided LinkedIn profile and accessible public repositories", () => {
     expect(socialLinks.linkedin).toBe("https://www.linkedin.com/in/jay-esmalla-1703bb381/");
     expect(projects.find((project) => project.id === "thryfto")?.githubUrl).toBe("https://github.com/JayEsmalla/thryfto-app");
-    expect(projects.find((project) => project.id === "rimworks")?.githubUrl).toBe("https://github.com/JayEsmalla/rim-works");
+    expect(projects.find((project) => project.id === "simulation-comlab-v3")).toMatchObject({
+      githubUrl: "https://github.com/JayEsmalla/simulation_comlabV3",
+      liveUrl: "https://simulation-comlab-v3.vercel.app/",
+    });
+    expect(projects.some((project) => project.id === "rimworks")).toBe(false);
     expect(projects.find((project) => project.id === "lolas-kusina")?.githubUrl).toBeUndefined();
     expect(testimonials.map((testimonial) => testimonial.name)).toEqual(["M. Santos", "D. Reyes", "A. Cruz"]);
   });
@@ -26,9 +30,13 @@ describe("ProjectsSection", () => {
       "href",
       "https://github.com/JayEsmalla/thryfto-app",
     );
-    expect(screen.getByRole("link", { name: "RimWorks PH public source code" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "ComLab V3 Egress Simulation public source code" })).toHaveAttribute(
       "href",
-      "https://github.com/JayEsmalla/rim-works",
+      "https://github.com/JayEsmalla/simulation_comlabV3",
+    );
+    expect(screen.getByRole("link", { name: "ComLab V3 Egress Simulation live project" })).toHaveAttribute(
+      "href",
+      "https://simulation-comlab-v3.vercel.app/",
     );
 
     const lolasCard = screen.getByRole("heading", { name: "LolasKusina" }).closest("article");
@@ -39,7 +47,7 @@ describe("ProjectsSection", () => {
     expect(screen.getByRole("heading", { name: "Thryfto" })).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.queryByRole("heading", { name: "LolasKusina" })).not.toBeInTheDocument();
-      expect(screen.queryByRole("heading", { name: "RimWorks PH" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("heading", { name: "ComLab V3 Egress Simulation" })).not.toBeInTheDocument();
     });
   });
 

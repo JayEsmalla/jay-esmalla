@@ -2,14 +2,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
   ArrowUpRight,
+  BarChart3,
   ExternalLink,
   Github,
   MessageCircle,
-  PackageCheck,
-  Search,
+  Route,
   ShoppingBag,
-  SlidersHorizontal,
   Upload,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -25,7 +25,7 @@ const filters: { key: Filter; label: string }[] = [
 
 const FLOW_ICONS = {
   "mobile-flow": [ShoppingBag, Upload, MessageCircle],
-  "order-flow": [Search, SlidersHorizontal, PackageCheck],
+  "simulation-flow": [Users, Route, BarChart3],
 } as const;
 
 const ProjectPreview = ({ project }: { project: Project }) => {
@@ -98,7 +98,7 @@ const ProjectsSection = () => {
           </div>
           <div className="flex flex-col justify-end">
             <p className="max-w-md text-[16px] leading-[1.6] text-smoke">
-              Mobile and web builds spanning local commerce, ordering operations, and configurable product experiences.
+              Mobile and web builds spanning local commerce, peer-to-peer marketplaces, and agent-based safety simulation.
             </p>
             <div className="mt-7 flex flex-wrap gap-2" aria-label="Filter projects">
               {filters.map((item) => (
@@ -171,6 +171,11 @@ const ProjectsSection = () => {
                       <button type="button" onClick={() => setSelectedProject(project)} className="primary-pill">
                         CASE STUDY <ArrowUpRight size={13} />
                       </button>
+                      {project.liveUrl && (
+                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="ghost-button" aria-label={`${project.title} live project`}>
+                          LIVE <ExternalLink size={13} />
+                        </a>
+                      )}
                       {project.githubUrl && (
                         <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="ghost-button" aria-label={`${project.title} public source code`}>
                           SOURCE <Github size={13} />

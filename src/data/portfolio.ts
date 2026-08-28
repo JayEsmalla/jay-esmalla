@@ -5,7 +5,7 @@ export interface Project {
   category: "flutter" | "web" | "other";
   technologies: string[];
   image: string;
-  preview: "screen" | "mobile-flow" | "order-flow";
+  preview: "screen" | "mobile-flow" | "simulation-flow";
   previewLabel: string;
   proofPoints: string[];
   liveUrl?: string;
@@ -59,19 +59,20 @@ export const projects: Project[] = [
     outcome: "Developed a cross-platform marketplace with structured listings, discovery tools, Firebase-backed interactions, and features designed around local peer-to-peer thrift transactions.",
   },
   {
-    id: "rimworks",
-    title: "RimWorks PH",
-    description: "A full-stack custom rim ordering platform for browsing products, configuring an order, uploading payment proof, and tracking fulfillment.",
+    id: "simulation-comlab-v3",
+    title: "ComLab V3 Egress Simulation",
+    description: "A Python-powered agent-based emergency egress simulator for comparing the current ComLab V3 layout with a safer modified layout.",
     category: "web",
-    technologies: ["React", "TypeScript", "Supabase", "Tailwind CSS"],
+    technologies: ["Python", "JavaScript", "HTML5 Canvas", "Vercel"],
     image: "",
-    preview: "order-flow",
-    previewLabel: "CUSTOM ORDER WORKFLOW",
-    proofPoints: ["Product filtering", "Payment proof", "Status tracking"],
-    githubUrl: "https://github.com/JayEsmalla/rim-works",
-    role: "Full-Stack Web Developer",
-    problemSolved: "Custom rim buyers and shop staff needed one clear workflow for product discovery, order configuration, downpayment review, and fulfillment tracking.",
-    outcome: "Built customer and staff experiences around a shared Supabase backend, including role-based access, order snapshots, payment-proof uploads, and status history.",
+    preview: "simulation-flow",
+    previewLabel: "EMERGENCY EGRESS MODEL",
+    proofPoints: ["Agent simulation", "Layout comparison", "Egress metrics"],
+    liveUrl: "https://simulation-comlab-v3.vercel.app/",
+    githubUrl: "https://github.com/JayEsmalla/simulation_comlabV3",
+    role: "Full-Stack Simulation Developer",
+    problemSolved: "The current computer-laboratory layout needed a repeatable way to evaluate how locker placement, crowd behavior, and different incident origins affect evacuation safety.",
+    outcome: "Built a deterministic 41-agent simulation with pathfinding, panic and fire scenarios, congestion heatmaps, evacuation metrics, and side-by-side layout comparisons.",
   },
 ];
 
