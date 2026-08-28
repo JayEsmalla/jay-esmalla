@@ -1,181 +1,102 @@
 import { motion } from "framer-motion";
-import { socialLinks } from "@/data/portfolio";
-import { Github, Linkedin, Facebook, Mail, Send, MapPin } from "lucide-react";
+import { ArrowUpRight, Facebook, Github, Linkedin, Mail, MapPin, Send } from "lucide-react";
 import { type ChangeEvent, type FormEvent, useState } from "react";
+import { socialLinks } from "@/data/portfolio";
 
 const initialForm = { name: "", email: "", subject: "", message: "" };
 
 const SOCIALS = [
-  { icon: Github,   href: "https://github.com/jaeqwrty",            label: "GitHub",   sub: "@jaeqwrty" },
-  { icon: Linkedin, href: socialLinks.linkedin,                      label: "LinkedIn",  sub: "Jay Esmalla" },
-  { icon: Facebook, href: "https://www.facebook.com/jaecoleeee/",   label: "Facebook",  sub: "@jaecoleeee" },
-  { icon: Mail,     href: `mailto:${socialLinks.email}`,             label: "Email",    sub: socialLinks.email },
-];
-
-const InputClass =
-  "w-full bg-muted/30 border border-border/60 rounded-sm px-4 py-2.5 font-mono-retro text-sm" +
-  " text-foreground placeholder:text-muted-foreground/50" +
-  " focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30" +
-  " hover:border-border transition-colors duration-200";
+  { icon: Github, href: socialLinks.github, label: "GitHub", sub: "@JayEsmalla" },
+  { icon: Linkedin, href: socialLinks.linkedin, label: "LinkedIn", sub: "Jay Esmalla" },
+  { icon: Facebook, href: "https://www.facebook.com/jaecoleeee/", label: "Facebook", sub: "@jaecoleeee" },
+  { icon: Mail, href: `mailto:${socialLinks.email}`, label: "Email", sub: socialLinks.email },
+].filter(({ href }) => href && href !== "https://linkedin.com");
 
 const ContactSection = () => {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState("");
 
-  const handle =
-    (field: keyof typeof form) =>
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      setForm({ ...form, [field]: e.target.value });
+  const handle = (field: keyof typeof form) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm((current) => ({ ...current, [field]: event.target.value }));
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    const subj = form.subject.trim() || `Portfolio Contact from ${form.name.trim()}`;
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    const subject = form.subject.trim() || `Portfolio Contact from ${form.name.trim()}`;
     const body = [
       `Name: ${form.name.trim()}`,
       `Email: ${form.email.trim()}`,
       form.subject.trim() ? `Subject: ${form.subject.trim()}` : "",
       "",
       form.message.trim(),
-    ]
-      .filter(Boolean)
-      .join("\n");
-    window.location.href = `mailto:${socialLinks.email}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+    ].filter(Boolean).join("\n");
+
+    window.location.href = `mailto:${socialLinks.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setStatus("Opening your email client…");
   };
 
   return (
-    <section id="contact" className="py-20 px-4 relative">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-14"
-        >
-          <p className="font-mono-retro text-secondary text-sm tracking-widest mb-3">
-            {"> init contact.sh_"}
-          </p>
-          <h2 className="font-display text-2xl md:text-3xl neon-text-purple mb-3">CONTACT</h2>
-          <div
-            className="w-24 h-px mx-auto bg-gradient-to-r from-transparent via-accent to-transparent"
-            style={{ boxShadow: "0 0 8px hsl(var(--accent))" }}
-          />
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Socials sidebar */}
-          <motion.div
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="retro-card h-full flex flex-col gap-6">
-              <div className="h-[2px] -mt-6 -mx-6 mb-2 bg-gradient-to-r from-primary via-secondary to-accent" />
-              <p className="font-mono-retro text-xs text-accent tracking-widest">&gt; find me online_</p>
-
-              <div className="space-y-3">
-                {SOCIALS.map(({ icon: Icon, href, label, sub }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-4 p-3 border border-border/50 rounded-sm bg-muted/10
-                               hover:border-primary/40 hover:bg-primary/5
-                               hover:shadow-[0_0_8px_hsl(var(--primary)/0.15)]
-                               transition-all duration-300 group"
-                  >
-                    <div className="p-2 border border-border/50 rounded-sm bg-card/60
-                                    group-hover:border-primary/50 group-hover:text-primary
-                                    text-muted-foreground transition-colors duration-300">
-                      <Icon size={16} />
-                    </div>
-                    <div>
-                      <p className="font-heading text-sm font-bold text-foreground/90 group-hover:text-primary transition-colors duration-300">
-                        {label}
-                      </p>
-                      <p className="font-mono-retro text-[10px] text-muted-foreground">{sub}</p>
-                    </div>
-                  </a>
-                ))}
-              </div>
-
-              <div className="mt-auto flex items-start gap-3 pt-4 border-t border-border/40">
-                <MapPin size={14} className="text-muted-foreground shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-heading text-xs font-semibold text-foreground/80">Based in</p>
-                  <p className="font-mono-retro text-[10px] text-muted-foreground">Tagum City, Davao del Norte, PH</p>
-                </div>
+    <section id="contact" className="section-shell scroll-mt-[72px]">
+      <div className="page-container">
+        <div className="section-heading-grid">
+          <div>
+            <p className="section-kicker">06 / CONTACT</p>
+            <h2 className="section-title">Have a project, collaboration, or idea worth building?</h2>
+            <a href={`mailto:${socialLinks.email}`} className="primary-pill mt-8">
+              LET'S CHAT <ArrowUpRight size={14} />
+            </a>
+          </div>
+          <div className="self-end">
+            <div className="flex items-start gap-3 border-b border-graphite pb-5">
+              <MapPin size={18} strokeWidth={1.5} className="icon-gold mt-0.5" />
+              <div>
+                <p className="text-[14px] text-chalk">Based in Tagum City</p>
+                <p className="meta-text mt-2 text-smoke">DAVAO DEL NORTE, PHILIPPINES</p>
               </div>
             </div>
-          </motion.div>
+            <p className="mt-5 text-[15px] leading-[1.6] text-smoke">
+              Reach out directly or use the form below. Submitting the form opens your default email client with the message prepared.
+            </p>
+          </div>
+        </div>
 
-          {/* Contact form */}
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
+        <div className="mt-12 grid rounded-[8px] border border-graphite md:mt-14 lg:grid-cols-[0.75fr_1.25fr]">
+          <div className="border-b border-graphite p-7 lg:border-b-0 lg:border-r lg:p-8">
+            <p className="section-kicker">FIND ME ONLINE</p>
+            <div className="mt-6 divide-y divide-graphite border-y border-graphite">
+              {SOCIALS.map(({ icon: Icon, href, label, sub }) => (
+                <a key={label} href={href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 py-5 group">
+                  <Icon size={18} strokeWidth={1.5} className="icon-gold" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[14px] text-chalk">{label}</p>
+                    <p className="meta-text mt-1 truncate text-smoke">{sub}</p>
+                  </div>
+                  <ArrowUpRight size={14} className="text-smoke transition-colors group-hover:text-chalk" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <motion.form
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.08 }}
+            onSubmit={handleSubmit}
+            className="p-7 lg:p-8"
           >
-            <form onSubmit={handleSubmit} className="retro-card flex flex-col gap-4">
-              <div className="h-[2px] -mt-6 -mx-6 mb-2 bg-gradient-to-r from-primary via-secondary to-accent" />
-              <p className="font-mono-retro text-xs text-secondary tracking-widest">&gt; send message_</p>
-
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  placeholder="Name"
-                  aria-label="Name"
-                  autoComplete="name"
-                  value={form.name}
-                  onChange={handle("name")}
-                  className={InputClass}
-                  required
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  aria-label="Email"
-                  autoComplete="email"
-                  value={form.email}
-                  onChange={handle("email")}
-                  className={InputClass}
-                  required
-                />
-              </div>
-              <input
-                type="text"
-                placeholder="Subject"
-                aria-label="Subject"
-                value={form.subject}
-                onChange={handle("subject")}
-                className={InputClass}
-              />
-              <textarea
-                placeholder="Message"
-                aria-label="Message"
-                rows={5}
-                minLength={10}
-                value={form.message}
-                onChange={handle("message")}
-                className={`${InputClass} resize-none`}
-                required
-              />
-              <button
-                type="submit"
-                className="neon-button w-full flex items-center justify-center gap-2"
-              >
-                <Send size={13} /> TRANSMIT MESSAGE
+            <p className="section-kicker">SEND A MESSAGE</p>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <input type="text" placeholder="Name" aria-label="Name" autoComplete="name" value={form.name} onChange={handle("name")} className="field-control" required />
+              <input type="email" placeholder="Email" aria-label="Email" autoComplete="email" value={form.email} onChange={handle("email")} className="field-control" required />
+            </div>
+            <input type="text" placeholder="Subject" aria-label="Subject" value={form.subject} onChange={handle("subject")} className="field-control mt-4" />
+            <textarea placeholder="Message" aria-label="Message" rows={6} minLength={10} value={form.message} onChange={handle("message")} className="field-control mt-4 resize-none" required />
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <button type="submit" className="primary-pill justify-center">
+                SEND MESSAGE <Send size={13} />
               </button>
-              {status && (
-                <p className="font-mono-retro text-xs text-secondary text-center" role="status">
-                  {status}
-                </p>
-              )}
-            </form>
-          </motion.div>
+              {status && <p className="meta-text text-smoke" role="status">{status}</p>}
+            </div>
+          </motion.form>
         </div>
       </div>
     </section>

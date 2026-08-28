@@ -1,50 +1,29 @@
+import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Github, Linkedin, Mail } from "lucide-react";
 import { socialLinks } from "@/data/portfolio";
 
-const Footer = () => {
-  const contactEmail = socialLinks.email;
-  const socials = [
-    { icon: Github, href: socialLinks.github, label: "GitHub" },
-    { icon: Linkedin, href: socialLinks.linkedin, label: "LinkedIn" },
-    { icon: Mail, href: `mailto:${contactEmail}`, label: "Email" },
-  ];
-
-
-
-
-  return (
-    <footer className="relative z-[1] mt-auto px-6 py-8 border-t border-border bg-background/50 backdrop-blur-sm">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-        {/* Left Side: Copyright */}
-        <div className="text-center md:text-left">
-          <p className="font-mono-retro text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} JAY ESMALLA. ALL RIGHTS RESERVED.
-          </p>
-          <p className="font-mono-retro text-[10px] text-muted-foreground/40 mt-1">
-            // TERMINAL SESSION ACTIVE. INSERT COIN TO CONTINUE.
-          </p>
+const Footer = () => (
+  <footer className="border-t border-graphite bg-obsidian">
+    <div className="page-container py-8">
+      <div className="flex flex-col gap-7 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-[14px] text-chalk">{socialLinks.email}</p>
+          <p className="meta-text mt-2 text-smoke">© {new Date().getFullYear()} JAY ESMALLA · TAGUM CITY, PH</p>
         </div>
-
-
-        {/* Right Side: Social Icons */}
-        <div className="flex gap-4">
-          {socials.map(({ icon: Icon, href, label }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 border border-border bg-card/40 rounded-sm text-muted-foreground hover:text-secondary hover:border-secondary/40 hover:shadow-[0_0_8px_hsl(var(--secondary)/0.4)] transition-all duration-300"
-              aria-label={label}
-            >
-              <Icon size={14} />
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] text-smoke">
+          <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-chalk">
+            GITHUB <ArrowUpRight size={11} />
+          </a>
+          {socialLinks.linkedin && socialLinks.linkedin !== "https://linkedin.com" && (
+            <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-chalk">
+              LINKEDIN <ArrowUpRight size={11} />
             </a>
-          ))}
+          )}
+          <Link to="/contact" className="hover:text-chalk">CONTACT</Link>
         </div>
       </div>
-    </footer>
-  );
-};
+    </div>
+  </footer>
+);
 
 export default Footer;

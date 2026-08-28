@@ -10,9 +10,14 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
-    // Proxy /api/* to the Vercel dev server so serverless functions work locally.
-    // Run `vercel dev` (not `npm run dev`) to get accurate GitHub data locally.
     proxy: {
+      // Keep GitHub activity same-origin during regular Vite development.
+      "/api/github-public": {
+        target: "https://github-contributions-api.jogruber.de",
+        changeOrigin: true,
+        rewrite: (requestPath) => requestPath.replace(/^\/api\/github-public/, "/v4"),
+      },
+      // Other API routes can still be served by `vercel dev` when needed.
       "/api": {
         target: "http://localhost:3000",
         changeOrigin: true,

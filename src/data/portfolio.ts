@@ -35,11 +35,10 @@ export const projects: Project[] = [
     technologies: ["PHP", "Python", "CSS", "JavaScript", "Batchfile", "Dockerfile", "Shell"],
     image: "/lolas-kusina-auth-gate.webp",
     thumbnail: "auth-gate",
-    githubUrl: "https://github.com/jaeqwrty/LolasKusina",
-    liveUrl: "https://github.com/jaeqwrty/LolasKusina",
+    githubUrl: "https://github.com/JayEsmalla/LolasKusina",
     role: "Lead Web Developer & System Architect",
     problemSolved: "Managing custom catering orders, menu packages, and client requests manually was prone to errors, communication delays, and order mix-ups for the local kitchen.",
-    outcome: "Streamlined the catering pipeline by launching an automated booking system and dashboard, reducing client booking errors by 35% and improving order processing times.",
+    outcome: "Built a structured ordering and management workflow that centralizes menu packages, customer requests, and order handling in one system.",
   },
   {
     id: "thryfto",
@@ -48,11 +47,10 @@ export const projects: Project[] = [
     category: "flutter",
     technologies: ["Flutter", "Dart", "Firebase", "Marketplace"],
     image: "/placeholder.svg",
-    githubUrl: "https://github.com/jaeqwrty/Thryfto",
-    liveUrl: "https://github.com/jaeqwrty/Thryfto",
+    githubUrl: "https://github.com/JayEsmalla/Thryfto",
     role: "Full-Stack Mobile Developer",
     problemSolved: "Existing peer-to-peer thrift sales on social media lacked structure, searchability, and secure communication channels, causing friction for both buyers and sellers.",
-    outcome: "Developed a cross-platform mobile marketplace app with real-time Firebase chat, keyword search, and item classification, resulting in a 50% faster listing-to-sale cycle in beta testing.",
+    outcome: "Developed a cross-platform marketplace with structured listings, discovery tools, Firebase-backed interactions, and features designed around local peer-to-peer thrift transactions.",
   },
   {
     id: "rimcraft",
@@ -61,11 +59,10 @@ export const projects: Project[] = [
     category: "web",
     technologies: ["React", "TypeScript", "Tailwind", "Configurator"],
     image: "/placeholder.svg",
-    githubUrl: "https://github.com/jaeqwrty/RimCraft",
-    liveUrl: "https://github.com/jaeqwrty/RimCraft",
+    githubUrl: "https://github.com/JayEsmalla/RimCraft",
     role: "Frontend UI/UX Developer",
-    problemSolved: "Automotive enthusiasts struggled to visualize how specific custom rims and fitments would look on their cars, leading to hesitation and high return rates.",
-    outcome: "Created an interactive 2D wheel configurator with dynamic color/finish toggles, helping customers visualize fitment instantly and boosting configuration engagement by 60%.",
+    problemSolved: "Automotive enthusiasts need a clearer way to preview wheel styles, finishes, and fitment choices before committing to a configuration.",
+    outcome: "Created an interactive wheel configurator with dynamic style and finish controls so users can explore customization options before making a selection.",
   },
 ];
 
@@ -106,9 +103,9 @@ export const skills: Skill[] = [
 ];
 
 export const socialLinks = {
-  github: "https://github.com/jaeqwrty",
-  linkedin: "https://linkedin.com",
-  twitter: "https://twitter.com",
+  github: "https://github.com/JayEsmalla",
+  linkedin: "",
+  twitter: "",
   email: "jaesmalla1@gmail.com",
 };
 
@@ -165,15 +162,15 @@ export const certifications: Certification[] = [
    Change only this object when customising the embed theme.
 ───────────────────────────────────────────────────────── */
 export const githubConfig = {
-  username: "jaeqwrty",
-  profileUrl: "https://github.com/jaeqwrty",
+  username: "JayEsmalla",
+  profileUrl: "https://github.com/JayEsmalla",
   /** Hex colours (no #) passed to the embed APIs */
   theme: {
-    bg: "0a0a12",
-    titleColor: "ff2ec4",
-    textColor: "22e0ff",
-    iconColor: "ff2ec4",
-    border: "22e0ff30",
+    bg: "101010",
+    titleColor: "f3f3f3",
+    textColor: "9c9c9c",
+    iconColor: "6f6759",
+    border: "212121",
   },
 };
 
