@@ -99,11 +99,11 @@
   }
 
   .section-shell {
-    @apply border-b border-graphite py-16 md:py-20;
+    @apply border-b border-graphite py-12 md:py-16;
   }
 
   .section-heading-grid {
-    @apply grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.75fr)] lg:gap-20;
+    @apply grid gap-7 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.75fr)] lg:gap-12;
   }
 
   .section-kicker {
@@ -112,11 +112,11 @@
   }
 
   .section-title {
-    @apply mt-5 max-w-[760px] text-[34px] leading-[1.06] tracking-[-0.02em] text-chalk md:text-[44px];
+    @apply mt-4 max-w-[760px] text-[28px] leading-[1.06] tracking-[-0.02em] text-chalk md:text-[36px];
   }
 
   .display-title {
-    @apply text-[44px] font-normal leading-[1.02] tracking-[-0.035em] text-chalk md:text-[63px];
+    @apply text-[36px] font-normal leading-[1.02] tracking-[-0.035em] text-chalk md:text-[48px];
   }
 
   .meta-text {

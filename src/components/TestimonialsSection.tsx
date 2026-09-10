@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
-import { testimonials } from "@/data/portfolio";
+import { projects, testimonials } from "@/data/portfolio";
 
 const TestimonialsSection = () => (
   <section id="testimonials" className="section-shell scroll-mt-[72px]">
@@ -28,8 +28,13 @@ const TestimonialsSection = () => (
             <Quote size={25} strokeWidth={1.5} className="icon-gold" />
             <p className="mt-8 text-[16px] leading-[1.65] text-chalk">“{testimonial.quote}”</p>
             <div className="mt-10 border-t border-graphite pt-5">
-              <p className="text-[14px] text-chalk">{testimonial.name}</p>
-              <p className="meta-text mt-2 text-smoke">{testimonial.role}</p>
+              <p className="text-[14px] text-chalk">{testimonial.approvedContext?.name ?? testimonial.name}</p>
+              <p className="meta-text mt-2 text-smoke">{testimonial.approvedContext?.role ?? testimonial.role}</p>
+              {testimonial.approvedContext && projects.some((project) => project.id === testimonial.approvedContext?.projectId) && (
+                <p className="mt-3 text-[13px] text-ash">
+                  Project: {projects.find((project) => project.id === testimonial.approvedContext?.projectId)?.title}
+                </p>
+              )}
             </div>
           </motion.article>
         ))}

@@ -107,16 +107,11 @@ const AboutSection = () => (
       <div className="section-heading-grid">
         <div>
           <p className="section-kicker">02 / ABOUT</p>
-          <h2 className="section-title text-balance">More than a stack: how I think, build, and keep improving.</h2>
+          <h2 className="section-title text-balance">How I approach a build.</h2>
         </div>
-        <div className="self-end space-y-5 text-[16px] leading-[1.65] text-smoke">
-          <p className="text-[19px] leading-[1.5] text-chalk md:text-[21px]">
-            I&apos;m <span className="text-white">Jay Factolarin Esmalla</span>, a 4th-year Computer Science student majoring in Artificial Intelligence at the University of Mindanao — Tagum College.
-          </p>
-          <p>
-            I build mobile and web systems with a practical mindset: understand the problem, make the flow clear, choose the right tools, and keep the implementation maintainable.
-          </p>
-        </div>
+        <p className="self-end text-[16px] leading-[1.65] text-smoke">
+          I start with the workflow, choose tools that fit, and connect the interface to reliable backend systems. My focus is software that is easy to use and maintain.
+        </p>
       </div>
 
       <motion.div

@@ -5,6 +5,9 @@ export interface Project {
   category: "flutter" | "web" | "other";
   technologies: string[];
   image: string;
+  imageAlt?: string;
+  imageFit?: "contain";
+  imageBackground?: string;
   preview: "screen" | "mobile-flow" | "simulation-flow";
   previewLabel: string;
   proofPoints: string[];
@@ -26,6 +29,12 @@ export interface Testimonial {
   name: string;
   role: string;
   quote: string;
+  /** Add only after the author approves the quote, attribution, and project association. */
+  approvedContext?: {
+    projectId: string;
+    name: string;
+    role: string;
+  };
 }
 
 export const projects: Project[] = [
@@ -49,9 +58,11 @@ export const projects: Project[] = [
     description: "A peer-to-peer thrift marketplace for listing pre-loved items, discovering local finds, and connecting buyers with sellers.",
     category: "flutter",
     technologies: ["Flutter", "Dart", "Firebase", "Marketplace"],
-    image: "",
-    preview: "mobile-flow",
-    previewLabel: "COMMUNITY MARKETPLACE FLOW",
+    image: "/thryfto.png",
+    imageAlt: "Thryfto mobile app login screen presented in a phone mockup",
+    imageFit: "contain",
+    preview: "screen",
+    previewLabel: "MOBILE APP / LOGIN",
     proofPoints: ["Real-time feed", "Listing uploads", "Buyer-seller chat"],
     githubUrl: "https://github.com/JayEsmalla/thryfto-app",
     role: "Full-Stack Mobile Developer",
@@ -59,14 +70,33 @@ export const projects: Project[] = [
     outcome: "Developed a cross-platform marketplace with structured listings, discovery tools, Firebase-backed interactions, and features designed around local peer-to-peer thrift transactions.",
   },
   {
+    id: "prism",
+    title: "PRISM",
+    description: "A centralized payroll and staff-management system for Tagum Doctors Hospital, connecting attendance verification, employee records, and leave administration.",
+    category: "web",
+    technologies: ["React 19", "Node.js 20", "Express 5", "MySQL 8"],
+    image: "/prism.png",
+    imageAlt: "PRISM payroll and staff-management landing page for Tagum Doctors Hospital",
+    imageFit: "contain",
+    preview: "screen",
+    previewLabel: "PAYROLL & STAFF MANAGEMENT",
+    proofPoints: ["Attendance verification", "Payroll reconciliation", "Staff records & leave"],
+    role: "Full-Stack Developer",
+    problemSolved: "Bring payroll, verified attendance, employee records, and leave administration together for fixed office schedules and rotating medical shifts at Tagum Doctors Hospital.",
+    outcome: "Built PRISM (Payroll Reconciliation and Integrated Staff Management System) around one centrally managed application and one MySQL database on the hospital LAN. Normal operations do not require public internet access. The README identifies outstanding payroll formulas and operational rules that require hospital approval before production use.",
+  },
+  {
     id: "simulation-comlab-v3",
     title: "ComLab V3 Egress Simulation",
     description: "A Python-powered agent-based emergency egress simulator for comparing the current ComLab V3 layout with a safer modified layout.",
     category: "web",
     technologies: ["Python", "JavaScript", "HTML5 Canvas", "Vercel"],
-    image: "",
-    preview: "simulation-flow",
-    previewLabel: "EMERGENCY EGRESS MODEL",
+    image: "/comlab-egress.png",
+    imageBackground: "#080f1b",
+    imageAlt: "ComLab V3 emergency egress simulation showing the laboratory layout, 41 agents, and live evacuation metrics",
+    imageFit: "contain",
+    preview: "screen",
+    previewLabel: "EMERGENCY EGRESS SIMULATION",
     proofPoints: ["Agent simulation", "Layout comparison", "Egress metrics"],
     liveUrl: "https://simulation-comlab-v3.vercel.app/",
     githubUrl: "https://github.com/JayEsmalla/simulation_comlabV3",
