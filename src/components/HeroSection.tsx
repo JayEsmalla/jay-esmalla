@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, Download } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -16,9 +16,6 @@ type PortraitMode = "real" | "anime";
 const HeroSection = () => {
   const [portraitState, setPortraitState] = useState<PortraitState>("loading");
   const [portraitMode, setPortraitMode] = useState<PortraitMode>("real");
-  const [isHovered, setIsHovered] = useState(false);
-
-  const isAnimeActive = portraitMode === "anime" || isHovered;
 
   return (
     <section id="home" className="border-b border-graphite bg-carbon">
@@ -32,7 +29,7 @@ const HeroSection = () => {
           >
             <div className="status-badge mb-5 w-fit">
               <span className="status-dot" />
-              OPEN TO INTERNSHIPS, ROLES & COLLABORATION
+              OPEN TO INTERNSHIPS, ROLES &amp; COLLABORATION
             </div>
 
             <p className="meta-text mb-5 text-ash">FLUTTER + REACT DEVELOPER · FULL-STACK PRODUCT BUILDER</p>
@@ -65,10 +62,9 @@ const HeroSection = () => {
           >
             <div className="relative border-l border-t border-graphite pl-4 pt-4 sm:pl-5 sm:pt-5">
               <div className="absolute -left-[3px] -top-[3px] h-[5px] w-[5px] bg-compass-gold" aria-hidden="true" />
+
               <div
                 className="group relative aspect-[4/5] cursor-pointer select-none overflow-hidden bg-[#0c0c0c]"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
                 onClick={() => setPortraitMode((prev) => (prev === "real" ? "anime" : "real"))}
                 role="button"
                 tabIndex={0}
@@ -91,80 +87,57 @@ const HeroSection = () => {
                   </div>
                 )}
 
-                {/* Real Portrait */}
                 <img
                   src="/profile.webp"
                   alt="Portrait of Jay Factolarin Esmalla"
                   onLoad={() => setPortraitState("ready")}
                   onError={() => setPortraitState("missing")}
-                  className={`absolute inset-0 h-full w-full object-cover object-center grayscale contrast-[1.04] brightness-[0.92] transition-all duration-700 ease-out ${
-                    portraitState === "ready" ? "opacity-100" : "opacity-0"
-                  } ${isAnimeActive ? "scale-105 opacity-0 blur-[0.5px]" : "scale-100 opacity-100"}`}
+                  className={[
+                    "absolute inset-0 h-full w-full object-cover object-center",
+                    "grayscale contrast-[1.04] brightness-[0.92]",
+                    "transition-all duration-700 ease-out",
+                    "group-hover:scale-105 group-hover:opacity-0 group-hover:blur-[1px]",
+                    portraitState === "ready" ? "opacity-100" : "opacity-0",
+                    portraitMode === "anime" ? "!scale-105 !opacity-0 !blur-[1px]" : "scale-100",
+                  ].join(" ")}
                 />
 
-                {/* Gun Park Anime Alter-Ego Portrait */}
                 <img
                   src="/gunpark.jpg"
                   alt="Gun Park anime alter-ego"
-                  className={`absolute inset-0 h-full w-full object-cover object-top contrast-[1.06] brightness-[0.96] transition-all duration-700 ease-out ${
-                    isAnimeActive ? "scale-100 opacity-100" : "scale-95 opacity-0 pointer-events-none"
-                  }`}
+                  className={[
+                    "absolute inset-0 h-full w-full object-cover object-top",
+                    "contrast-[1.06] brightness-[0.96]",
+                    "transition-all duration-700 ease-out",
+                    "group-hover:scale-100 group-hover:opacity-100",
+                    portraitMode === "anime" ? "!scale-100 !opacity-100" : "scale-95 opacity-0",
+                  ].join(" ")}
                 />
 
-                {/* Corner Status Pill */}
-                <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-[4px] border border-graphite/90 bg-carbon/80 px-2.5 py-1 backdrop-blur-md transition-all duration-300">
+                <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-[4px] border border-graphite/90 bg-carbon/80 px-2.5 py-1 backdrop-blur-md">
                   <span
-                    className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${
-                      isAnimeActive ? "bg-compass-gold" : "bg-pulse-green"
+                    className={`h-1.5 w-1.5 rounded-full transition-colors duration-500 ${
+                      portraitMode === "anime" ? "bg-compass-gold" : "bg-pulse-green"
                     }`}
                   />
                   <span className="font-mono text-[10px] uppercase tracking-wider text-chalk">
-                    {isAnimeActive ? "ALTER EGO · GUN PARK" : "HOVER / TAP · ALTER EGO"}
+                    {portraitMode === "anime" ? "ALTER EGO · GUN PARK" : "TAP · ALTER EGO"}
                   </span>
                 </div>
               </div>
 
               <div className="grid border-x border-b border-graphite sm:grid-cols-2">
-                <div className="px-4 py-3 sm:py-4">
+                <div className="px-4 py-4">
                   <p className="meta-text text-smoke">
-                    {isAnimeActive ? "ALTER EGO / LOOKISM" : "JAY FACTOLARIN ESMALLA"}
+                    {portraitMode === "anime" ? "ALTER EGO / LOOKISM" : "JAY FACTOLARIN ESMALLA"}
                   </p>
-                  <p className="mt-1 text-[13px] text-chalk transition-all">
-                    {isAnimeActive ? "Park Jonggun (Gun Park)" : "Computer Science · AI"}
+                  <p className="mt-1 text-[13px] text-chalk">
+                    {portraitMode === "anime" ? "Park Jonggun (Gun Park)" : "Computer Science · AI"}
                   </p>
                 </div>
-                <div className="border-t border-graphite px-4 py-3 sm:border-l sm:border-t-0 sm:py-4 sm:text-right">
-                  <div className="flex items-center justify-between sm:justify-end gap-2">
-                    <span className="meta-text text-smoke">MODE</span>
-                    <div className="inline-flex rounded border border-graphite p-0.5 text-[10px]">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPortraitMode("real");
-                        }}
-                        aria-pressed={portraitMode === "real"}
-                        className={`rounded px-2 py-0.5 transition-colors ${
-                          portraitMode === "real" ? "bg-chalk font-medium text-obsidian" : "text-smoke hover:text-chalk"
-                        }`}
-                      >
-                        REAL
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPortraitMode("anime");
-                        }}
-                        aria-pressed={portraitMode === "anime"}
-                        className={`rounded px-2 py-0.5 transition-colors ${
-                          portraitMode === "anime" ? "bg-chalk font-medium text-obsidian" : "text-smoke hover:text-chalk"
-                        }`}
-                      >
-                        ANIME
-                      </button>
-                    </div>
-                  </div>
+                <div className="border-t border-graphite px-4 py-4 sm:border-l sm:border-t-0 sm:text-right">
+                  <p className="meta-text text-smoke">BASED IN</p>
+                  <p className="mt-1 text-[13px] text-chalk">Tagum City, Philippines</p>
                 </div>
               </div>
             </div>
