@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, Download } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -29,7 +29,7 @@ const HeroSection = () => {
           >
             <div className="status-badge mb-5 w-fit">
               <span className="status-dot" />
-              OPEN TO INTERNSHIPS, ROLES &amp; COLLABORATION
+              AVAILABLE FOR FREELANCE &amp; PROJECT COMMISSIONS
             </div>
 
             <p className="meta-text mb-5 text-ash">FLUTTER + REACT DEVELOPER · FULL-STACK PRODUCT BUILDER</p>
