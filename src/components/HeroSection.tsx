@@ -103,7 +103,7 @@ const HeroSection = () => {
                 />
 
                 <img
-                  src="/gunpark.jpg"
+                  src="/gunpark_v2.jpg"
                   alt="Gun Park anime alter-ego"
                   className={[
                     "absolute inset-0 h-full w-full object-cover object-top",
