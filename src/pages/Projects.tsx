@@ -9,7 +9,7 @@ const Projects = () => {
   }, []);
   return (
     <PageLayout>
-      <ProjectsSection />
+      <ProjectsSection showAllByDefault />
       <GitHubSection />
     </PageLayout>
   );

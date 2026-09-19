@@ -3,6 +3,8 @@ import {
   ArrowRight,
   ArrowUpRight,
   BarChart3,
+  ChevronDown,
+  ChevronUp,
   ExternalLink,
   Github,
   MessageCircle,
@@ -102,10 +104,19 @@ const ProjectPreview = ({ project }: { project: Project }) => {
   );
 };
 
-const ProjectsSection = () => {
+export interface ProjectsSectionProps {
+  initialVisibleCount?: number;
+  showAllByDefault?: boolean;
+}
+
+const ProjectsSection = ({ initialVisibleCount = 4, showAllByDefault = false }: ProjectsSectionProps = {}) => {
   const [filter, setFilter] = useState<Filter>("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [expanded, setExpanded] = useState(showAllByDefault);
+
   const filtered = filter === "all" ? projects : projects.filter((project) => project.category === filter);
+  const hasMore = filtered.length > initialVisibleCount;
+  const visibleProjects = expanded || !hasMore ? filtered : filtered.slice(0, initialVisibleCount);
 
   return (
     <section id="projects" className="section-shell scroll-mt-[72px]">
@@ -141,7 +152,7 @@ const ProjectsSection = () => {
 
         <motion.div layout className="mt-7 grid gap-5 md:grid-cols-2">
           <AnimatePresence mode="popLayout">
-            {filtered.map((project) => {
+            {visibleProjects.map((project) => {
               const projectNumber = String(projects.findIndex((item) => item.id === project.id) + 1).padStart(2, "0");
               return (
                 <motion.article
@@ -196,6 +207,31 @@ const ProjectsSection = () => {
             })}
           </AnimatePresence>
         </motion.div>
+
+        {hasMore && (
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 text-center">
+            <button
+              type="button"
+              onClick={() => setExpanded((prev) => !prev)}
+              aria-expanded={expanded}
+              className="ghost-button group transition-all duration-300 hover:border-white hover:bg-white hover:text-obsidian"
+            >
+              {expanded ? (
+                <>
+                  SHOW LESS <ChevronUp size={14} className="transition-transform group-hover:-translate-y-0.5" />
+                </>
+              ) : (
+                <>
+                  VIEW ALL PROJECTS ({filtered.length - initialVisibleCount} MORE){" "}
+                  <ChevronDown size={14} className="transition-transform group-hover:translate-y-0.5" />
+                </>
+              )}
+            </button>
+            <p className="meta-text text-smoke">
+              SHOWING {visibleProjects.length} OF {filtered.length} {filter === "all" ? "PROJECTS" : `${filter.toUpperCase()} PROJECTS`}
+            </p>
+          </div>
+        )}
 
         <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => !open && setSelectedProject(null)}>
           <DialogContent className="max-h-[90vh] overflow-hidden border-graphite bg-carbon p-0 text-chalk shadow-none sm:max-w-2xl">
