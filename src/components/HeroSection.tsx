@@ -106,7 +106,7 @@ const HeroSection = () => {
                   src="/gunpark_v2.jpg"
                   alt="Gun Park anime alter-ego"
                   className={[
-                    "absolute inset-0 h-full w-full object-cover object-top",
+                    "absolute inset-0 h-full w-full object-contain object-center",
                     "contrast-[1.06] brightness-[0.96]",
                     "transition-all duration-700 ease-out",
                     "group-hover:scale-100 group-hover:opacity-100",
