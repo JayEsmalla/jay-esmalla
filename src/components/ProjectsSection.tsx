@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { projects, type Project } from "@/data/portfolio";
 
 type Filter = "all" | "flutter" | "web";
@@ -197,59 +198,61 @@ const ProjectsSection = () => {
         </motion.div>
 
         <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => !open && setSelectedProject(null)}>
-          <DialogContent className="max-h-[90vh] overflow-y-auto border-graphite bg-carbon text-chalk shadow-none sm:max-w-2xl">
+          <DialogContent className="max-h-[90vh] overflow-hidden border-graphite bg-carbon p-0 text-chalk shadow-none sm:max-w-2xl">
             {selectedProject && (
-              <>
-                <DialogHeader className="text-left">
-                  <p className="section-kicker">PROJECT CASE STUDY</p>
-                  <DialogTitle className="mt-2 text-[34px] font-normal tracking-[-0.02em] text-chalk">{selectedProject.title}</DialogTitle>
-                  <DialogDescription className="text-[14px] leading-[1.5] text-smoke">{selectedProject.description}</DialogDescription>
-                </DialogHeader>
+              <ScrollArea className="max-h-[90vh]">
+                <div className="p-6 pr-8 sm:p-8 sm:pr-10">
+                  <DialogHeader className="text-left">
+                    <p className="section-kicker">PROJECT CASE STUDY</p>
+                    <DialogTitle className="mt-2 text-[34px] font-normal tracking-[-0.02em] text-chalk">{selectedProject.title}</DialogTitle>
+                    <DialogDescription className="text-[14px] leading-[1.5] text-smoke">{selectedProject.description}</DialogDescription>
+                  </DialogHeader>
 
-                <div className="mt-4 divide-y divide-graphite border-y border-graphite">
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">ROLE</p>
-                    <p className="text-[14px] leading-[1.6] text-chalk">{selectedProject.role}</p>
-                  </div>
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">PROBLEM</p>
-                    <p className="text-[14px] leading-[1.6] text-smoke">{selectedProject.problemSolved}</p>
-                  </div>
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">OUTCOME</p>
-                    <p className="text-[14px] leading-[1.6] text-smoke">{selectedProject.outcome}</p>
-                  </div>
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">IMPLEMENTED</p>
-                    <div className="space-y-2">
-                      {selectedProject.proofPoints.map((point) => (
-                        <p key={point} className="flex items-center gap-2 text-[14px] text-chalk">
-                          <span className="h-1 w-1 rounded-full bg-compass-gold" aria-hidden="true" /> {point}
-                        </p>
-                      ))}
+                  <div className="mt-4 divide-y divide-graphite border-y border-graphite">
+                    <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
+                      <p className="meta-text text-smoke">ROLE</p>
+                      <p className="text-[14px] leading-[1.6] text-chalk">{selectedProject.role}</p>
+                    </div>
+                    <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
+                      <p className="meta-text text-smoke">PROBLEM</p>
+                      <p className="text-[14px] leading-[1.6] text-smoke">{selectedProject.problemSolved}</p>
+                    </div>
+                    <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
+                      <p className="meta-text text-smoke">OUTCOME</p>
+                      <p className="text-[14px] leading-[1.6] text-smoke">{selectedProject.outcome}</p>
+                    </div>
+                    <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
+                      <p className="meta-text text-smoke">IMPLEMENTED</p>
+                      <div className="space-y-2">
+                        {selectedProject.proofPoints.map((point) => (
+                          <p key={point} className="flex items-center gap-2 text-[14px] text-chalk">
+                            <span className="h-1 w-1 rounded-full bg-compass-gold" aria-hidden="true" /> {point}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
+                      <p className="meta-text text-smoke">STACK</p>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProject.technologies.map((tech) => <span key={tech} className="tech-tag">{tech}</span>)}
+                      </div>
                     </div>
                   </div>
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">STACK</p>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedProject.technologies.map((tech) => <span key={tech} className="tech-tag">{tech}</span>)}
-                    </div>
+
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    {selectedProject.liveUrl && (
+                      <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="primary-pill">
+                        OPEN PROJECT <ExternalLink size={13} />
+                      </a>
+                    )}
+                    {selectedProject.githubUrl && (
+                      <a href={selectedProject.githubUrl} target="_blank" rel="noopener noreferrer" className="ghost-button">
+                        PUBLIC SOURCE <Github size={13} />
+                      </a>
+                    )}
                   </div>
                 </div>
-
-                <div className="mt-6 flex flex-wrap gap-3">
-                  {selectedProject.liveUrl && (
-                    <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="primary-pill">
-                      OPEN PROJECT <ExternalLink size={13} />
-                    </a>
-                  )}
-                  {selectedProject.githubUrl && (
-                    <a href={selectedProject.githubUrl} target="_blank" rel="noopener noreferrer" className="ghost-button">
-                      PUBLIC SOURCE <Github size={13} />
-                    </a>
-                  )}
-                </div>
-              </>
+              </ScrollArea>
             )}
           </DialogContent>
         </Dialog>
