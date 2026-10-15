@@ -7,7 +7,8 @@ const env = { UPSTASH_REDIS_REST_URL: "https://test.upstash.io", UPSTASH_REDIS_R
 const sessionId = "90ecad82-9b50-476f-8cb8-cb493fd93057";
 const headers = { Origin: "https://jayesmalla.tech", "Content-Type": "application/json", "CF-Connecting-IP": "192.0.2.1" };
 const request = (body = JSON.stringify({ sessionId }), overrides: Record<string, string> = {}) => new Request(endpoint, { method: "POST", headers: { ...headers, ...overrides }, body });
-const redis = (result: unknown = [120, 3]) => vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ result })));
+const viewerSessions = [sessionId, "09f145b8-6b5f-4cad-b847-7aa60638975a", "2fab145f-b2de-4d10-aeb3-a17f81c529c6"];
+const redis = (result: unknown = [120, 3, viewerSessions]) => vi.stubGlobal("fetch", vi.fn().mockImplementation(async () => Response.json({ result })));
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("visitor Worker boundary", () => {
@@ -15,7 +16,7 @@ describe("visitor Worker boundary", () => {
     redis();
     const response = await worker.fetch(request(), env);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ visits: 120, active: 3 });
+    expect(await response.json()).toEqual({ visits: 120, active: 3, viewers: expect.arrayContaining([expect.stringMatching(/^[a-f0-9]{24}$/)]) });
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe(headers.Origin);
     expect(response.headers.get("Cache-Control")).toBe("no-store");
     expect(fetch).toHaveBeenCalledTimes(1);
@@ -84,5 +85,24 @@ describe("visitor Worker boundary", () => {
     expect(response.status).toBe(503);
     expect(await response.text()).not.toContain(env.UPSTASH_REDIS_REST_TOKEN);
     expect((await worker.fetch(request(), { ...env, UPSTASH_REDIS_REST_URL: "" })).status).toBe(503);
+  });
+
+  it("supplies distinct, refresh-stable icons without exposing session IDs", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(Date.UTC(2026, 9, 16, 4));
+    redis();
+    const first = await (await worker.fetch(request(), env)).json() as { viewers: string[] };
+    const second = await (await worker.fetch(request(), env)).json() as { viewers: string[] };
+    expect(first.viewers).toHaveLength(3);
+    expect(new Set(first.viewers).size).toBe(3);
+    expect(second.viewers).toEqual(first.viewers);
+    viewerSessions.forEach((id) => expect(JSON.stringify(first)).not.toContain(id));
+    vi.spyOn(Date, "now").mockReturnValue(Date.UTC(2026, 9, 17, 4));
+    const tomorrow = await (await worker.fetch(request(), env)).json() as { viewers: string[] };
+    expect(tomorrow.viewers).not.toEqual(first.viewers);
+  });
+
+  it.each([[120, 3, [sessionId]], [120, 3, [sessionId, sessionId, sessionId]], [120, 1, ["not-a-session"]]])("rejects invalid viewer samples", async (result) => {
+    redis(result);
+    expect((await worker.fetch(request(), env)).status).toBe(503);
   });
 });

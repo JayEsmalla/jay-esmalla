@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-export interface VisitorCounts { visits: number; active: number }
+export interface VisitorCounts { visits: number; active: number; viewers?: string[] }
 export const VisitorContext = createContext<VisitorCounts | null>(null);
 
 export const VISITOR_ENDPOINT = "https://jay-esmalla.jaesmalla1.workers.dev/api/visitors";
@@ -58,6 +58,8 @@ export function startVisitorTracking(onCounts: (counts: VisitorCounts | null) =>
       if (!response.ok) throw new Error("Counter unavailable");
       const counts = await response.json() as VisitorCounts;
       if (!Number.isSafeInteger(counts?.visits) || !Number.isSafeInteger(counts?.active) || counts.visits < 1 || counts.active < 1 || counts.active > counts.visits) throw new Error("Invalid counts");
+      // Older deployments can still supply totals while the Worker is updated.
+      if (counts.viewers !== undefined && (!Array.isArray(counts.viewers) || counts.viewers.length !== Math.min(counts.active, 3) || new Set(counts.viewers).size !== counts.viewers.length || counts.viewers.some((seed) => typeof seed !== "string" || !/^[a-f0-9]{24}$/.test(seed)))) throw new Error("Invalid viewers");
       failures = 0;
       if (!disposed && document.visibilityState === "visible" && Date.now() - lastActivity < idleMs) {
         onCounts(counts);

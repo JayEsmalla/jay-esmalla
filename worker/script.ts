@@ -16,5 +16,5 @@ redis.call('SET', KEYS[1], '1', 'EX', 1800)
 redis.call('ZREMRANGEBYSCORE', KEYS[3], '-inf', tonumber(ARGV[1]) - 90000)
 redis.call('ZADD', KEYS[3], ARGV[1], ARGV[2])
 redis.call('EXPIRE', KEYS[3], 120)
-return {tonumber(redis.call('GET', KEYS[2]) or '0'), redis.call('ZCARD', KEYS[3])}
+return {tonumber(redis.call('GET', KEYS[2]) or '0'), redis.call('ZCARD', KEYS[3]), redis.call('ZREVRANGE', KEYS[3], 0, 2)}
 `;

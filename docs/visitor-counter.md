@@ -54,6 +54,13 @@ Local previews show the same placeholders and do not write visits to Redis.
   a heartbeat every 30 seconds while recently used; after 60 seconds without input
   they stop. Returning to a hidden tab counts as activity. Navigation keeps the
   same tracker mounted. Development, preview domains and Worker previews are excluded.
+- Each of up to three recently active viewers gets a deterministic pixel glyph
+  inside the site's bracket frame. The Worker derives daily rotating public seeds
+  with HMAC; raw session IDs, IPs, names and photos never appear in the response.
+  A session keeps its icon across refreshes within the same UTC day. Icons can
+  change when the recently active sample changes or the daily seeds rotate.
+  The displayed active count is capped at `3+`; total visits stay exact. Without
+  avatar seeds (including an older Worker), one generic placeholder is shown.
 - One atomic Lua script updates the visit total, session TTL, and active-session
   sorted set. Simultaneous requests for the same ID cannot double count a visit.
 - Failures replace counts with dashes and back off to at most one retry per two minutes per tab.

@@ -165,8 +165,8 @@ const Navbar = () => {
 
         <div className="hidden items-center gap-3 lg:flex">
           <ThemeSwitch />
-          <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button">
-            VIEW CV <FileText size={13} />
+          <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View résumé (opens in a new tab)" className="ghost-button">
+            RÉSUMÉ <FileText size={13} />
           </a>
           <Link
             to={contactHref}
@@ -229,11 +229,11 @@ const Navbar = () => {
                 );
               })}
               <div className="mt-5 grid grid-cols-2 gap-3">
-                <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button justify-center" onClick={() => {
+                <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View résumé (opens in a new tab)" className="ghost-button justify-center" onClick={() => {
                   setMobileOpen(false);
                   toggleRef.current?.focus();
                 }}>
-                  VIEW CV <FileText size={13} />
+                  RÉSUMÉ <FileText size={13} />
                 </a>
                 <Link to={contactHref} onClick={() => setMobileOpen(false)} className={contactActive ? "ghost-button justify-center" : "primary-pill justify-center"}>
                   LET&apos;S CHAT <ArrowUpRight size={14} />

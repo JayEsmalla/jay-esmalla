@@ -21,11 +21,11 @@ function reply(status: number, data: unknown, origin: string | null = null) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
-async function addressKey(address: string, secret: string, now: number) {
-  // Daily rotating HMAC: raw addresses are never sent to Redis or logged.
+async function privateDigest(value: string, secret: string, now: number) {
+  // Daily rotating HMAC: address keys and public avatar seeds cannot reveal their input.
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const digest = await crypto.subtle.sign("HMAC", key, encoder.encode(`${Math.floor(now / 86400000)}:${address}`));
+  const digest = await crypto.subtle.sign("HMAC", key, encoder.encode(`${Math.floor(now / 86400000)}:${value}`));
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
@@ -81,7 +81,7 @@ export default {
       const now = Date.now();
       const address = request.headers.get("CF-Connecting-IP");
       if (!address) return reply(503, { error: "Counter unavailable" }, origin);
-      const hash = await addressKey(address, env.UPSTASH_REDIS_REST_TOKEN, now);
+      const hash = await privateDigest(address, env.UPSTASH_REDIS_REST_TOKEN, now);
       const prefix = "portfolio:{visitors}:";
       const response = await fetch(redisUrl.origin, {
         method: "POST",
@@ -95,11 +95,15 @@ export default {
       });
       if (!response.ok) throw new Error("Redis unavailable");
       const body = await response.json() as { result?: unknown };
-      if (!Array.isArray(body.result) || body.result.length !== 2) throw new Error("Invalid result");
-      const [visits, active] = body.result as unknown[];
-      if (visits === -1 && active === -1) return reply(429, { error: "Too many requests" }, origin);
+      if (!Array.isArray(body.result)) throw new Error("Invalid result");
+      const [visits, active, sessionIds] = body.result as unknown[];
+      if (body.result.length === 2 && visits === -1 && active === -1) return reply(429, { error: "Too many requests" }, origin);
+      if (body.result.length !== 3) throw new Error("Invalid result");
       if (!Number.isSafeInteger(visits) || !Number.isSafeInteger(active) || Number(visits) < 1 || Number(active) < 1 || Number(active) > Number(visits)) throw new Error("Invalid counts");
-      return reply(200, { visits, active }, origin);
+      if (!Array.isArray(sessionIds) || sessionIds.length !== Math.min(Number(active), 3) || new Set(sessionIds).size !== sessionIds.length || sessionIds.some((id) => typeof id !== "string" || !sessionPattern.test(id))) throw new Error("Invalid viewers");
+      // Domain-separated seeds, never raw session IDs. Icons rotate daily.
+      const viewers = (await Promise.all((sessionIds as string[]).map(async (id) => (await privateDigest(`viewer:${id}`, env.UPSTASH_REDIS_REST_TOKEN, now)).slice(0, 24)))).sort();
+      return reply(200, { visits, active, viewers }, origin);
     } catch {
       // Neither credentials nor upstream error bodies belong in public responses.
       return reply(503, { error: "Counter unavailable" }, origin);

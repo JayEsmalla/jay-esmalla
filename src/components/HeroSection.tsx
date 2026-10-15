@@ -1,6 +1,4 @@
 import { motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
-import { Link } from "react-router-dom";
 import { projects } from "@/data/portfolio";
 import { motionTokens, useMotionSettings } from "@/lib/motion";
 import VisitorCounter from "./VisitorCounter";
@@ -55,15 +53,7 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
               I&apos;m Jay, a full-stack developer building mobile and web apps with Flutter, React, React Native, and TypeScript.
             </motion.p>
 
-            <motion.div {...entrance(0.18, 6)} className="mt-7 flex flex-wrap items-center gap-3 md:mt-8">
-              <Link to="/#projects" className="primary-pill justify-center">
-                VIEW WORK <ArrowUpRight size={14} />
-              </Link>
-              <Link to="/#contact" className="ghost-button justify-center">
-                CONTACT <ArrowDownRight size={13} />
-              </Link>
-            </motion.div>
-            <motion.div {...entrance(0.22, 0)}><VisitorCounter /></motion.div>
+            <motion.div {...entrance(0.18, 0)}><VisitorCounter /></motion.div>
           </div>
 
           {/* ── Right: portrait ── */}
