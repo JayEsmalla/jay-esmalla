@@ -1,10 +1,13 @@
 export interface Project {
   id: string;
   title: string;
+  summary: string;
   description: string;
-  category: "flutter" | "web" | "other";
+  category: "flutter" | "mobile" | "web" | "other";
   technologies: string[];
   image: string;
+  imageSrcSet?: string;
+  fullImage?: string;
   imageAlt?: string;
   imageFit?: "contain";
   imageBackground?: string;
@@ -24,27 +27,19 @@ export interface Skill {
   category: "frontend" | "mobile" | "backend" | "tools";
 }
 
-export interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  quote: string;
-  /** Add only after the author approves the quote, attribution, and project association. */
-  approvedContext?: {
-    projectId: string;
-    name: string;
-    role: string;
-  };
-}
-
 export const projects: Project[] = [
   {
     id: "lolas-kusina",
     title: "LolasKusina",
+    summary: "Catering packages, online ordering, and customer request management.",
     description: "A food package ordering system for browsing catering options, placing orders, and managing customer requests.",
     category: "web",
     technologies: ["PHP", "JavaScript", "Python", "Docker"],
-    image: "/lolas-kusina-auth-gate.webp",
+    image: "/projects/lolas-kusina-800.webp",
+    imageSrcSet: "/projects/lolas-kusina-480.webp 480w, /projects/lolas-kusina-800.webp 800w, /projects/lolas-kusina-1200.webp 1200w",
+    fullImage: "/lolas-kusina-auth-gate.webp",
+    imageAlt: "LolasKusina sign-in and guest browsing screen",
+    imageFit: "contain",
     preview: "screen",
     previewLabel: "AUTHENTICATION & ORDER ENTRY",
     proofPoints: ["Guest browsing", "Package booking", "Order history"],
@@ -55,10 +50,13 @@ export const projects: Project[] = [
   {
     id: "thryfto",
     title: "Thryfto",
+    summary: "A local thrift marketplace connecting buyers and sellers of pre-loved items.",
     description: "A peer-to-peer thrift marketplace for listing pre-loved items, discovering local finds, and connecting buyers with sellers.",
     category: "flutter",
-    technologies: ["Flutter", "Dart", "Firebase", "Marketplace"],
-    image: "/thryfto.png",
+    technologies: ["Flutter", "Dart", "Firebase"],
+    image: "/projects/thryfto-800.webp",
+    imageSrcSet: "/projects/thryfto-480.webp 480w, /projects/thryfto-800.webp 800w, /projects/thryfto-1200.webp 1200w",
+    fullImage: "/thryfto.png",
     imageAlt: "Thryfto mobile app login screen presented in a phone mockup",
     imageFit: "contain",
     preview: "screen",
@@ -72,10 +70,13 @@ export const projects: Project[] = [
   {
     id: "prism",
     title: "PRISM",
+    summary: "Payroll, attendance, and staff management for Tagum Doctors Hospital.",
     description: "A centralized payroll and staff-management system for Tagum Doctors Hospital, connecting attendance verification, employee records, and leave administration.",
     category: "web",
     technologies: ["React 19", "Node.js 20", "Express 5", "MySQL 8"],
-    image: "/prism.png",
+    image: "/projects/prism-800.webp",
+    imageSrcSet: "/projects/prism-480.webp 480w, /projects/prism-800.webp 800w, /projects/prism-1200.webp 1200w",
+    fullImage: "/prism.png",
     imageAlt: "PRISM payroll and staff-management landing page for Tagum Doctors Hospital",
     imageFit: "contain",
     preview: "screen",
@@ -88,10 +89,13 @@ export const projects: Project[] = [
   {
     id: "simulation-comlab-v3",
     title: "ComLab V3 Egress Simulation",
+    summary: "Compare lab layouts and evacuation outcomes with an agent-based simulator.",
     description: "A Python-powered agent-based emergency egress simulator for comparing the current ComLab V3 layout with a safer modified layout.",
     category: "web",
     technologies: ["Python", "JavaScript", "HTML5 Canvas", "Vercel"],
-    image: "/comlab-egress.png",
+    image: "/projects/simulation-comlab-v3-800.webp",
+    imageSrcSet: "/projects/simulation-comlab-v3-480.webp 480w, /projects/simulation-comlab-v3-800.webp 800w, /projects/simulation-comlab-v3-1200.webp 1200w",
+    fullImage: "/comlab-egress.png",
     imageBackground: "#080f1b",
     imageAlt: "ComLab V3 emergency egress simulation showing the laboratory layout, 41 agents, and live evacuation metrics",
     imageFit: "contain",
@@ -104,26 +108,45 @@ export const projects: Project[] = [
     problemSolved: "The current computer-laboratory layout needed a repeatable way to evaluate how locker placement, crowd behavior, and different incident origins affect evacuation safety.",
     outcome: "Built a deterministic 41-agent simulation with pathfinding, panic and fire scenarios, congestion heatmaps, evacuation metrics, and side-by-side layout comparisons.",
   },
-];
-
-export const testimonials: Testimonial[] = [
   {
-    id: "client-1",
-    name: "M. Santos",
-    role: "Small Business Owner",
-    quote: "The app felt simple, fast, and easy to understand. It turned our ordering process into something customers could use without asking for help.",
+    id: "aralytics",
+    title: "Aralytics",
+    summary: "A study workspace for learning materials, flashcards, and progress tracking.",
+    description: "A responsive study workspace for organizing learning materials, practicing flashcards, and tracking study progress.",
+    category: "web",
+    technologies: ["TypeScript", "PostgreSQL", "CSS", "JavaScript"],
+    image: "/projects/aralytics-800.webp",
+    imageSrcSet: "/projects/aralytics-480.webp 480w, /projects/aralytics-800.webp 800w, /projects/aralytics-1200.webp 1200w",
+    fullImage: "/aralytics-portfolio.png",
+    imageAlt: "Aralytics study library on a laptop alongside mobile flashcard practice",
+    imageFit: "contain",
+    imageBackground: "#e6ede7",
+    preview: "screen",
+    previewLabel: "STUDY LIBRARY & FLASHCARDS",
+    proofPoints: ["Study set library", "Flashcard practice", "Progress tracking"],
+    role: "Solo Full-Stack Developer",
+    problemSolved: "Students need a clear way to organize study materials by subject and move from reading to regular recall practice.",
+    outcome: "Created a study workspace that brings a searchable library, study sets, flashcard review, and progress into a responsive desktop and mobile interface.",
   },
   {
-    id: "client-2",
-    name: "D. Reyes",
-    role: "Project Collaborator",
-    quote: "Jae is thoughtful with both design and implementation. The final interface looked polished while still keeping the user flow clear.",
-  },
-  {
-    id: "client-3",
-    name: "A. Cruz",
-    role: "Beta Tester",
-    quote: "Everything was organized and responsive. The experience felt smooth on mobile, which made the project much easier to test.",
+    id: "lakbai",
+    title: "LakBai",
+    summary: "Discover destinations, save places, and plan trips around Davao del Norte.",
+    description: "A mobile tourism app for discovering destinations in Davao del Norte, saving places offline, and planning trips.",
+    category: "mobile",
+    technologies: ["React Native", "Expo"],
+    image: "/projects/lakbai-800.webp",
+    imageSrcSet: "/projects/lakbai-480.webp 480w, /projects/lakbai-800.webp 800w, /projects/lakbai-1200.webp 1200w",
+    fullImage: "/lakbai-portfolio-landscape.png",
+    imageAlt: "LakBai mobile app showing its home screen, destination explorer, and trip planner for Davao del Norte",
+    imageFit: "contain",
+    imageBackground: "#f6f3ea",
+    preview: "screen",
+    previewLabel: "DESTINATION DISCOVERY & TRIP PLANNING",
+    proofPoints: ["Destination discovery", "Offline saved places", "Trip planning"],
+    role: "Mobile App Developer",
+    problemSolved: "Travelers exploring Davao del Norte need local destination information and a practical way to organize their stops, including when connectivity is limited.",
+    outcome: "Built an offline-first tourism experience with destination browsing, saved places, and a trip planner for arranging travel dates, stops, and notes.",
   },
 ];
 
@@ -156,44 +179,53 @@ export const socialLinks = {
 ───────────────────────────────────────────────────────── */
 export interface Certification {
   id: string;
-  /** Official certificate title */
   name: string;
-  /** Specialisation / subject domain shown on the cert */
-  domain: string;
-  /** Issuing body name(s) */
+  type: "Certification" | "Participation" | "Team participation";
   issuer: string;
-  /** Short issuer acronym for the badge chip */
-  issuerTag: string;
-  /** ISO date string used for display, e.g. "July 3, 2026" */
   issuedDate: string;
-  /** Optional expiry, e.g. "July 3, 2031" */
   expiryDate?: string;
-  /** URL that opens the verifier page */
-  verificationUrl?: string;
-  /** The credential/serial code to paste into the verifier */
-  verificationCode?: string;
-  /** Tailwind-compatible accent color key: "pink" | "cyan" | "purple" */
-  accent: "pink" | "cyan" | "purple";
-  /** Lucide icon name to use as a badge icon */
-  iconName: string;
-  /** Optional path to certificate badge/image */
-  image?: string;
+  recognition?: string;
+  image: string;
+  imageSrcSet: string;
+  fullImage: string;
+  imageAlt: string;
 }
 
 export const certifications: Certification[] = [
   {
     id: "its-databases-2026",
     name: "IT Specialist — Databases",
-    domain: "Databases",
+    type: "Certification",
     issuer: "Certiport · CertNexus · Pearson VUE",
-    issuerTag: "CERTIPORT",
     issuedDate: "July 3, 2026",
     expiryDate: "July 3, 2031",
-    verificationUrl: "https://verify.certiport.com",
-    verificationCode: "wBTT6-2FvB",
-    accent: "cyan",
-    iconName: "Database",
-    image: "/its-databases-cert.jpg",
+    image: "/credentials/database-800.webp",
+    imageSrcSet: "/credentials/database-480.webp 480w, /credentials/database-800.webp 800w, /credentials/database-1200.webp 1200w",
+    fullImage: "/credentials/database.jpg",
+    imageAlt: "IT Specialist Databases certificate awarded to Jay Factolarin Esmalla on July 3, 2026, valid for five years",
+  },
+  {
+    id: "innovathon-2026",
+    name: "Innovathon 2026",
+    type: "Participation",
+    issuer: "City Government of Tagum",
+    issuedDate: "September 24, 2026",
+    image: "/credentials/innovathon-800.webp",
+    imageSrcSet: "/credentials/innovathon-480.webp 480w, /credentials/innovathon-800.webp 800w, /credentials/innovathon-1200.webp 1200w",
+    fullImage: "/credentials/innovathon.jpg",
+    imageAlt: "Innovathon 2026 certificate of participation presented to Jay Esmalla on September 24, 2026",
+  },
+  {
+    id: "start-in-davnor-2026",
+    name: "Start in DavNor",
+    type: "Team participation",
+    issuer: "Province of Davao del Norte",
+    issuedDate: "October 9, 2026",
+    recognition: "GridPulse team · Top 12 finalist",
+    image: "/credentials/onedavnor-800.webp",
+    imageSrcSet: "/credentials/onedavnor-480.webp 480w, /credentials/onedavnor-800.webp 800w, /credentials/onedavnor-1200.webp 1200w",
+    fullImage: "/credentials/onedavnor.jpg",
+    imageAlt: "Certificate of participation awarded to the GridPulse team, one of the Top 12 Finalists of the Start in DavNor Startup Development Challenge, on October 9, 2026",
   },
 ];
 

@@ -3,8 +3,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   BarChart3,
-  ChevronDown,
-  ChevronUp,
   ExternalLink,
   Github,
   MessageCircle,
@@ -13,31 +11,40 @@ import {
   Upload,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { projects, type Project } from "@/data/portfolio";
 
-type Filter = "all" | "flutter" | "web";
+type Filter = "all" | "mobile" | "web";
 
 const filters: { key: Filter; label: string }[] = [
   { key: "all", label: "ALL WORK" },
-  { key: "flutter", label: "MOBILE" },
+  { key: "mobile", label: "MOBILE" },
   { key: "web", label: "WEB" },
 ];
+
+const featuredOrder = ["aralytics", "lakbai", "prism", "thryfto"];
+const projectRank = (project: Project) => {
+  const rank = featuredOrder.indexOf(project.id);
+  return rank === -1 ? featuredOrder.length : rank;
+};
+const orderedProjects = [...projects].sort((a, b) => projectRank(a) - projectRank(b));
 
 const FLOW_ICONS = {
   "mobile-flow": [ShoppingBag, Upload, MessageCircle],
   "simulation-flow": [Users, Route, BarChart3],
 } as const;
 
-const ProjectPreview = ({ project }: { project: Project }) => {
+const ProjectPreview = ({ project, fullCollection }: { project: Project; fullCollection: boolean }) => {
   if (project.preview === "screen" && project.imageFit === "contain") {
     return (
-      <figure className="flex h-[190px] min-w-0 shrink-0 flex-col bg-[#0b0b0b]">
-        <div className="flex min-h-0 flex-1 items-center bg-[#f5f3f5]" style={{ backgroundColor: project.imageBackground }}>
+      <figure className="flex min-w-0 shrink-0 flex-col bg-[#0b0b0b]">
+        <div className="h-40 overflow-hidden bg-[#f5f3f5] sm:h-44" style={{ backgroundColor: project.imageBackground }}>
           <img
             src={project.image}
+            srcSet={project.imageSrcSet}
+            sizes="(min-width: 1200px) 366px, (min-width: 1024px) calc((100vw - 104px) / 3), (min-width: 768px) calc((100vw - 84px) / 2), calc(100vw - 40px)"
             alt={project.imageAlt ?? project.title}
             loading="lazy"
             decoding="async"
@@ -58,7 +65,7 @@ const ProjectPreview = ({ project }: { project: Project }) => {
           alt={project.imageAlt ?? `${project.title} authentication and order-entry screen`}
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover grayscale-[0.18] transition duration-700 group-hover:scale-[1.015] group-hover:grayscale-0"
+          className="absolute inset-0 h-full w-full object-cover grayscale-[0.18] transition duration-700 group-hover:scale-[1.03] group-hover:grayscale-0"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/10" aria-hidden="true" />
         <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-white/15 px-5 py-4 backdrop-blur-sm">
@@ -76,7 +83,7 @@ const ProjectPreview = ({ project }: { project: Project }) => {
       <div className="project-grid pointer-events-none absolute inset-0 opacity-45" aria-hidden="true" />
       <div className="relative flex flex-wrap items-center justify-between gap-3">
         <p className="meta-text text-smoke">{project.previewLabel}</p>
-        <p className="meta-text text-ash">{project.category === "flutter" ? "MOBILE" : "WEB"}</p>
+        <p className="meta-text text-ash">{project.category === "flutter" || project.category === "mobile" ? "MOBILE" : "WEB"}</p>
       </div>
 
       <div className="relative my-7 flex items-center justify-between gap-2">
@@ -109,37 +116,40 @@ export interface ProjectsSectionProps {
   showAllByDefault?: boolean;
 }
 
-const ProjectsSection = ({ initialVisibleCount = 4, showAllByDefault = false }: ProjectsSectionProps = {}) => {
+const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: ProjectsSectionProps = {}) => {
   const [filter, setFilter] = useState<Filter>("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [expanded, setExpanded] = useState(showAllByDefault);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const dialogTitleRef = useRef<HTMLHeadingElement | null>(null);
 
-  const filtered = filter === "all" ? projects : projects.filter((project) => project.category === filter);
-  const hasMore = filtered.length > initialVisibleCount;
-  const visibleProjects = expanded || !hasMore ? filtered : filtered.slice(0, initialVisibleCount);
+  const filtered = filter === "all" ? orderedProjects : orderedProjects.filter((project) =>
+    filter === "mobile" ? project.category === "flutter" || project.category === "mobile" : project.category === filter,
+  );
+  const visibleProjects = showAllByDefault ? filtered : filtered.slice(0, initialVisibleCount);
 
   return (
     <section id="projects" className="section-shell scroll-mt-[72px]">
       <div className="page-container">
         <div className="section-heading-grid">
           <div>
-            <p className="section-kicker">01 / SELECTED WORK</p>
-            <h2 className="section-title">Practical products built around real workflows.</h2>
+            <p className="section-kicker">{showAllByDefault ? "01 / PROJECT COLLECTION" : "01 / SELECTED WORK"}</p>
+            <h2 className="section-title">{showAllByDefault ? "All projects. One place." : "Selected work. Real-world problems."}</h2>
           </div>
           <div className="flex flex-col justify-end">
             <p className="max-w-md text-[16px] leading-[1.6] text-smoke">
-              {projects.length} selected mobile and web builds spanning commerce, hospital staff management, and safety simulation.
+              {projects.length} selected mobile and web builds spanning commerce, education, travel, hospital staff management, and safety simulation.
             </p>
-            <div className="mt-3 flex flex-wrap gap-2" aria-label="Filter projects">
+            <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label="Filter projects">
               {filters.map((item) => (
                 <button
                   key={item.key}
                   type="button"
                   onClick={() => setFilter(item.key)}
                   aria-pressed={filter === item.key}
-                  className={`rounded-[4px] border px-3 py-2 text-[11px] font-normal tracking-[0.03em] transition-colors ${
+                  aria-controls="project-list"
+                  className={`min-h-11 rounded-[4px] border px-4 py-2 text-[12px] font-normal tracking-[0.03em] transition-colors ${
                     filter === item.key
-                      ? "border-chalk bg-chalk text-obsidian"
+                      ? "border-pulse-green text-pulse-green"
                       : "border-graphite text-smoke hover:border-iron hover:text-chalk"
                   }`}
                 >
@@ -150,10 +160,13 @@ const ProjectsSection = ({ initialVisibleCount = 4, showAllByDefault = false }: 
           </div>
         </div>
 
-        <motion.div layout className="mt-7 grid gap-5 md:grid-cols-2">
+        <p className="meta-text mt-6 text-smoke" role="status" aria-live="polite" aria-atomic="true">
+          Showing {visibleProjects.length} of {filtered.length} {filter === "all" ? "projects" : `${filter} projects`}
+        </p>
+        <motion.div id="project-list" layout className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {visibleProjects.map((project) => {
-              const projectNumber = String(projects.findIndex((item) => item.id === project.id) + 1).padStart(2, "0");
+              const projectNumber = String(orderedProjects.findIndex((item) => item.id === project.id) + 1).padStart(2, "0");
               return (
                 <motion.article
                   layout
@@ -162,42 +175,39 @@ const ProjectsSection = ({ initialVisibleCount = 4, showAllByDefault = false }: 
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.3 }}
-                  className="group flex min-w-0 flex-col overflow-hidden rounded-[8px] border border-graphite bg-carbon"
+                  className="group flex min-w-0 flex-col overflow-hidden rounded-[8px] border border-graphite bg-carbon transition-all duration-300 hover:-translate-y-0.5 hover:border-iron hover:shadow-[0_8px_32px_rgba(152,255,56,0.06)] focus-within:border-iron"
                 >
-                  <ProjectPreview project={project} />
+                  <ProjectPreview project={project} fullCollection={showAllByDefault} />
 
-                  <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
+                  <div className="flex min-w-0 flex-1 flex-col p-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <p className="meta-text text-smoke">{projectNumber}</p>
                         <span className="h-px w-8 bg-graphite" aria-hidden="true" />
-                        <p className="meta-text text-smoke">{project.category}</p>
+                        <p className="meta-text text-smoke">{project.category === "flutter" || project.category === "mobile" ? "Mobile app" : "Web app"}</p>
                       </div>
-                      <span className="status-badge">
-                        <span className={`h-1.5 w-1.5 rounded-full ${project.githubUrl ? "bg-pulse-green" : "bg-compass-gold"}`} />
-                        {project.githubUrl ? "PUBLIC REPOSITORY" : "PRIVATE BUILD"}
-                      </span>
                     </div>
 
-                    <h3 className="mt-3 text-[22px] font-normal leading-tight tracking-[-0.035em] text-chalk">{project.title}</h3>
-                    <p className="mt-2 text-[14px] leading-[1.6] text-smoke">{project.description}</p>
+                    <h3 className="mt-2 text-[20px] font-normal leading-tight tracking-[-0.025em] text-chalk">{project.title}</h3>
+                    <p className="mt-2 text-[14px] leading-[1.6] text-smoke">{project.summary}</p>
 
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      {project.technologies.map((tech) => <span key={tech} className="tech-tag">{tech}</span>)}
+                    <div className="mb-4 mt-3 flex flex-wrap items-center gap-1.5">
+                      {project.technologies.slice(0, 3).map((tech) => <span key={tech} className="tech-tag">{tech}</span>)}
+                      {project.technologies.length > 3 && <span className="px-1 text-[12px] text-smoke">+{project.technologies.length - 3}</span>}
                     </div>
 
-                    <div className="mt-auto flex flex-wrap gap-2 pt-4">
-                      <button type="button" onClick={() => setSelectedProject(project)} className="primary-pill">
-                        CASE STUDY <ArrowUpRight size={13} />
+                    <div className="mt-auto flex items-center gap-1 border-t border-graphite pt-2">
+                      <button type="button" onClick={(event) => { triggerRef.current = event.currentTarget; setSelectedProject(project); }} className="mr-auto inline-flex min-h-11 items-center gap-2 rounded-sm pr-3 text-[12px] text-chalk transition-colors hover:text-compass-gold" aria-label={`View ${project.title} case study`}>
+                        CASE STUDY <ArrowUpRight size={15} className="text-compass-gold" />
                       </button>
                       {project.liveUrl && (
-                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="ghost-button" aria-label={`${project.title} live project`}>
-                          LIVE <ExternalLink size={13} />
+                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-smoke transition-colors hover:bg-white/5 hover:text-chalk" aria-label={`${project.title} live project`} title="Open live project">
+                          <ExternalLink size={17} />
                         </a>
                       )}
                       {project.githubUrl && (
-                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="ghost-button" aria-label={`${project.title} public source code`}>
-                          SOURCE <Github size={13} />
+                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-smoke transition-colors hover:bg-white/5 hover:text-chalk" aria-label={`${project.title} public source code`} title="View source on GitHub">
+                          <Github size={17} />
                         </a>
                       )}
                     </div>
@@ -208,45 +218,32 @@ const ProjectsSection = ({ initialVisibleCount = 4, showAllByDefault = false }: 
           </AnimatePresence>
         </motion.div>
 
-        {hasMore && (
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 text-center">
-            <button
-              type="button"
-              onClick={() => setExpanded((prev) => !prev)}
-              aria-expanded={expanded}
-              className="ghost-button group transition-all duration-300 hover:border-white hover:bg-white hover:text-obsidian"
-            >
-              {expanded ? (
-                <>
-                  SHOW LESS <ChevronUp size={14} className="transition-transform group-hover:-translate-y-0.5" />
-                </>
-              ) : (
-                <>
-                  VIEW ALL PROJECTS ({filtered.length - initialVisibleCount} MORE){" "}
-                  <ChevronDown size={14} className="transition-transform group-hover:translate-y-0.5" />
-                </>
-              )}
-            </button>
-            <p className="meta-text text-smoke">
-              SHOWING {visibleProjects.length} OF {filtered.length} {filter === "all" ? "PROJECTS" : `${filter.toUpperCase()} PROJECTS`}
-            </p>
+        {!showAllByDefault && (
+          <div className="mt-8 flex justify-center">
+            <Link to="/projects" className="ghost-button">
+              VIEW ALL {projects.length} PROJECTS <ArrowRight size={15} />
+            </Link>
           </div>
         )}
 
         <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => !open && setSelectedProject(null)}>
-          <DialogContent className="max-h-[90vh] overflow-hidden border-graphite bg-carbon p-0 text-chalk shadow-none sm:max-w-2xl">
+          <DialogContent
+            className="flex max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] flex-col gap-0 overflow-hidden rounded-lg border-iron bg-carbon p-0 text-chalk shadow-none sm:max-w-4xl"
+            onOpenAutoFocus={(event) => { event.preventDefault(); dialogTitleRef.current?.focus(); }}
+            onCloseAutoFocus={(event) => { event.preventDefault(); triggerRef.current?.focus({ preventScroll: true }); }}
+          >
             {selectedProject && (
-              <ScrollArea className="max-h-[90vh]">
-                <div className="p-6 pr-8 sm:p-8 sm:pr-10">
-                  <DialogHeader className="text-left">
+              <>
+                  <DialogHeader className="shrink-0 border-b border-graphite p-5 pr-16 text-left sm:px-8 sm:py-6">
                     <p className="section-kicker">PROJECT CASE STUDY</p>
-                    <DialogTitle className="mt-2 text-[34px] font-normal tracking-[-0.02em] text-chalk">{selectedProject.title}</DialogTitle>
-                    <DialogDescription className="text-[14px] leading-[1.5] text-smoke">{selectedProject.description}</DialogDescription>
+                    <DialogTitle ref={dialogTitleRef} tabIndex={-1} className="mt-2 text-[26px] font-normal leading-tight tracking-[-0.02em] text-chalk sm:text-[34px]">{selectedProject.title}</DialogTitle>
+                    <DialogDescription className="sr-only">{selectedProject.description}</DialogDescription>
                   </DialogHeader>
-
-                  <div className="mt-4 divide-y divide-graphite border-y border-graphite">
+                <div className="no-scrollbar min-h-0 overflow-y-auto overscroll-contain p-5 sm:p-8">
+                  <p className="text-[16px] leading-relaxed text-chalk">{selectedProject.description}</p>
+                  <div className="mt-6 divide-y divide-graphite border-y border-graphite">
                     <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                      <p className="meta-text text-smoke">ROLE</p>
+                      <p className="meta-text text-smoke">MY ROLE</p>
                       <p className="text-[14px] leading-[1.6] text-chalk">{selectedProject.role}</p>
                     </div>
                     <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
@@ -254,7 +251,7 @@ const ProjectsSection = ({ initialVisibleCount = 4, showAllByDefault = false }: 
                       <p className="text-[14px] leading-[1.6] text-smoke">{selectedProject.problemSolved}</p>
                     </div>
                     <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                      <p className="meta-text text-smoke">OUTCOME</p>
+                      <p className="meta-text text-smoke">WHAT I BUILT</p>
                       <p className="text-[14px] leading-[1.6] text-smoke">{selectedProject.outcome}</p>
                     </div>
                     <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
@@ -288,7 +285,7 @@ const ProjectsSection = ({ initialVisibleCount = 4, showAllByDefault = false }: 
                     )}
                   </div>
                 </div>
-              </ScrollArea>
+              </>
             )}
           </DialogContent>
         </Dialog>

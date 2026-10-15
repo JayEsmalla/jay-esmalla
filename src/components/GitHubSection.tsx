@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowUpRight, Loader2 } from "lucide-react";
 import { githubConfig } from "@/data/portfolio";
@@ -13,7 +13,7 @@ type CalendarResponse = CalendarData & { error?: string };
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_TABS = [
-  { key: "last", label: "LAST YEAR" },
+  { key: "last", label: "PAST 12 MONTHS" },
   ...Array.from({ length: CURRENT_YEAR - 2023 }, (_, index) => {
     const year = CURRENT_YEAR - index;
     return { key: String(year), label: String(year) };
@@ -21,7 +21,12 @@ const YEAR_TABS = [
 ];
 
 const CELL = 10;
-const LEVELS = ["#171717", "#2a2a2a", "#474747", "#9c9c9c", "#f3f3f3"];
+const REQUEST_TIMEOUT_MS = 12_000;
+const UNAVAILABLE_MESSAGE = "Activity is temporarily unavailable. You can still explore my repositories on GitHub.";
+const LEVELS = ["#171717", "#2a2a2a", "#1a3a0a", "#3d7a18", "#98ff38"];
+const formatDate = (date: string) => new Date(`${date}T12:00:00`).toLocaleDateString(undefined, {
+  month: "short", day: "numeric", year: "numeric",
+});
 
 const dayOfWeek = (dateString: string) => {
   const [year, month, day] = dateString.split("-").map(Number);
@@ -34,6 +39,21 @@ const countToLevel = (count: number) => {
   if (count >= 10) return 3;
   if (count >= 4) return 2;
   return 1;
+};
+
+const groupChronologicalDays = (days: Day[]): Week[] => {
+  const orderedDays = [...days].sort((first, second) => first.date.localeCompare(second.date));
+  const weeks: Week[] = [];
+  let currentWeek: Day[] = [];
+  orderedDays.forEach((day) => {
+    if (dayOfWeek(day.date) === 0 && currentWeek.length > 0) {
+      weeks.push({ days: currentWeek });
+      currentWeek = [];
+    }
+    currentWeek.push(day);
+  });
+  if (currentWeek.length) weeks.push({ days: currentWeek });
+  return weeks;
 };
 
 const jogruberToCalendar = (raw: JogRaw, year: string): CalendarData => {
@@ -50,16 +70,11 @@ const jogruberToCalendar = (raw: JogRaw, year: string): CalendarData => {
     contributions = contributions.filter((item) => item.date.startsWith(year) && item.date <= today);
   }
 
-  const weeks: Week[] = [];
-  let currentWeek: Day[] = [];
-  contributions.forEach((item) => {
-    if (dayOfWeek(item.date) === 0 && currentWeek.length > 0) {
-      weeks.push({ days: currentWeek });
-      currentWeek = [];
-    }
-    currentWeek.push({ date: item.date, count: item.count, color: LEVELS[Math.min(4, Math.max(0, item.level))] });
-  });
-  if (currentWeek.length) weeks.push({ days: currentWeek });
+  const weeks = groupChronologicalDays(contributions.map((item) => ({
+    date: item.date,
+    count: item.count,
+    color: LEVELS[Math.min(4, Math.max(0, item.level))],
+  })));
 
   const total = year === "last"
     ? contributions.reduce((sum, item) => sum + item.count, 0)
@@ -86,6 +101,8 @@ const GitHubSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fallback, setFallback] = useState(false);
+  const [displayTotal, setDisplayTotal] = useState(0);
+  const countUpRef = useRef<number | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -95,6 +112,13 @@ const GitHubSection = () => {
     setError(null);
     setData(null);
     setFallback(false);
+
+    const timeout = window.setTimeout(() => {
+      if (disposed) return;
+      controller.abort();
+      setError(UNAVAILABLE_MESSAGE);
+      setLoading(false);
+    }, REQUEST_TIMEOUT_MS);
 
     const query = activeTab === "last" ? "" : `?year=${activeTab}`;
     const publicUrl = import.meta.env.DEV
@@ -111,7 +135,7 @@ const GitHubSection = () => {
         throw new Error("Portfolio API returned an invalid contribution payload.");
       }
 
-      return result;
+      return { ...result, weeks: groupChronologicalDays(result.weeks.flatMap((week) => week.days)) };
     };
 
     const fetchPublicCalendar = async (): Promise<CalendarData> => {
@@ -130,7 +154,7 @@ const GitHubSection = () => {
       try {
         if (import.meta.env.DEV) {
           const publicCalendar = await fetchPublicCalendar();
-          if (disposed) return;
+          if (disposed || controller.signal.aborted) return;
           setData(publicCalendar);
           setFallback(true);
           return;
@@ -138,20 +162,21 @@ const GitHubSection = () => {
 
         try {
           const serverCalendar = await fetchServerCalendar();
-          if (disposed) return;
+          if (disposed || controller.signal.aborted) return;
           setData(serverCalendar);
           setFallback(serverCalendar.source === "public");
         } catch {
           if (controller.signal.aborted) return;
           const publicCalendar = await fetchPublicCalendar();
-          if (disposed) return;
+          if (disposed || controller.signal.aborted) return;
           setData(publicCalendar);
           setFallback(true);
         }
-      } catch (loadError) {
+      } catch {
         if (controller.signal.aborted || disposed) return;
-        setError(loadError instanceof Error ? loadError.message : "GitHub activity is temporarily unavailable.");
+        setError(UNAVAILABLE_MESSAGE);
       } finally {
+        window.clearTimeout(timeout);
         if (!disposed) setLoading(false);
       }
     };
@@ -160,11 +185,37 @@ const GitHubSection = () => {
 
     return () => {
       disposed = true;
+      window.clearTimeout(timeout);
       controller.abort();
     };
   }, [activeTab]);
 
+  // Count-up animation when total changes
+  useEffect(() => {
+    if (!data) return;
+    const target = data.total;
+    if (countUpRef.current) window.cancelAnimationFrame(countUpRef.current);
+    const duration = 900;
+    const startTime = performance.now();
+    const startValue = displayTotal;
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeOutExpo
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setDisplayTotal(Math.round(startValue + (target - startValue) * eased));
+      if (progress < 1) countUpRef.current = window.requestAnimationFrame(animate);
+    };
+    countUpRef.current = window.requestAnimationFrame(animate);
+    return () => { if (countUpRef.current) window.cancelAnimationFrame(countUpRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
   const columns = useMemo(() => (data ? buildColumns(data.weeks) : []), [data]);
+  const days = useMemo(() => data?.weeks.flatMap((week) => week.days) ?? [], [data]);
+  const firstDate = days[0]?.date;
+  const lastDate = days[days.length - 1]?.date;
+  const activeDays = days.filter((day) => day.count > 0).length;
 
   return (
     <section id="github" className="section-shell scroll-mt-[72px]">
@@ -188,26 +239,32 @@ const GitHubSection = () => {
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-12 rounded-[8px] border border-graphite p-5 md:mt-14 md:p-8"
+          className="mt-8 rounded-[8px] border border-graphite p-4 md:mt-10 md:p-5"
         >
-          <div className="flex flex-col gap-5 border-b border-graphite pb-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="meta-text text-smoke">CONTRIBUTIONS</p>
-              {!loading && !error && data && (
-                <p className="mt-2 text-[34px] font-normal tracking-[-0.02em] text-chalk">{data.total.toLocaleString()}</p>
-              )}
-              {loading && <p className="mt-3 text-[14px] text-smoke">Loading activity…</p>}
-              {error && <p className="mt-3 text-[14px] text-smoke">Unable to load contribution data.</p>}
-              {fallback && <p className="meta-text mt-2 text-smoke">PUBLIC CONTRIBUTIONS ONLY</p>}
+          {/* ── Header: number + label + tabs in one compact row ── */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-graphite pb-3">
+            <div className="flex items-baseline gap-2.5">
+              <p className="text-[26px] font-normal tracking-[-0.03em] text-chalk leading-none">
+                {loading ? "—" : error ? "—" : displayTotal.toLocaleString()}
+              </p>
+              <div className="leading-none">
+                <span className="meta-text text-smoke">CONTRIBUTIONS</span>
+                {fallback && !loading && !error && (
+                  <span className="meta-text ml-2 text-smoke/50">· PUBLIC ONLY</span>
+                )}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Contribution period">
               {YEAR_TABS.map((tab) => (
                 <button
                   key={tab.key}
                   type="button"
+                  aria-pressed={activeTab === tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`rounded-[4px] border px-3 py-2 text-[10px] tracking-[0.03em] ${
-                    activeTab === tab.key ? "border-chalk bg-chalk text-obsidian" : "border-graphite text-smoke hover:text-chalk"
+                  className={`rounded-[4px] border px-2.5 py-1 text-[11px] tracking-[0.03em] transition-colors ${
+                    activeTab === tab.key
+                      ? "border-pulse-green text-pulse-green"
+                      : "border-graphite text-smoke hover:border-iron hover:text-chalk"
                   }`}
                 >
                   {tab.label}
@@ -216,45 +273,88 @@ const GitHubSection = () => {
             </div>
           </div>
 
+          {/* ── Loading ── */}
           {loading && (
-            <div className="flex h-40 items-center justify-center gap-3 text-smoke">
-              <Loader2 size={16} className="animate-spin" />
+            <div role="status" className="flex h-[120px] items-center justify-center gap-2.5 text-smoke">
+              <Loader2 size={13} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
               <span className="meta-text">QUERYING GITHUB</span>
             </div>
           )}
 
+          {/* ── Error ── */}
           {!loading && error && (
-            <div className="flex h-40 flex-col items-center justify-center gap-4 text-smoke">
-              <div className="flex items-center gap-2 text-[14px]"><AlertCircle size={15} /> {error}</div>
-              <a href={githubConfig.profileUrl} target="_blank" rel="noopener noreferrer" className="ghost-button">OPEN PROFILE <ArrowUpRight size={13} /></a>
+            <div role="status" className="flex min-h-[120px] flex-col items-center justify-center gap-3 py-4 text-smoke">
+              <div className="flex max-w-md items-start gap-2 text-[13px] leading-relaxed">
+                <AlertCircle size={15} className="mt-0.5 shrink-0" aria-hidden="true" /> {error}
+              </div>
+              <a href={githubConfig.profileUrl} target="_blank" rel="noopener noreferrer" className="ghost-button">
+                OPEN PROFILE <ArrowUpRight size={13} />
+              </a>
             </div>
           )}
 
+          {/* ── Calendar ── */}
           {!loading && !error && data && (
-            <div className="no-scrollbar mt-7 overflow-x-auto pb-2">
-              <div className="flex min-w-max gap-[3px]">
-                {columns.map((column, columnIndex) => (
-                  <div key={columnIndex} className="flex flex-col gap-[3px]">
-                    {column.map((day, rowIndex) => (
-                      day ? (
-                        <div
-                          key={`${day.date}-${rowIndex}`}
-                          title={`${day.count} contribution${day.count === 1 ? "" : "s"} on ${day.date}`}
-                          className="rounded-[2px] border border-graphite"
-                          style={{ width: CELL, height: CELL, background: LEVELS[countToLevel(day.count)] }}
-                        />
-                      ) : (
-                        <div key={`empty-${rowIndex}`} style={{ width: CELL, height: CELL }} />
-                      )
-                    ))}
+            <div className="mt-3">
+              {/* Hidden accessibility hint */}
+              <p id="github-calendar-help" className="sr-only">
+                Swipe or use the arrow keys to scroll the calendar.
+              </p>
+
+              {days.length > 0 ? (
+                <>
+                  <div
+                    role="region"
+                    aria-label="Contribution calendar"
+                    aria-describedby="github-calendar-summary github-calendar-help"
+                    tabIndex={0}
+                    className="scroll-fade-right overflow-x-auto rounded-[2px] pb-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pulse-green"
+                  >
+                    <div aria-hidden="true" className="flex min-w-max gap-[3px]">
+                      {columns.map((column, columnIndex) => (
+                        <div key={columnIndex} className="flex flex-col gap-[3px]">
+                          {column.map((day, rowIndex) => (
+                            day ? (
+                              <div
+                                key={`${day.date}-${rowIndex}`}
+                                title={`${day.count} contribution${day.count === 1 ? "" : "s"} on ${day.date}`}
+                                className="rounded-[2px] border border-graphite"
+                                style={{ width: CELL, height: CELL, background: LEVELS[countToLevel(day.count)] }}
+                              />
+                            ) : (
+                              <div key={`empty-${rowIndex}`} style={{ width: CELL, height: CELL }} />
+                            )
+                          ))}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-              <div className="mt-4 flex items-center justify-end gap-1.5">
-                <span className="meta-text mr-1 text-smoke">LESS</span>
-                {LEVELS.map((level) => <span key={level} className="rounded-[2px] border border-graphite" style={{ width: CELL, height: CELL, background: level }} />)}
-                <span className="meta-text ml-1 text-smoke">MORE</span>
-              </div>
+
+                  {/* ── Footer: summary + legend on same row ── */}
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                    <p id="github-calendar-summary" className="text-[12px] text-smoke">
+                      {firstDate && lastDate
+                        ? `${activeDays} active day${activeDays === 1 ? "" : "s"} · ${formatDate(firstDate)} – ${formatDate(lastDate)}`
+                        : "No activity recorded for this period."}
+                    </p>
+                    <div aria-hidden="true" className="flex items-center gap-1">
+                      <span className="meta-text mr-1 text-smoke">LESS</span>
+                      {LEVELS.map((level) => (
+                        <span
+                          key={level}
+                          className="rounded-[2px] border border-graphite"
+                          style={{ width: CELL, height: CELL, background: level }}
+                        />
+                      ))}
+                      <span className="meta-text ml-1 text-smoke">MORE</span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p id="github-calendar-summary" className="py-4 text-[13px] text-smoke">
+                  No activity recorded for this period yet.
+                </p>
+              )}
             </div>
           )}
         </motion.div>

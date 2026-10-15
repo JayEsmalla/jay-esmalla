@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Inter:wght@400;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,7 +33,7 @@
     --destructive: 0 62% 52%;
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 13%;
-    --input: 0 0% 28%;
+    --input: 0 0% 40%;
     --ring: 0 0% 75.7%;
     --radius: 0.5rem;
 
@@ -66,6 +64,12 @@
   html {
     scroll-behavior: smooth;
     background: var(--color-obsidian);
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+
+  html::-webkit-scrollbar {
+    display: none; /* Chrome / Safari */
   }
 
   body {
@@ -86,8 +90,21 @@
     font: inherit;
   }
 
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-chalk);
+    outline-offset: 4px;
+  }
+
+  :where(h1, h2, h3, main)[tabindex="-1"]:focus {
+    outline: none;
+  }
+
+  button, a, input, textarea, select {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   ::selection {
-    background: var(--color-signal-white);
+    background: var(--color-pulse-green);
     color: var(--color-obsidian);
   }
 }
@@ -112,7 +129,7 @@
   }
 
   .section-title {
-    @apply mt-4 max-w-[760px] text-[28px] leading-[1.06] tracking-[-0.02em] text-chalk md:text-[36px];
+    @apply mt-3 max-w-[760px] text-[28px] leading-[1.15] tracking-[-0.025em] text-chalk md:text-[36px];
   }
 
   .display-title {
@@ -125,11 +142,11 @@
   }
 
   .primary-pill {
-    @apply inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[13px] font-normal text-obsidian transition-opacity hover:opacity-85;
+    @apply inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-6 py-3 text-[13px] font-normal text-obsidian transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .ghost-button {
-    @apply inline-flex items-center gap-2 rounded-[8px] border border-chalk bg-transparent px-5 py-[11px] text-[13px] font-normal text-chalk transition-colors hover:bg-chalk hover:text-obsidian;
+    @apply inline-flex min-h-11 items-center gap-2 rounded-[8px] border border-iron bg-transparent px-5 py-[11px] text-[13px] font-normal text-chalk transition-colors hover:border-chalk hover:bg-chalk hover:text-obsidian;
   }
 
   .status-badge {
@@ -147,7 +164,7 @@
 
   .tech-tag {
     font-family: var(--font-input);
-    @apply inline-flex items-center gap-1.5 rounded-[4px] border border-graphite px-2.5 py-1.5 text-[11px] text-smoke;
+    @apply inline-flex items-center gap-1.5 rounded-[4px] border border-graphite bg-white/[0.02] px-2.5 py-1.5 text-[12px] text-ash;
   }
 
   .icon-gold {
@@ -155,7 +172,7 @@
   }
 
   .field-control {
-    @apply w-full rounded-[8px] border border-graphite bg-transparent px-4 py-3 text-[14px] text-chalk outline-none transition-colors placeholder:text-smoke/60 focus:border-ash focus-visible:ring-1 focus-visible:ring-ash;
+    @apply w-full min-h-11 rounded-[8px] border border-iron bg-carbon px-4 py-3 text-[16px] text-chalk outline-none transition-colors placeholder:text-smoke focus:border-ash focus-visible:ring-1 focus-visible:ring-pulse-green;
   }
 
   .project-grid {
@@ -189,6 +206,82 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .text-balance { text-wrap: balance; }
+  /* Right-edge scroll hint for horizontally scrollable containers */
+  .scroll-fade-right {
+    -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+    mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  }
+}
+
+@keyframes portrait-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(152, 255, 56, 0); }
+  50% { box-shadow: 0 0 28px 4px rgba(152, 255, 56, 0.12); }
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.portrait-glow {
+  animation: portrait-pulse 3.5s ease-in-out infinite;
+}
+
+.hint-pulse {
+  animation: hint-pulse 2s ease-in-out 1.5s infinite;
+}
+
+/* A signature drawn in light, followed by a quiet handoff to the hero. */
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  color: var(--color-chalk);
+  background: var(--color-carbon);
+  padding: max(16px, env(safe-area-inset-top)) clamp(20px, 4vw, 56px) max(20px, env(safe-area-inset-bottom));
+  animation: intro-canvas-away 700ms cubic-bezier(.22, 1, .36, 1) 1700ms both;
+}
+.intro-topline, .intro-bottomline { display: flex; align-items: center; justify-content: space-between; gap: 16px; animation: intro-detail-away 250ms ease 1450ms both; }
+.intro-topline { min-height: 44px; }
+.intro-bottomline { border-top: 1px solid var(--color-graphite); padding-top: 18px; }
+.intro-meta { font-family: var(--font-input); font-size: 11px; line-height: 1.5; letter-spacing: .035em; text-transform: uppercase; color: var(--color-smoke); }
+.intro-center { width: min(1000px, 100%); align-self: center; justify-self: center; }
+.intro-signature { position: relative; padding: clamp(64px, 9vw, 112px) 8%; text-align: center; }
+.intro-drawing { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; animation: intro-detail-away 300ms ease 1150ms both; }
+.intro-trace { stroke: var(--color-compass-gold); stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 1; animation: intro-draw 850ms cubic-bezier(.4, 0, .2, 1) 50ms forwards; }
+.intro-drawing-point { position: absolute; width: 3px; height: 3px; margin: -1.5px; border-radius: 50%; background: var(--color-chalk); animation: intro-point 900ms cubic-bezier(.4, 0, .2, 1) both; }
+.intro-name-mask { position: relative; overflow: hidden; animation: intro-detail-away 250ms ease 1450ms both; }
+.intro-name { font-size: clamp(42px, 8.5vw, 100px); line-height: 1.16; font-weight: 400; letter-spacing: -.055em; white-space: nowrap; color: var(--color-smoke); animation: intro-name-in 850ms cubic-bezier(.22, 1, .36, 1) 200ms both; }
+.intro-name span { color: var(--color-chalk); }
+.intro-role { position: relative; margin-top: 24px; letter-spacing: .14em; animation: intro-role-in 600ms cubic-bezier(.22, 1, .36, 1) 500ms both, intro-detail-away 250ms ease 1450ms forwards; }
+@keyframes intro-draw { to { stroke-dashoffset: 0; } }
+@keyframes intro-point {
+  0% { left: 0; top: 80%; opacity: 0; }
+  8% { left: 6.67%; top: 80%; opacity: 1; }
+  26% { left: 6.67%; top: 20%; opacity: 1; }
+  78% { left: 93.33%; top: 20%; opacity: 1; }
+  94% { left: 93.33%; top: 80%; opacity: 1; }
+  100% { left: 100%; top: 80%; opacity: 0; }
+}
+@keyframes intro-detail-away { from { opacity: 1; } to { opacity: 0; } }
+@keyframes intro-name-in { from { opacity: 0; transform: translateY(24%); clip-path: inset(0 100% 0 0); } to { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0 0); } }
+@keyframes intro-role-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes intro-canvas-away { from { opacity: 1; } to { opacity: 0; } }
+@media (max-width: 600px) {
+  .intro-topline-detail { display: none; }
+  .intro-topline > .intro-meta { max-width: 140px; font-size: 10px; }
+  .intro-bottomline .intro-meta { font-size: 9px; }
+  .intro-signature { padding: 72px 4%; }
+  .intro-role { font-size: 9px; letter-spacing: .08em; margin-top: 18px; }
+}
+@media (max-height: 440px) {
+  .intro-signature { padding-top: 40px; padding-bottom: 40px; }
+  .intro-name { font-size: clamp(40px, 7vw, 64px); }
+  .intro-role { margin-top: 12px; }
+  .intro-bottomline { padding-top: 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

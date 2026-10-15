@@ -1,26 +1,47 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Download, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const NAV_ITEMS = [
   { label: "WORK", sectionId: "projects", pageHref: "/projects" },
   { label: "ABOUT", sectionId: "about", pageHref: "/#about" },
   { label: "CREDENTIALS", sectionId: "certifications", pageHref: "/certifications" },
-  { label: "TESTIMONIALS", sectionId: "testimonials", pageHref: "/testimonials" },
 ];
 
-const HOME_SECTIONS = ["home", "projects", "about", "github", "certifications", "testimonials", "contact"];
+const HOME_SECTIONS = ["home", "projects", "about", "github", "certifications", "contact"];
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const mobileNavRef = useRef<HTMLElement>(null);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
-  useEffect(() => setMobileOpen(false), [location.pathname, location.hash]);
+  useEffect(() => setMobileOpen(false), [location.key]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    mobileNavRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      setMobileOpen(false);
+      toggleRef.current?.focus();
+    };
+    const closeOnDesktop = () => {
+      if (window.innerWidth >= 1024) setMobileOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("resize", closeOnDesktop);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("resize", closeOnDesktop);
+    };
+  }, [mobileOpen]);
 
   useEffect(() => {
     const updateScrollState = () => {
@@ -103,10 +124,11 @@ const Navbar = () => {
       >
         <Link
           to="/"
+          onClick={() => setMobileOpen(false)}
           className="group flex items-center gap-3 text-[18px] font-normal tracking-[-0.02em] text-chalk"
           aria-label="Jay Factolarin Esmalla home"
         >
-          <span className="grid h-7 w-7 place-items-center rounded-full border border-graphite text-[10px] text-smoke transition-colors group-hover:border-iron group-hover:text-chalk">
+          <span className="grid h-7 w-7 place-items-center rounded-full border border-graphite bg-graphite text-[10px] text-chalk transition-all group-hover:border-pulse-green group-hover:ring-1 group-hover:ring-pulse-green/40">
             JE
           </span>
           <span className="sm:hidden">Jay F. Esmalla</span>
@@ -120,7 +142,7 @@ const Navbar = () => {
               <Link
                 key={item.label}
                 to={hrefFor(item.sectionId, item.pageHref)}
-                aria-current={active ? "page" : undefined}
+                aria-current={active ? isHome ? "location" : "page" : undefined}
                 className={`relative py-2 text-[13px] font-normal tracking-[0.02em] transition-colors ${
                   active ? "text-chalk" : "text-smoke hover:text-chalk"
                 }`}
@@ -129,7 +151,7 @@ const Navbar = () => {
                 {active && (
                   <motion.span
                     layoutId="desktop-nav-active"
-                    className="absolute inset-x-0 -bottom-[2px] h-px bg-chalk"
+                    className="absolute inset-x-0 -bottom-[2px] h-px bg-pulse-green"
                     transition={{ type: "spring", stiffness: 420, damping: 34 }}
                   />
                 )}
@@ -144,7 +166,7 @@ const Navbar = () => {
           </a>
           <Link
             to={contactHref}
-            aria-current={contactActive ? "page" : undefined}
+            aria-current={contactActive ? isHome ? "location" : "page" : undefined}
             className={contactActive ? "ghost-button" : "primary-pill"}
           >
             LET&apos;S CHAT <ArrowUpRight size={14} />
@@ -152,11 +174,13 @@ const Navbar = () => {
         </div>
 
         <button
+          ref={toggleRef}
           type="button"
           onClick={() => setMobileOpen((open) => !open)}
-          className="grid h-10 w-10 place-items-center rounded-[8px] border border-graphite text-chalk transition-colors hover:border-iron lg:hidden"
-          aria-label="Toggle navigation"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-[8px] border border-graphite text-chalk transition-colors hover:border-iron lg:hidden"
+          aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
           aria-expanded={mobileOpen}
+          aria-controls="mobile-navigation"
         >
           {mobileOpen ? <X size={18} /> : <Menu size={18} />}
         </button>
@@ -164,7 +188,7 @@ const Navbar = () => {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-graphite" aria-hidden="true">
         <motion.div
-          className="h-full origin-left bg-chalk"
+          className="h-full origin-left bg-pulse-green"
           animate={{ scaleX: scrollProgress }}
           transition={{ duration: 0.12, ease: "linear" }}
         />
@@ -177,16 +201,17 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden border-t border-graphite bg-obsidian lg:hidden"
+            className="absolute inset-x-0 top-full max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-b border-t border-graphite bg-obsidian lg:hidden"
           >
-            <div className="page-container flex flex-col py-5">
+            <nav ref={mobileNavRef} id="mobile-navigation" aria-label="Mobile navigation" className="page-container flex flex-col py-5">
               {NAV_ITEMS.map((item) => {
                 const active = isActive(item.sectionId, item.pageHref);
                 return (
                   <Link
                     key={item.label}
                     to={hrefFor(item.sectionId, item.pageHref)}
-                    aria-current={active ? "page" : undefined}
+                    onClick={() => setMobileOpen(false)}
+                    aria-current={active ? isHome ? "location" : "page" : undefined}
                     className={`flex items-center justify-between border-b border-graphite py-4 text-[14px] transition-colors last:border-b-0 ${
                       active ? "text-chalk" : "text-smoke hover:text-chalk"
                     }`}
@@ -197,14 +222,17 @@ const Navbar = () => {
                 );
               })}
               <div className="mt-5 grid grid-cols-2 gap-3">
-                <a href="/cv.pdf" download="Esmalla_Jay_CV.pdf" className="ghost-button justify-center">
+                <a href="/cv.pdf" download="Esmalla_Jay_CV.pdf" className="ghost-button justify-center" onClick={() => {
+                  setMobileOpen(false);
+                  toggleRef.current?.focus();
+                }}>
                   CV <Download size={13} />
                 </a>
-                <Link to={contactHref} className={contactActive ? "ghost-button justify-center" : "primary-pill justify-center"}>
+                <Link to={contactHref} onClick={() => setMobileOpen(false)} className={contactActive ? "ghost-button justify-center" : "primary-pill justify-center"}>
                   LET&apos;S CHAT <ArrowUpRight size={14} />
                 </Link>
               </div>
-            </div>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>
