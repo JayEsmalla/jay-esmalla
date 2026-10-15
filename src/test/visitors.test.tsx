@@ -126,15 +126,26 @@ describe("visitor lifecycle", () => {
 });
 
 describe("hero counter", () => {
-  it("gives different viewers distinct glyphs and keeps their identity when the order changes", () => {
+  it("gives different viewers distinct illustrated portraits and keeps them when the order changes", () => {
     const { container, rerender } = render(<VisitorContext.Provider value={counts}><VisitorCounter /></VisitorContext.Provider>);
-    const glyphs = Array.from(container.querySelectorAll("svg")).filter((svg) => svg.querySelector("rect"));
-    expect(glyphs).toHaveLength(3);
-    expect(new Set(glyphs.map((svg) => svg.innerHTML)).size).toBe(3);
+    const portraits = Array.from(container.querySelectorAll("img"));
+    expect(portraits).toHaveLength(3);
+    expect(new Set(portraits.map((img) => img.style.objectPosition)).size).toBe(3);
+    portraits.forEach((img) => expect(img).toHaveAttribute("src", "/viewer-avatars.webp"));
     rerender(<VisitorContext.Provider value={{ ...counts, viewers: [...counts.viewers].reverse() }}><VisitorCounter /></VisitorContext.Provider>);
-    const reordered = Array.from(container.querySelectorAll("svg")).filter((svg) => svg.querySelector("rect"));
-    expect(reordered[0]).toBe(glyphs[2]);
-    expect(reordered[2]).toBe(glyphs[0]);
+    const reordered = Array.from(container.querySelectorAll("img"));
+    expect(reordered[0]).toBe(portraits[2]);
+    expect(reordered[2]).toBe(portraits[0]);
+  });
+  it("keeps the visible portraits distinct even when viewer seeds select the same portrait", () => {
+    const viewers = ["000000000000000000000000", "000000030000000000000000", "000000060000000000000000"];
+    const { container } = render(<VisitorContext.Provider value={{ ...counts, viewers }}><VisitorCounter /></VisitorContext.Provider>);
+    expect(new Set(Array.from(container.querySelectorAll("img")).map((img) => img.style.objectPosition)).size).toBe(3);
+  });
+  it("uses the reference's singular label for one viewer", () => {
+    const { container } = render(<VisitorContext.Provider value={{ visits: 2, active: 1, viewers: [counts.viewers[0]] }}><VisitorCounter /></VisitorContext.Provider>);
+    expect(container.textContent).toContain("1 person viewing now");
+    expect(container.querySelectorAll("img")).toHaveLength(1);
   });
   it("shows readable counts and visible dashes without inventing unavailable numbers", () => {
     const { rerender, container } = render(<VisitorContext.Provider value={counts}><VisitorCounter /></VisitorContext.Provider>);
@@ -142,10 +153,10 @@ describe("hero counter", () => {
     expect(screen.getByText("3+")).toBeInTheDocument();
     expect(screen.getByTitle(/Approximate active sessions/)).toBeInTheDocument();
     rerender(<VisitorContext.Provider value={null}><VisitorCounter /></VisitorContext.Provider>);
-    expect(container.textContent).toContain("— active now");
+    expect(container.textContent).toContain("— people viewing now");
     expect(container.textContent).toContain("— visits");
     expect(screen.getByTitle(/Local previews do not record visits/)).toBeInTheDocument();
     expect(screen.queryByText("1,240")).not.toBeInTheDocument();
-    expect(container.firstChild).toHaveClass("min-h-5");
+    expect(container.querySelectorAll("img")).toHaveLength(0);
   });
 });

@@ -59,13 +59,16 @@ Local previews show the same placeholders and do not write visits to Redis.
   mouse. Hidden tabs pause; returning to a visible tab resumes immediately unless
   recovering from an API failure. Navigation keeps the
   same tracker mounted. Development, preview domains and Worker previews are excluded.
-- Each of up to three recently active viewers gets a deterministic pixel glyph
-  inside the site's bracket frame. The Worker derives daily rotating public seeds
+- Up to three recently active viewers appear as distinct, circular monochrome
+  manga portraits, above the "person/people viewing now" label. These are decorative
+  anonymous avatars, not actual visitors' photos. The Worker derives daily rotating public seeds
   with HMAC; raw session IDs, IPs, names and photos never appear in the response.
-  A session keeps its icon across refreshes within the same UTC day. Icons can
-  change when the recently active sample changes or the daily seeds rotate.
+  Portrait selection stays deterministic while the viewer sample is unchanged,
+  including after a refresh or display reordering. Portraits can change when the
+  recently active sample changes or the daily seeds rotate.
   The displayed active count is capped at `3+`; total visits stay exact. Without
-  avatar seeds (including an older Worker), one generic placeholder is shown.
+  avatar seeds (including an older Worker), an empty circular placeholder is shown.
+  The local avatar sheet is 12 KB; [generation notes](viewer-avatar-art.md) record its source and prompt.
 - One atomic Lua script updates the visit total, session TTL, and active-session
   sorted set. Simultaneous requests for the same ID cannot double count a visit.
 - Failures replace counts with dashes and back off to at most one retry per two minutes per tab.
