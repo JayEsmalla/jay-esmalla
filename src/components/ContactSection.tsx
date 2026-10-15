@@ -126,7 +126,7 @@ const ContactSection = () => {
                   href={href}
                   target={label === "Email" ? undefined : "_blank"}
                   rel={label === "Email" ? undefined : "noopener noreferrer"}
-                  className="group flex items-center gap-3 rounded-[6px] px-3 py-3 transition-colors hover:bg-white/[0.04]"
+                  className="group flex items-center gap-3 rounded-[6px] px-3 py-3 transition-colors hover:bg-signal-white/[0.04]"
                 >
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-graphite bg-graphite text-smoke transition-colors group-hover:border-iron group-hover:text-chalk">
                     <Icon size={14} strokeWidth={1.5} />
@@ -179,7 +179,7 @@ const ContactSection = () => {
                   aria-invalid={Boolean(errors.name)}
                   aria-describedby={errors.name ? "contact-name-error" : undefined}
                 />
-                {errors.name && <p id="contact-name-error" className="mt-1.5 text-[12px] text-red-400" role="alert">{errors.name}</p>}
+                {errors.name && <p id="contact-name-error" className="mt-1.5 text-[12px] text-error" role="alert">{errors.name}</p>}
               </div>
               <div>
                 <label htmlFor="contact-email" className="mb-1.5 block text-[13px] text-smoke">
@@ -194,7 +194,7 @@ const ContactSection = () => {
                   aria-invalid={Boolean(errors.email)}
                   aria-describedby={errors.email ? "contact-email-error" : undefined}
                 />
-                {errors.email && <p id="contact-email-error" className="mt-1.5 text-[12px] text-red-400" role="alert">{errors.email}</p>}
+                {errors.email && <p id="contact-email-error" className="mt-1.5 text-[12px] text-error" role="alert">{errors.email}</p>}
               </div>
             </div>
 
@@ -219,7 +219,7 @@ const ContactSection = () => {
                 <label htmlFor="contact-message" className="text-[13px] text-smoke">
                   Message <span className="text-pulse-green">*</span>
                 </label>
-                <span className={`font-mono text-[11px] tabular-nums transition-colors ${charsLeft < 100 ? "text-amber-400" : "text-smoke/40"}`}>
+                <span className={`font-mono text-[11px] tabular-nums transition-colors ${charsLeft < 100 ? "text-warning" : "text-smoke/40"}`}>
                   {charsLeft}
                 </span>
               </div>
@@ -232,7 +232,7 @@ const ContactSection = () => {
                 aria-invalid={Boolean(errors.message)}
                 aria-describedby={errors.message ? "contact-message-error" : undefined}
               />
-              {errors.message && <p id="contact-message-error" className="mt-1.5 text-[12px] text-red-400" role="alert">{errors.message}</p>}
+              {errors.message && <p id="contact-message-error" className="mt-1.5 text-[12px] text-error" role="alert">{errors.message}</p>}
             </div>
 
             {/* Submit row */}
@@ -272,7 +272,7 @@ const ContactSection = () => {
                   className={`mt-4 flex items-start gap-2.5 rounded-[6px] border px-4 py-3 text-[13px] leading-relaxed ${
                     status.type === "success"
                       ? "border-pulse-green/20 bg-pulse-green/5 text-pulse-green"
-                      : "border-red-400/20 bg-red-400/5 text-red-400"
+                      : "border-error/20 bg-error/5 text-error"
                   }`}
                   role={status.type === "error" ? "alert" : "status"}
                 >

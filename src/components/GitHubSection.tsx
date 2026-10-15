@@ -25,7 +25,7 @@ const YEAR_TABS = [
 const CELL = 10;
 const REQUEST_TIMEOUT_MS = 12_000;
 const UNAVAILABLE_MESSAGE = "Activity is temporarily unavailable. You can still explore my repositories on GitHub.";
-const LEVELS = ["#171717", "#2a2a2a", "#1a3a0a", "#3d7a18", "#98ff38"];
+const LEVELS = Array.from({ length: 5 }, (_, level) => `var(--graph-${level})`);
 const formatDate = (date: string) => new Date(`${date}T12:00:00`).toLocaleDateString(undefined, {
   month: "short", day: "numeric", year: "numeric",
 });

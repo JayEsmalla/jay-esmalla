@@ -1,19 +1,16 @@
 import { motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight, FileText } from "lucide-react";
-import { useState } from "react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { projects } from "@/data/portfolio";
 import { motionTokens, useMotionSettings } from "@/lib/motion";
 import VisitorCounter from "./VisitorCounter";
+import Portrait from "./Portrait";
 
 const HERO_STATS = [
   { value: String(projects.length), label: "PROJECTS", detail: "Selected academic & independent work" },
   { value: "3+", label: "FRAMEWORKS", detail: "Flutter · React · React Native" },
   { value: "4th", label: "CS / AI", detail: "UMTC · Tagum College" },
 ];
-
-type PortraitState = "loading" | "ready" | "missing";
-type PortraitMode = "real" | "anime";
 
 const HeroSection = ({ ready = true }: { ready?: boolean }) => {
   const { reduced, compact, pageEntrance } = useMotionSettings();
@@ -24,10 +21,6 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
     animate: { opacity: shown ? 1 : 0, y: shown ? 0 : compact ? distance / 2 : distance },
     transition: { duration: immediate ? 0 : motionTokens.reveal, delay: shown && !immediate ? delay : 0, ease: motionTokens.ease },
   });
-  const [portraitStates, setPortraitStates] = useState<Record<PortraitMode, PortraitState>>({ real: "loading", anime: "loading" });
-  const [portraitMode, setPortraitMode] = useState<PortraitMode>("real");
-  const portraitState = portraitStates[portraitMode];
-  const isAnime = portraitMode === "anime";
 
   return (
     <section id="home" className="border-b border-graphite bg-carbon">
@@ -69,15 +62,6 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
               <Link to="/#contact" className="ghost-button justify-center">
                 CONTACT <ArrowDownRight size={13} />
               </Link>
-              <a
-                href="/cv.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="View CV (opens in a new tab)"
-                className="inline-flex min-h-11 items-center gap-2 px-1 text-[13px] text-ash underline decoration-iron underline-offset-4 hover:text-chalk"
-              >
-                VIEW CV <FileText size={13} />
-              </a>
             </motion.div>
             <motion.div {...entrance(0.22, 0)}><VisitorCounter /></motion.div>
           </div>
@@ -88,64 +72,7 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
             className="order-2 w-full lg:ml-auto"
             aria-label="Profile portrait"
           >
-            <button
-              type="button"
-              className="group relative block w-full select-none overflow-hidden rounded-[8px] border border-graphite bg-[#0c0c0c] text-left transition-colors hover:border-iron"
-              style={{ aspectRatio: "3 / 4" }}
-              onMouseEnter={() => setPortraitMode("anime")}
-              onMouseLeave={() => setPortraitMode("real")}
-              onClick={() => setPortraitMode((prev) => (prev === "real" ? "anime" : "real"))}
-              aria-label="Toggle anime alter-ego portrait"
-              data-cursor="portrait"
-              aria-pressed={isAnime}
-            >
-              {/* Fallback monogram */}
-              {portraitState !== "ready" && (
-                <span className="absolute inset-0 grid place-items-center" aria-hidden="true">
-                  <span className="text-center">
-                    <span className="block text-[52px] font-normal tracking-[-0.05em] text-chalk">JE</span>
-                    <span className="mt-2 block text-[12px] text-smoke">
-                      {portraitState === "missing" ? "Portrait unavailable" : "Loading portrait"}
-                    </span>
-                  </span>
-                </span>
-              )}
-
-              {/* Portrait image */}
-              <img
-                key={portraitMode}
-                src={isAnime ? "/gunpark_v2.jpg" : "/profile.webp"}
-                alt={isAnime ? "Gun Park, Jay's anime alter-ego" : "Portrait of Jay Factolarin Esmalla"}
-                {...{ fetchpriority: isAnime ? "auto" : "high" }}
-                loading="eager"
-                decoding="async"
-                onLoad={() => setPortraitStates((current) => ({ ...current, [portraitMode]: "ready" }))}
-                onError={() => setPortraitStates((current) => ({ ...current, [portraitMode]: "missing" }))}
-                className={[
-                  "absolute inset-0 h-full w-full object-cover object-center",
-                  isAnime ? "contrast-[1.06] brightness-[0.96]" : "grayscale contrast-[1.04] brightness-[0.92]",
-                  "transition-opacity duration-300",
-                  portraitState === "ready" ? "opacity-100" : "opacity-0",
-                ].join(" ")}
-              />
-
-              {/* Bottom gradient overlay with name + toggle hint */}
-              <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/30 to-transparent px-4 pb-4 pt-14">
-                <div className="flex items-end justify-between gap-3">
-                  <div>
-                    <p className="text-[13px] font-normal leading-snug text-white/90">
-                      {isAnime ? "Gun Park / Lookism" : "Jay Factolarin Esmalla"}
-                    </p>
-                    <p className="meta-text mt-1 text-white/50">
-                      {isAnime ? "Alter ego · CS / AI" : "CS / AI · Tagum City, PH"}
-                    </p>
-                  </div>
-                  <span className="shrink-0 rounded-[4px] border border-white/20 bg-black/50 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-white/70 backdrop-blur-sm">
-                    {isAnime ? "← BACK" : "ALTER EGO"}
-                  </span>
-                </div>
-              </div>
-            </button>
+            <Portrait />
           </motion.aside>
         </div>
 

@@ -41,7 +41,7 @@ const FLOW_ICONS = {
 const ProjectPreview = ({ project, fullCollection }: { project: Project; fullCollection: boolean }) => {
   if (project.preview === "screen" && project.imageFit === "contain") {
     return (
-      <figure className="flex min-w-0 shrink-0 flex-col bg-[#0b0b0b]">
+      <figure className="flex min-w-0 shrink-0 flex-col bg-preview-surface">
         <div className="h-40 overflow-hidden bg-[#f5f3f5] sm:h-44" style={{ backgroundColor: project.imageBackground }}>
           <img
             src={project.image}
@@ -61,7 +61,7 @@ const ProjectPreview = ({ project, fullCollection }: { project: Project; fullCol
   }
   if (project.preview === "screen") {
     return (
-      <div className="relative h-[190px] shrink-0 overflow-hidden bg-[#0b0b0b]">
+      <div className="relative h-[190px] shrink-0 overflow-hidden bg-preview-surface">
         <img
           src={project.image}
           alt={project.imageAlt ?? `${project.title} authentication and order-entry screen`}
@@ -81,7 +81,7 @@ const ProjectPreview = ({ project, fullCollection }: { project: Project; fullCol
   const icons = FLOW_ICONS[project.preview];
 
   return (
-    <div className="relative flex h-full min-h-[220px] flex-col justify-between overflow-hidden bg-[#0b0b0b] p-5 sm:p-6 md:min-h-[320px]">
+    <div className="relative flex h-full min-h-[220px] flex-col justify-between overflow-hidden bg-preview-surface p-5 sm:p-6 md:min-h-[320px]">
       <div className="project-grid pointer-events-none absolute inset-0 opacity-45" aria-hidden="true" />
       <div className="relative flex flex-wrap items-center justify-between gap-3">
         <p className="meta-text text-smoke">{project.previewLabel}</p>
@@ -107,7 +107,7 @@ const ProjectPreview = ({ project, fullCollection }: { project: Project; fullCol
 
       <div className="relative flex items-end justify-between gap-5 border-t border-graphite pt-5">
         <p className="max-w-[250px] text-[13px] leading-[1.55] text-smoke">System map based on the implemented repository.</p>
-        <span className="text-[40px] font-normal leading-none tracking-[-0.06em] text-[#242424]">{project.title.slice(0, 2).toUpperCase()}</span>
+        <span className="text-[40px] font-normal leading-none tracking-[-0.06em] text-preview-mark">{project.title.slice(0, 2).toUpperCase()}</span>
       </div>
     </div>
   );
@@ -178,7 +178,7 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
                   {...reveal(index)}
                   exit={{ opacity: 0, transition: { duration: reduced ? 0 : motionTokens.exit } }}
                   transition={{ ...reveal(index).transition, layout: { duration: reduced ? 0 : motionTokens.page, ease: motionTokens.ease } }}
-                  className="motion-feedback group flex min-w-0 flex-col overflow-hidden rounded-[8px] border border-graphite bg-carbon transition-[border-color,box-shadow] hover:border-iron hover:shadow-[0_8px_32px_rgba(152,255,56,0.06)] focus-within:border-iron"
+                  className="motion-feedback group flex min-w-0 flex-col overflow-hidden rounded-[8px] border border-graphite bg-carbon transition-[border-color,box-shadow] hover:border-iron hover:shadow-[0_8px_32px_rgb(var(--signal)/0.06)] focus-within:border-iron"
                 >
                   <ProjectPreview project={project} fullCollection={showAllByDefault} />
 
@@ -204,12 +204,12 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
                         CASE STUDY <ArrowUpRight size={15} className="text-compass-gold" />
                       </button>
                       {project.liveUrl && (
-                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-smoke transition-colors hover:bg-white/5 hover:text-chalk" aria-label={`${project.title} live project`} title="Open live project">
+                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-smoke transition-colors hover:bg-signal-white/5 hover:text-chalk" aria-label={`${project.title} live project`} title="Open live project">
                           <ExternalLink size={17} />
                         </a>
                       )}
                       {project.githubUrl && (
-                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-smoke transition-colors hover:bg-white/5 hover:text-chalk" aria-label={`${project.title} public source code`} title="View source on GitHub">
+                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-smoke transition-colors hover:bg-signal-white/5 hover:text-chalk" aria-label={`${project.title} public source code`} title="View source on GitHub">
                           <Github size={17} />
                         </a>
                       )}

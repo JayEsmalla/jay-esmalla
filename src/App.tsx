@@ -7,6 +7,7 @@ import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "re
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
 import IntroScreen from "./components/IntroScreen";
 import FocusCursor from "./components/FocusCursor";
+import ThemeProvider from "./components/ThemeProvider";
 import VisitorProvider from "./components/VisitorProvider";
 import PageLayout from "./components/PageLayout";
 import PageTransition, { PageEntrance } from "./components/PageTransition";
@@ -167,7 +168,7 @@ const App = () => {
   };
 
   return (
-    <MotionConfig reducedMotion="user">
+    <ThemeProvider><MotionConfig reducedMotion="user">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
@@ -182,7 +183,7 @@ const App = () => {
           </div>
         </TooltipProvider>
       </QueryClientProvider>
-    </MotionConfig>
+    </MotionConfig></ThemeProvider>
   );
 };
 

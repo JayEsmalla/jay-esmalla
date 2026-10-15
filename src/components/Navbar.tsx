@@ -3,6 +3,7 @@ import { ArrowUpRight, FileText, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motionTokens, useMotionSettings } from "@/lib/motion";
+import ThemeSwitch from "./ThemeSwitch";
 
 const NAV_ITEMS = [
   { label: "WORK", sectionId: "projects", pageHref: "/projects" },
@@ -163,8 +164,9 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <a href="/cv.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button">
-            CV <FileText size={13} />
+          <ThemeSwitch />
+          <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button">
+            VIEW CV <FileText size={13} />
           </a>
           <Link
             to={contactHref}
@@ -175,17 +177,20 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <button
-          ref={toggleRef}
-          type="button"
-          onClick={() => setMobileOpen((open) => !open)}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-[8px] border border-graphite text-chalk transition-colors hover:border-iron lg:hidden"
-          aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-navigation"
-        >
-          {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-        </button>
+        <div className="flex shrink-0 items-center gap-2 lg:hidden">
+          <ThemeSwitch />
+          <button
+            ref={toggleRef}
+            type="button"
+            onClick={() => setMobileOpen((open) => !open)}
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-[8px] border border-graphite text-chalk transition-colors hover:border-iron lg:hidden"
+            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
+          >
+            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-graphite" aria-hidden="true">
@@ -224,11 +229,11 @@ const Navbar = () => {
                 );
               })}
               <div className="mt-5 grid grid-cols-2 gap-3">
-                <a href="/cv.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button justify-center" onClick={() => {
+                <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button justify-center" onClick={() => {
                   setMobileOpen(false);
                   toggleRef.current?.focus();
                 }}>
-                  CV <FileText size={13} />
+                  VIEW CV <FileText size={13} />
                 </a>
                 <Link to={contactHref} onClick={() => setMobileOpen(false)} className={contactActive ? "ghost-button justify-center" : "primary-pill justify-center"}>
                   LET&apos;S CHAT <ArrowUpRight size={14} />

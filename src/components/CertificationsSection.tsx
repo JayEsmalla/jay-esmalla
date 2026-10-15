@@ -28,7 +28,7 @@ const CertificationsSection = () => {
             {/* Top accent bar */}
             <div
               className="h-[3px] w-full shrink-0"
-              style={{ background: certification.type === "Certification" ? "#98ff38" : "#6f6759" }}
+              style={{ background: certification.type === "Certification" ? "var(--color-pulse-green)" : "var(--color-compass-gold)" }}
               aria-hidden="true"
             />
             <a

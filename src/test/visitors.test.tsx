@@ -106,13 +106,16 @@ describe("visitor lifecycle", () => {
 });
 
 describe("hero counter", () => {
-  it("shows readable counts and reserves space without fake values when unavailable", () => {
+  it("shows readable counts and visible dashes without inventing unavailable numbers", () => {
     const { rerender, container } = render(<VisitorContext.Provider value={counts}><VisitorCounter /></VisitorContext.Provider>);
     expect(screen.getByText("1,240")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
     expect(screen.getByTitle(/Approximate active sessions/)).toBeInTheDocument();
     rerender(<VisitorContext.Provider value={null}><VisitorCounter /></VisitorContext.Provider>);
-    expect(container.textContent).toBe("");
+    expect(container.textContent).toContain("— active now");
+    expect(container.textContent).toContain("— visits");
+    expect(screen.getByTitle(/Local previews do not record visits/)).toBeInTheDocument();
+    expect(screen.queryByText("1,240")).not.toBeInTheDocument();
     expect(container.firstChild).toHaveClass("min-h-5");
   });
 });

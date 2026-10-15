@@ -41,7 +41,8 @@ Wait for both Cloudflare and GitHub Pages deployments to succeed. Open
 `/api/visitors` should return `{ "visits": ..., "active": ... }`. Opening that URL
 in a browser tab directly is not a health test: GET and missing Origin are rejected.
 If requests return 503, verify the two runtime bindings and the Upstash database
-status. A failed or unavailable counter leaves reserved empty space in the hero.
+status. The counter stays visible with dashes while real counts are unavailable.
+Local previews show the same placeholders and do not write visits to Redis.
 
 ## Meaning and limits
 
@@ -55,7 +56,7 @@ status. A failed or unavailable counter leaves reserved empty space in the hero.
   same tracker mounted. Development, preview domains and Worker previews are excluded.
 - One atomic Lua script updates the visit total, session TTL, and active-session
   sorted set. Simultaneous requests for the same ID cannot double count a visit.
-- Failures hide counts and back off to at most one retry per two minutes per tab.
+- Failures replace counts with dashes and back off to at most one retry per two minutes per tab.
   Blocked browser storage disables counting instead of inflating sessions.
 - Raw IP addresses are never stored in Redis. A daily rotating HMAC is used only
   for short-lived rate-limit keys: 60 requests/minute and 30 new sessions/hour per
