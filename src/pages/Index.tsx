@@ -1,6 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
-import PageLayout from "@/components/PageLayout";
 import ProjectsSection from "@/components/ProjectsSection";
 
 const AboutSection = lazy(() => import("@/components/AboutSection"));
@@ -22,14 +21,14 @@ const Index = ({ heroReady = true }: { heroReady?: boolean }) => {
   }, []);
 
   return (
-    <PageLayout>
+    <>
       <HeroSection ready={heroReady} />
       <ProjectsSection />
       <Suspense fallback={<SectionFallback />}><AboutSection /></Suspense>
       <Suspense fallback={<SectionFallback />}><GitHubSection /></Suspense>
       <Suspense fallback={<SectionFallback />}><CertificationsSection /></Suspense>
       <Suspense fallback={<SectionFallback />}><ContactSection /></Suspense>
-    </PageLayout>
+    </>
   );
 };
 

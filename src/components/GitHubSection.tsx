@@ -1,3 +1,5 @@
+import Reveal from "@/components/Reveal";
+import { useReveal } from "@/lib/motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowUpRight, Loader2 } from "lucide-react";
@@ -96,6 +98,7 @@ const buildColumns = (weeks: Week[]): (Day | null)[][] =>
   });
 
 const GitHubSection = () => {
+  const reveal = useReveal();
   const [activeTab, setActiveTab] = useState("last");
   const [data, setData] = useState<CalendarData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -220,7 +223,7 @@ const GitHubSection = () => {
   return (
     <section id="github" className="section-shell scroll-mt-[72px]">
       <div className="page-container">
-        <div className="section-heading-grid">
+        <Reveal className="section-heading-grid">
           <div>
             <p className="section-kicker">03 / GITHUB ACTIVITY</p>
             <h2 className="section-title">A public trail of experiments, commits, and shipped code.</h2>
@@ -233,12 +236,10 @@ const GitHubSection = () => {
               VIEW GITHUB <ArrowUpRight size={13} />
             </a>
           </div>
-        </div>
+        </Reveal>
 
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          {...reveal(1, 8)}
           className="mt-8 rounded-[8px] border border-graphite p-4 md:mt-10 md:p-5"
         >
           {/* ── Header: number + label + tabs in one compact row ── */}

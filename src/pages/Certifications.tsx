@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import PageLayout from "@/components/PageLayout";
 import CertificationsSection from "@/components/CertificationsSection";
 
 const Certifications = () => {
@@ -7,9 +6,9 @@ const Certifications = () => {
     document.title = "Certifications | Jay Factolarin Esmalla";
   }, []);
   return (
-    <PageLayout>
+    <>
       <CertificationsSection />
-    </PageLayout>
+    </>
   );
 };
 

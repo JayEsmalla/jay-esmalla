@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import PageLayout from "@/components/PageLayout";
 import ProjectsSection from "@/components/ProjectsSection";
 import GitHubSection from "@/components/GitHubSection";
 
@@ -8,10 +7,10 @@ const Projects = () => {
     document.title = "Projects | Jay Factolarin Esmalla";
   }, []);
   return (
-    <PageLayout>
+    <>
       <ProjectsSection showAllByDefault />
       <GitHubSection />
-    </PageLayout>
+    </>
   );
 };
 

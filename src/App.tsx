@@ -6,6 +6,9 @@ import { MotionConfig } from "framer-motion";
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
 import IntroScreen from "./components/IntroScreen";
+import FocusCursor from "./components/FocusCursor";
+import PageLayout from "./components/PageLayout";
+import PageTransition, { PageEntrance } from "./components/PageTransition";
 import Index from "./pages/Index";
 import { shouldPlayIntro } from "./lib/intro";
 
@@ -42,9 +45,12 @@ export const ScrollToHash = () => {
     const navigateToDestination = (allowFallback = false) => {
       if (settled) return;
       const main = document.getElementById("main-content");
+      const route = main?.querySelector<HTMLElement>("[data-route-path]");
+      if (route && (route.dataset.routePath !== location.pathname || route.hasAttribute("data-route-exiting"))) return;
       const target = hashId ? document.getElementById(hashId) : main;
       if (!main || (!target && savedTop === undefined && !allowFallback)) return;
       const hasPendingSections = Boolean(main.querySelector("[data-section-loading]"));
+      if (main.querySelector("[data-page-loading]")) return;
       // Concurrent lazy sections above an anchor can still move its final position.
       if (hashId && savedTop === undefined && hasPendingSections && !allowFallback) return;
 
@@ -91,7 +97,7 @@ export const ScrollToHash = () => {
       mutationObserver.disconnect();
       resizeObserver?.disconnect();
     };
-    mutationObserver.observe(document.body, { childList: true, subtree: true });
+    mutationObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-route-exiting"] });
     resizeObserver?.observe(document.body);
     window.addEventListener("scroll", recordPosition, { passive: true });
     window.addEventListener("pointerdown", stopPendingNavigationOnInteraction, { passive: true });
@@ -114,6 +120,27 @@ export const ScrollToHash = () => {
 
   return null;
 };
+
+function PortfolioRoutes({ heroReady }: { heroReady: boolean }) {
+  const location = useLocation();
+  return (
+    <PageTransition>
+      <Suspense fallback={<div data-page-loading className="min-h-[70vh] bg-background p-8 text-smoke" role="status">Loading page…</div>}>
+        <PageEntrance>
+        <Routes location={location}>
+          <Route path="/" element={<Index heroReady={heroReady} />} />
+          <Route path="/about" element={<Navigate to="/#about" replace />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/certifications" element={<Certifications />} />
+          <Route path="/testimonials" element={<Navigate to="/" replace />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        </PageEntrance>
+      </Suspense>
+    </PageTransition>
+  );
+}
 
 const App = () => {
   const [introPhase, setIntroPhase] = useState<"playing" | "revealing" | "complete">(() => shouldPlayIntro() ? "playing" : "complete");
@@ -144,21 +171,12 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <FocusCursor enabled={!introActive} />
           {introActive && <IntroScreen onReveal={() => setIntroPhase("revealing")} onComplete={handleIntroComplete} />}
           <div data-intro-phase={introPhase} {...(introActive ? { inert: "" } : {})} aria-hidden={introActive ? true : undefined}>
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ScrollToHash />
-            <Suspense fallback={<div className="min-h-screen bg-background p-8 text-smoke" role="status">Loading page…</div>}>
-              <Routes>
-                <Route path="/" element={<Index heroReady={introPhase !== "playing"} />} />
-                <Route path="/about" element={<Navigate to="/#about" replace />} />
-                <Route path="/projects" element={<Projects />} />
-                <Route path="/certifications" element={<Certifications />} />
-                <Route path="/testimonials" element={<Navigate to="/" replace />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
+            <PageLayout><PortfolioRoutes heroReady={introPhase !== "playing"} /></PageLayout>
           </BrowserRouter>
           </div>
         </TooltipProvider>

@@ -1,3 +1,5 @@
+import Reveal from "@/components/Reveal";
+import { useReveal } from "@/lib/motion";
 import { motion } from "framer-motion";
 import {
   Box,
@@ -90,10 +92,12 @@ const STACK = [
   },
 ];
 
-const AboutSection = () => (
+const AboutSection = () => {
+  const reveal = useReveal();
+  return (
   <section id="about" className="section-shell scroll-mt-[72px] overflow-hidden">
     <div className="page-container">
-      <div className="section-heading-grid">
+      <Reveal className="section-heading-grid">
         <div>
           <p className="section-kicker">02 / ABOUT</p>
           <h2 className="section-title text-balance">How I approach a build.</h2>
@@ -101,13 +105,10 @@ const AboutSection = () => (
         <p className="self-end text-[16px] leading-[1.65] text-smoke">
           I start with the workflow, choose tools that fit, and connect clear interfaces to reliable backend systems.
         </p>
-      </div>
+      </Reveal>
 
       <motion.div
-        initial={{ opacity: 0, y: 22 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+        {...reveal(1)}
         className="mt-8 overflow-hidden rounded-[8px] border border-graphite bg-carbon md:mt-10"
       >
         <div className="flex items-start gap-4 border-b border-graphite p-5 sm:p-7">
@@ -132,12 +133,8 @@ const AboutSection = () => (
           {FOCUS_AREAS.map((area, index) => {
             const Icon = area.icon;
             return (
-              <motion.article
+              <article
                 key={area.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: index * 0.1 }}
                 className={`relative overflow-hidden p-5 sm:p-7 ${index > 0 ? "border-t border-graphite md:border-l md:border-t-0" : ""}`}
               >
                 <span
@@ -151,7 +148,7 @@ const AboutSection = () => (
                 </div>
                 <h4 className="relative mt-4 text-[18px] font-normal tracking-[-0.01em] text-chalk">{area.title}</h4>
                 <p className="relative mt-3 text-[14px] leading-[1.65] text-smoke">{area.description}</p>
-              </motion.article>
+              </article>
             );
           })}
         </div>
@@ -201,6 +198,7 @@ const AboutSection = () => (
       </div>
     </div>
   </section>
-);
+  );
+};
 
 export default AboutSection;

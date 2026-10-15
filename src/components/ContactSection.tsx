@@ -1,3 +1,5 @@
+import Reveal from "@/components/Reveal";
+import { useReveal, useMotionSettings, motionTokens } from "@/lib/motion";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, CheckCircle2, Facebook, Github, Linkedin, Mail, MapPin, Send, XCircle } from "lucide-react";
 import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from "react";
@@ -19,6 +21,8 @@ const SOCIALS = [
 ].filter(({ href }) => href && href !== "https://linkedin.com");
 
 const ContactSection = () => {
+  const reveal = useReveal();
+  const { reduced } = useMotionSettings();
   const [form, setForm]     = useState(initialForm);
   const [status, setStatus] = useState<SubmissionStatus>({ type: "idle", message: "" });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -90,7 +94,7 @@ const ContactSection = () => {
       <div className="page-container">
 
         {/* ── Section heading ── */}
-        <div className="section-heading-grid">
+        <Reveal className="section-heading-grid">
           <div>
             <p className="section-kicker">05 / CONTACT</p>
             <h2 className="section-title">Have a project, collaboration, or idea worth building?</h2>
@@ -107,7 +111,7 @@ const ContactSection = () => {
               Reach out directly or use the form below. I typically respond within 24 hours.
             </p>
           </div>
-        </div>
+        </Reveal>
 
         {/* ── Main card ── */}
         <div className="mt-10 overflow-hidden rounded-[10px] border border-graphite md:mt-12 lg:grid lg:grid-cols-[300px_1fr]">
@@ -150,9 +154,7 @@ const ContactSection = () => {
 
           {/* ── Right: form ── */}
           <motion.form
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            {...reveal(1, 8)}
             onSubmit={handleSubmit}
             noValidate
             aria-busy={isSending}
@@ -263,10 +265,10 @@ const ContactSection = () => {
             <AnimatePresence>
               {status.message && (
                 <motion.div
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={reduced ? false : { opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25 }}
+                  transition={{ duration: reduced ? 0 : motionTokens.overlay, ease: motionTokens.ease }}
                   className={`mt-4 flex items-start gap-2.5 rounded-[6px] border px-4 py-3 text-[13px] leading-relaxed ${
                     status.type === "success"
                       ? "border-pulse-green/20 bg-pulse-green/5 text-pulse-green"

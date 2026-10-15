@@ -1,3 +1,5 @@
+import Reveal from "@/components/Reveal";
+import { useReveal, useMotionSettings, motionTokens } from "@/lib/motion";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -117,6 +119,8 @@ export interface ProjectsSectionProps {
 }
 
 const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: ProjectsSectionProps = {}) => {
+  const reveal = useReveal();
+  const { reduced } = useMotionSettings();
   const [filter, setFilter] = useState<Filter>("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -130,7 +134,7 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
   return (
     <section id="projects" className="section-shell scroll-mt-[72px]">
       <div className="page-container">
-        <div className="section-heading-grid">
+        <Reveal className="section-heading-grid">
           <div>
             <p className="section-kicker">{showAllByDefault ? "01 / PROJECT COLLECTION" : "01 / SELECTED WORK"}</p>
             <h2 className="section-title">{showAllByDefault ? "All projects. One place." : "Selected work. Real-world problems."}</h2>
@@ -158,24 +162,23 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
               ))}
             </div>
           </div>
-        </div>
+        </Reveal>
 
         <p className="meta-text mt-6 text-smoke" role="status" aria-live="polite" aria-atomic="true">
           Showing {visibleProjects.length} of {filtered.length} {filter === "all" ? "projects" : `${filter} projects`}
         </p>
-        <motion.div id="project-list" layout className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <motion.div id="project-list" layout={!reduced} className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
-            {visibleProjects.map((project) => {
+            {visibleProjects.map((project, index) => {
               const projectNumber = String(orderedProjects.findIndex((item) => item.id === project.id) + 1).padStart(2, "0");
               return (
                 <motion.article
-                  layout
+                  layout={!reduced}
                   key={project.id}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.3 }}
-                  className="group flex min-w-0 flex-col overflow-hidden rounded-[8px] border border-graphite bg-carbon transition-all duration-300 hover:-translate-y-0.5 hover:border-iron hover:shadow-[0_8px_32px_rgba(152,255,56,0.06)] focus-within:border-iron"
+                  {...reveal(index)}
+                  exit={{ opacity: 0, transition: { duration: reduced ? 0 : motionTokens.exit } }}
+                  transition={{ ...reveal(index).transition, layout: { duration: reduced ? 0 : motionTokens.page, ease: motionTokens.ease } }}
+                  className="motion-feedback group flex min-w-0 flex-col overflow-hidden rounded-[8px] border border-graphite bg-carbon transition-[border-color,box-shadow] hover:border-iron hover:shadow-[0_8px_32px_rgba(152,255,56,0.06)] focus-within:border-iron"
                 >
                   <ProjectPreview project={project} fullCollection={showAllByDefault} />
 
@@ -197,7 +200,7 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
                     </div>
 
                     <div className="mt-auto flex items-center gap-1 border-t border-graphite pt-2">
-                      <button type="button" onClick={(event) => { triggerRef.current = event.currentTarget; setSelectedProject(project); }} className="mr-auto inline-flex min-h-11 items-center gap-2 rounded-sm pr-3 text-[12px] text-chalk transition-colors hover:text-compass-gold" aria-label={`View ${project.title} case study`}>
+                      <button type="button" data-cursor="project" onClick={(event) => { triggerRef.current = event.currentTarget; setSelectedProject(project); }} className="mr-auto inline-flex min-h-11 items-center gap-2 rounded-sm pr-3 text-[12px] text-chalk transition-colors hover:text-compass-gold" aria-label={`View ${project.title} case study`}>
                         CASE STUDY <ArrowUpRight size={15} className="text-compass-gold" />
                       </button>
                       {project.liveUrl && (

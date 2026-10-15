@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import PageLayout from "@/components/PageLayout";
 import ContactSection from "@/components/ContactSection";
 
 const Contact = () => {
@@ -7,9 +6,9 @@ const Contact = () => {
     document.title = "Contact | Jay Factolarin Esmalla";
   }, []);
   return (
-    <PageLayout>
+    <>
       <ContactSection />
-    </PageLayout>
+    </>
   );
 };
 

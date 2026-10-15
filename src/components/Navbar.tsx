@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Download, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motionTokens, useMotionSettings } from "@/lib/motion";
 
 const NAV_ITEMS = [
   { label: "WORK", sectionId: "projects", pageHref: "/projects" },
@@ -12,6 +13,7 @@ const NAV_ITEMS = [
 const HOME_SECTIONS = ["home", "projects", "about", "github", "certifications", "contact"];
 
 const Navbar = () => {
+  const { reduced } = useMotionSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -152,7 +154,7 @@ const Navbar = () => {
                   <motion.span
                     layoutId="desktop-nav-active"
                     className="absolute inset-x-0 -bottom-[2px] h-px bg-pulse-green"
-                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                    transition={{ duration: reduced ? 0 : motionTokens.feedback, ease: motionTokens.ease }}
                   />
                 )}
               </Link>
@@ -190,17 +192,17 @@ const Navbar = () => {
         <motion.div
           className="h-full origin-left bg-pulse-green"
           animate={{ scaleX: scrollProgress }}
-          transition={{ duration: 0.12, ease: "linear" }}
+          transition={{ duration: reduced ? 0 : motionTokens.feedback, ease: "linear" }}
         />
       </div>
 
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
+            initial={reduced ? false : { opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, height: 0, transition: { duration: reduced ? 0 : motionTokens.exit } }}
+            transition={{ duration: reduced ? 0 : motionTokens.overlay, ease: motionTokens.ease }}
             className="absolute inset-x-0 top-full max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-b border-t border-graphite bg-obsidian lg:hidden"
           >
             <nav ref={mobileNavRef} id="mobile-navigation" aria-label="Mobile navigation" className="page-container flex flex-col py-5">

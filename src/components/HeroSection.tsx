@@ -3,6 +3,7 @@ import { ArrowDownRight, ArrowUpRight, Download } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { projects } from "@/data/portfolio";
+import { motionTokens, useMotionSettings } from "@/lib/motion";
 
 const HERO_STATS = [
   { value: String(projects.length), label: "PROJECTS", detail: "Selected academic & independent work" },
@@ -14,6 +15,14 @@ type PortraitState = "loading" | "ready" | "missing";
 type PortraitMode = "real" | "anime";
 
 const HeroSection = ({ ready = true }: { ready?: boolean }) => {
+  const { reduced, compact, pageEntrance } = useMotionSettings();
+  const immediate = reduced || pageEntrance;
+  const shown = ready || immediate;
+  const entrance = (delay = 0, distance = 8) => ({
+    initial: immediate ? false as const : { opacity: 0, y: compact ? distance / 2 : distance },
+    animate: { opacity: shown ? 1 : 0, y: shown ? 0 : compact ? distance / 2 : distance },
+    transition: { duration: immediate ? 0 : motionTokens.reveal, delay: shown && !immediate ? delay : 0, ease: motionTokens.ease },
+  });
   const [portraitStates, setPortraitStates] = useState<Record<PortraitMode, PortraitState>>({ real: "loading", anime: "loading" });
   const [portraitMode, setPortraitMode] = useState<PortraitMode>("real");
   const portraitState = portraitStates[portraitMode];
@@ -25,28 +34,34 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(240px,0.52fr)] lg:gap-10 xl:gap-16">
 
           {/* ── Left: text content ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: ready ? 1 : 0, y: ready ? 0 : 10 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          <div
             className="order-1 flex flex-col justify-center py-2 lg:py-10"
           >
-            <div className="status-badge mb-5 w-fit">
+            <motion.div {...entrance()} className="status-badge mb-5 w-fit">
               <span className="status-dot shrink-0" />
               OPEN TO OPPORTUNITIES &amp; FREELANCE
-            </div>
+            </motion.div>
 
-            <p className="meta-text mb-3 text-ash">MOBILE + WEB DEVELOPER</p>
+            <motion.p {...entrance(0.03)} className="meta-text mb-3 text-ash">MOBILE + WEB DEVELOPER</motion.p>
 
             <h1 className="max-w-[680px] text-balance text-[38px] font-normal leading-[1.02] tracking-[-0.035em] text-chalk sm:text-[46px] md:text-[52px] lg:text-[56px]">
-              Practical apps.<br className="hidden sm:block" /> Clear interfaces.
+              {["Practical apps.", "Clear interfaces."].map((line, index) => (
+                <span key={line} className="block overflow-hidden pb-[0.08em] -mb-[0.08em]">
+                  <motion.span
+                    className="block"
+                    initial={immediate ? false : { opacity: 0, y: "105%" }}
+                    animate={{ opacity: shown ? 1 : 0, y: shown ? "0%" : "105%" }}
+                    transition={{ duration: immediate ? 0 : motionTokens.headline, delay: shown && !immediate ? index * (compact ? 0.04 : 0.07) : 0, ease: motionTokens.ease }}
+                  >{line}{index === 0 ? " " : ""}</motion.span>
+                </span>
+              ))}
             </h1>
 
-            <p className="mt-5 max-w-[580px] text-[16px] leading-[1.65] text-smoke md:mt-6 md:text-[17px]">
+            <motion.p {...entrance(0.12)} className="mt-5 max-w-[580px] text-[16px] leading-[1.65] text-smoke md:mt-6 md:text-[17px]">
               I&apos;m Jay, a full-stack developer building mobile and web apps with Flutter, React, React Native, and TypeScript.
-            </p>
+            </motion.p>
 
-            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: ready ? 1 : 0, y: ready ? 0 : 6 }} transition={{ duration: 0.6, delay: ready ? 0.14 : 0, ease: [0.22, 1, 0.36, 1] }} className="mt-7 flex flex-wrap items-center gap-3 md:mt-8">
+            <motion.div {...entrance(0.18, 6)} className="mt-7 flex flex-wrap items-center gap-3 md:mt-8">
               <Link to="/#projects" className="primary-pill justify-center">
                 VIEW WORK <ArrowUpRight size={14} />
               </Link>
@@ -61,14 +76,12 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
                 DOWNLOAD CV <Download size={13} />
               </a>
             </motion.div>
-          </motion.div>
+          </div>
 
           {/* ── Right: portrait ── */}
           <motion.aside
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: ready ? 1 : 0, y: ready ? 0 : 8 }}
-            transition={{ duration: 0.65, delay: ready ? 0.1 : 0, ease: [0.22, 1, 0.36, 1] }}
-            className="portrait-glow order-2 w-full lg:ml-auto"
+            {...entrance(0.1)}
+            className="order-2 w-full lg:ml-auto"
             aria-label="Profile portrait"
           >
             <button
@@ -79,6 +92,7 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
               onMouseLeave={() => setPortraitMode("real")}
               onClick={() => setPortraitMode((prev) => (prev === "real" ? "anime" : "real"))}
               aria-label="Toggle anime alter-ego portrait"
+              data-cursor="portrait"
               aria-pressed={isAnime}
             >
               {/* Fallback monogram */}
@@ -122,7 +136,7 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
                       {isAnime ? "Alter ego · CS / AI" : "CS / AI · Tagum City, PH"}
                     </p>
                   </div>
-                  <span className="hint-pulse shrink-0 rounded-[4px] border border-white/20 bg-black/50 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-white/70 backdrop-blur-sm">
+                  <span className="shrink-0 rounded-[4px] border border-white/20 bg-black/50 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-white/70 backdrop-blur-sm">
                     {isAnime ? "← BACK" : "ALTER EGO"}
                   </span>
                 </div>

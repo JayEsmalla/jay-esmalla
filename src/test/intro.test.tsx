@@ -7,10 +7,10 @@ import { shouldPlayIntro } from "@/lib/intro";
 
 vi.mock("@/pages/Index", () => ({
   default: ({ heroReady }: { heroReady: boolean }) => (
-    <main id="main-content" tabIndex={-1}>
+    <section>
       <h1 data-ready={heroReady}>Portfolio hero</h1>
       <a href="/#projects">View work</a>
-    </main>
+    </section>
   ),
 }));
 

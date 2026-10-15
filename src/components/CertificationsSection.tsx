@@ -1,10 +1,14 @@
+import Reveal from "@/components/Reveal";
+import { useReveal } from "@/lib/motion";
 import { motion } from "framer-motion";
 import { certifications } from "@/data/portfolio";
 
-const CertificationsSection = () => (
+const CertificationsSection = () => {
+  const reveal = useReveal();
+  return (
   <section id="certifications" className="section-shell scroll-mt-[72px]">
     <div className="page-container">
-      <div className="section-heading-grid">
+      <Reveal className="section-heading-grid">
         <div>
           <p className="section-kicker">04 / CREDENTIALS</p>
           <h2 className="section-title">Certifications &amp; participation.</h2>
@@ -12,16 +16,13 @@ const CertificationsSection = () => (
         <p className="self-end text-[15px] leading-[1.6] text-smoke">
           Technical certification and participation in local innovation events. Select a certificate to view it full size.
         </p>
-      </div>
+      </Reveal>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {certifications.map((certification, index) => (
           <motion.article
             key={certification.id}
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.06 }}
+            {...reveal(index)}
             className="flex min-w-0 flex-col overflow-hidden rounded-[8px] border border-graphite bg-carbon transition-colors hover:border-iron"
           >
             {/* Top accent bar */}
@@ -70,6 +71,7 @@ const CertificationsSection = () => (
       </div>
     </div>
   </section>
-);
+  );
+};
 
 export default CertificationsSection;

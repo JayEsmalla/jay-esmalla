@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import PageLayout from "@/components/PageLayout";
 
 const NotFound = () => {
   const location = useLocation();
@@ -11,7 +10,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <PageLayout>
+    <>
       <section className="grid min-h-[70vh] place-items-center px-5 py-24">
         <div className="w-full max-w-2xl border-y border-graphite py-12 text-center">
           <p className="section-kicker">404 / NOT FOUND</p>
@@ -20,7 +19,7 @@ const NotFound = () => {
           <Link to="/" className="ghost-button mt-8"><ArrowLeft size={13} /> RETURN HOME</Link>
         </div>
       </section>
-    </PageLayout>
+    </>
   );
 };
 

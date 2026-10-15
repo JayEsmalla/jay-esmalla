@@ -2,6 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
+/* A precise center with a gently following frame; never intercepts input. */
+.focus-cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  color: var(--color-chalk);
+}
+.focus-cursor[data-visible="true"] { opacity: 1; }
+.focus-cursor-position { position: absolute; top: 0; left: 0; will-change: transform; }
+.focus-cursor-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-chalk);
+  box-shadow: 0 0 0 1px #080808b3;
+  transform: translate(-50%, -50%);
+}
+.focus-cursor-brackets {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  transition: width 180ms ease, height 180ms ease, transform 180ms ease, color 180ms ease;
+  filter: drop-shadow(0 1px 1px #080808);
+}
+.focus-cursor-brackets i { position: absolute; width: 6px; height: 6px; border: 0 solid currentColor; }
+.focus-cursor-brackets i:nth-child(1) { top: 0; left: 0; border-top-width: 1px; border-left-width: 1px; }
+.focus-cursor-brackets i:nth-child(2) { top: 0; right: 0; border-top-width: 1px; border-right-width: 1px; }
+.focus-cursor-brackets i:nth-child(3) { bottom: 0; right: 0; border-bottom-width: 1px; border-right-width: 1px; }
+.focus-cursor-brackets i:nth-child(4) { bottom: 0; left: 0; border-bottom-width: 1px; border-left-width: 1px; }
+.focus-cursor[data-mode="action"],
+.focus-cursor[data-mode="project"],
+.focus-cursor[data-mode="portrait"] { color: var(--color-pulse-green); }
+.focus-cursor[data-mode="action"] .focus-cursor-brackets { width: 32px; height: 32px; }
+.focus-cursor[data-mode="project"] .focus-cursor-brackets { width: 38px; height: 38px; }
+.focus-cursor[data-mode="portrait"] .focus-cursor-brackets { width: 32px; height: 32px; transform: translate(-50%, -50%) rotate(45deg); }
+.focus-cursor-arrow {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(.7);
+  opacity: 0;
+  filter: drop-shadow(0 1px 1px #080808);
+  transition: transform 180ms ease, opacity 150ms ease;
+}
+.focus-cursor[data-mode="project"] .focus-cursor-arrow { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.focus-cursor[data-mode="project"] .focus-cursor-dot { opacity: 0; }
+.focus-cursor[data-pressed="true"] .focus-cursor-brackets { width: 20px; height: 20px; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html.focus-cursor-active, html.focus-cursor-active * { cursor: none !important; }
+}
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .focus-cursor { display: none; }
+}
+
 @layer base {
   :root {
     --color-obsidian: #101010;
@@ -213,22 +270,41 @@
   }
 }
 
-@keyframes portrait-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(152, 255, 56, 0); }
-  50% { box-shadow: 0 0 28px 4px rgba(152, 255, 56, 0.12); }
+/* Shared rhythm for pointer feedback and overlays. */
+:root {
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --motion-feedback: 180ms;
+  --motion-overlay: 220ms;
+  --motion-exit: 150ms;
 }
-
-@keyframes hint-pulse {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
+:is(a, button, input, textarea, select)[class], .motion-feedback {
+  transition-duration: var(--motion-feedback);
+  transition-timing-function: var(--motion-ease);
 }
-
-.portrait-glow {
-  animation: portrait-pulse 3.5s ease-in-out infinite;
+.primary-pill:active, .ghost-button:active { transform: translateY(1px); }
+.portfolio-dialog-overlay[data-state="open"], .portfolio-dialog-content[data-state="open"] {
+  animation-fill-mode: both;
+  animation-duration: var(--motion-overlay);
+  animation-timing-function: var(--motion-ease);
 }
-
-.hint-pulse {
-  animation: hint-pulse 2s ease-in-out 1.5s infinite;
+.portfolio-dialog-overlay[data-state="closed"], .portfolio-dialog-content[data-state="closed"] {
+  animation-fill-mode: both;
+  animation-duration: var(--motion-exit);
+  animation-timing-function: var(--motion-ease);
+}
+.portfolio-dialog-content[data-state="open"] { animation-name: dialog-arrive; }
+.portfolio-dialog-content[data-state="closed"] { animation-name: dialog-leave; }
+.portfolio-dialog-overlay[data-state="open"] { animation-name: overlay-arrive; }
+.portfolio-dialog-overlay[data-state="closed"] { animation-name: overlay-leave; }
+@keyframes overlay-arrive { from { opacity: 0; } to { opacity: 1; } }
+@keyframes overlay-leave { from { opacity: 1; } to { opacity: 0; } }
+@keyframes dialog-arrive {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+@keyframes dialog-leave {
+  from { opacity: 1; transform: translate(-50%, -50%); }
+  to { opacity: 0; transform: translate(-50%, calc(-50% + 4px)); }
 }
 
 /* A signature drawn in light, followed by a quiet handoff to the hero. */
