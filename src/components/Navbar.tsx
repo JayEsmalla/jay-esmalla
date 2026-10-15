@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, Download, Menu, X } from "lucide-react";
+import { ArrowUpRight, FileText, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motionTokens, useMotionSettings } from "@/lib/motion";
@@ -163,8 +163,8 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <a href="/cv.pdf" download="Esmalla_Jay_CV.pdf" className="ghost-button">
-            CV <Download size={13} />
+          <a href="/cv.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button">
+            CV <FileText size={13} />
           </a>
           <Link
             to={contactHref}
@@ -224,11 +224,11 @@ const Navbar = () => {
                 );
               })}
               <div className="mt-5 grid grid-cols-2 gap-3">
-                <a href="/cv.pdf" download="Esmalla_Jay_CV.pdf" className="ghost-button justify-center" onClick={() => {
+                <a href="/cv.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button justify-center" onClick={() => {
                   setMobileOpen(false);
                   toggleRef.current?.focus();
                 }}>
-                  CV <Download size={13} />
+                  CV <FileText size={13} />
                 </a>
                 <Link to={contactHref} onClick={() => setMobileOpen(false)} className={contactActive ? "ghost-button justify-center" : "primary-pill justify-center"}>
                   LET&apos;S CHAT <ArrowUpRight size={14} />

@@ -7,6 +7,7 @@ import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "re
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
 import IntroScreen from "./components/IntroScreen";
 import FocusCursor from "./components/FocusCursor";
+import VisitorProvider from "./components/VisitorProvider";
 import PageLayout from "./components/PageLayout";
 import PageTransition, { PageEntrance } from "./components/PageTransition";
 import Index from "./pages/Index";
@@ -176,7 +177,7 @@ const App = () => {
           <div data-intro-phase={introPhase} {...(introActive ? { inert: "" } : {})} aria-hidden={introActive ? true : undefined}>
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ScrollToHash />
-            <PageLayout><PortfolioRoutes heroReady={introPhase !== "playing"} /></PageLayout>
+            <VisitorProvider><PageLayout><PortfolioRoutes heroReady={introPhase !== "playing"} /></PageLayout></VisitorProvider>
           </BrowserRouter>
           </div>
         </TooltipProvider>

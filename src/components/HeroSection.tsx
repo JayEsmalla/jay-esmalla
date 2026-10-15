@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight, Download } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, FileText } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { projects } from "@/data/portfolio";
 import { motionTokens, useMotionSettings } from "@/lib/motion";
+import VisitorCounter from "./VisitorCounter";
 
 const HERO_STATS = [
   { value: String(projects.length), label: "PROJECTS", detail: "Selected academic & independent work" },
@@ -70,12 +71,15 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
               </Link>
               <a
                 href="/cv.pdf"
-                download="Esmalla_Jay_CV.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View CV (opens in a new tab)"
                 className="inline-flex min-h-11 items-center gap-2 px-1 text-[13px] text-ash underline decoration-iron underline-offset-4 hover:text-chalk"
               >
-                DOWNLOAD CV <Download size={13} />
+                VIEW CV <FileText size={13} />
               </a>
             </motion.div>
+            <motion.div {...entrance(0.22, 0)}><VisitorCounter /></motion.div>
           </div>
 
           {/* ── Right: portrait ── */}

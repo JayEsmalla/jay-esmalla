@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "jay-esmalla",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-15",
+  "workers_dev": true,
+  "preview_urls": false,
+  // Keep the Upstash URL saved in the dashboard. Secrets are managed there too.
+  "keep_vars": true,
+  "tsconfig": "worker/tsconfig.json"
+}
