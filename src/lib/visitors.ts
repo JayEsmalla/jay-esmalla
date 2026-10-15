@@ -6,8 +6,7 @@ export const VisitorContext = createContext<VisitorCounts | null>(null);
 export const VISITOR_ENDPOINT = "https://jay-esmalla.jaesmalla1.workers.dev/api/visitors";
 const storageKey = "portfolio-visitor-session-v1";
 const sessionPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const heartbeatMs = 30000;
-const idleMs = 60000;
+const heartbeatMs = 15000;
 
 export function shouldTrackVisitors(production: boolean, origin: string) {
   return production && ["https://jayesmalla.tech", "https://www.jayesmalla.tech"].includes(origin);
@@ -24,7 +23,6 @@ function getSession() {
 
 export function startVisitorTracking(onCounts: (counts: VisitorCounts | null) => void) {
   let disposed = false;
-  let lastActivity = Date.now();
   let nextRequest = 0;
   let failures = 0;
   let pending: AbortController | null = null;
@@ -34,7 +32,7 @@ export function startVisitorTracking(onCounts: (counts: VisitorCounts | null) =>
   async function heartbeat() {
     clearTimeout(timer);
     if (disposed) return;
-    if (document.visibilityState !== "visible" || Date.now() - lastActivity >= idleMs) {
+    if (document.visibilityState !== "visible") {
       onCounts(null);
       return;
     }
@@ -61,7 +59,7 @@ export function startVisitorTracking(onCounts: (counts: VisitorCounts | null) =>
       // Older deployments can still supply totals while the Worker is updated.
       if (counts.viewers !== undefined && (!Array.isArray(counts.viewers) || counts.viewers.length !== Math.min(counts.active, 3) || new Set(counts.viewers).size !== counts.viewers.length || counts.viewers.some((seed) => typeof seed !== "string" || !/^[a-f0-9]{24}$/.test(seed)))) throw new Error("Invalid viewers");
       failures = 0;
-      if (!disposed && document.visibilityState === "visible" && Date.now() - lastActivity < idleMs) {
+      if (!disposed && document.visibilityState === "visible") {
         onCounts(counts);
         clearTimeout(staleTimer);
         staleTimer = setTimeout(() => onCounts(null), 90000);
@@ -72,24 +70,18 @@ export function startVisitorTracking(onCounts: (counts: VisitorCounts | null) =>
     } finally {
       clearTimeout(timeout);
       pending = null;
-      nextRequest = Date.now() + Math.min(120000, heartbeatMs * 2 ** Math.min(failures, 2));
+      nextRequest = Date.now() + (failures ? Math.min(120000, 30000 * 2 ** Math.min(failures, 2)) : heartbeatMs);
       if (!disposed) timer = setTimeout(heartbeat, nextRequest - Date.now());
     }
   }
 
-  function activity() {
-    lastActivity = Date.now();
-    if (!pending && lastActivity >= nextRequest) void heartbeat();
-  }
   function visibility() {
     if (document.visibilityState === "visible") {
-      lastActivity = Date.now();
+      if (!failures) nextRequest = 0;
       void heartbeat();
     }
     else { clearTimeout(timer); onCounts(null); }
   }
-  const events = ["pointerdown", "pointermove", "keydown", "scroll", "touchstart"] as const;
-  events.forEach((event) => window.addEventListener(event, activity, { passive: true }));
   document.addEventListener("visibilitychange", visibility);
   void heartbeat();
   return () => {
@@ -97,7 +89,6 @@ export function startVisitorTracking(onCounts: (counts: VisitorCounts | null) =>
     clearTimeout(timer);
     clearTimeout(staleTimer);
     pending?.abort();
-    events.forEach((event) => window.removeEventListener(event, activity));
     document.removeEventListener("visibilitychange", visibility);
   };
 }

@@ -75,6 +75,7 @@ export default {
     try { sessionId = await readSession(request); } catch { sessionId = null; }
     if (!sessionId) return reply(400, { error: "Invalid session" }, origin);
 
+    let failureCode = "configuration";
     try {
       const redisUrl = new URL(env.UPSTASH_REDIS_REST_URL);
       if (redisUrl.protocol !== "https:" || !redisUrl.hostname.endsWith(".upstash.io") || !env.UPSTASH_REDIS_REST_TOKEN) throw new Error("Missing configuration");
@@ -83,6 +84,7 @@ export default {
       if (!address) return reply(503, { error: "Counter unavailable" }, origin);
       const hash = await privateDigest(address, env.UPSTASH_REDIS_REST_TOKEN, now);
       const prefix = "portfolio:{visitors}:";
+      failureCode = "redis_unreachable";
       const response = await fetch(redisUrl.origin, {
         method: "POST",
         headers: { Authorization: `Bearer ${env.UPSTASH_REDIS_REST_TOKEN}`, "Content-Type": "application/json" },
@@ -93,20 +95,27 @@ export default {
         ]),
         signal: AbortSignal.timeout(5000),
       });
+      failureCode = response.status === 401 || response.status === 403 ? "redis_auth" : response.status === 429 ? "redis_limit" : "redis_http";
       if (!response.ok) throw new Error("Redis unavailable");
-      const body = await response.json() as { result?: unknown };
+      failureCode = "redis_response";
+      const body = await response.json() as { result?: unknown; error?: unknown };
+      if (body.error) { failureCode = "redis_command"; throw new Error("Redis command failed"); }
       if (!Array.isArray(body.result)) throw new Error("Invalid result");
       const [visits, active, sessionIds] = body.result as unknown[];
       if (body.result.length === 2 && visits === -1 && active === -1) return reply(429, { error: "Too many requests" }, origin);
       if (body.result.length !== 3) throw new Error("Invalid result");
+      failureCode = "redis_counts";
       if (!Number.isSafeInteger(visits) || !Number.isSafeInteger(active) || Number(visits) < 1 || Number(active) < 1 || Number(active) > Number(visits)) throw new Error("Invalid counts");
+      failureCode = "redis_viewers";
       if (!Array.isArray(sessionIds) || sessionIds.length !== Math.min(Number(active), 3) || new Set(sessionIds).size !== sessionIds.length || sessionIds.some((id) => typeof id !== "string" || !sessionPattern.test(id))) throw new Error("Invalid viewers");
       // Domain-separated seeds, never raw session IDs. Icons rotate daily.
       const viewers = (await Promise.all((sessionIds as string[]).map(async (id) => (await privateDigest(`viewer:${id}`, env.UPSTASH_REDIS_REST_TOKEN, now)).slice(0, 24)))).sort();
       return reply(200, { visits, active, viewers }, origin);
     } catch {
       // Neither credentials nor upstream error bodies belong in public responses.
-      return reply(503, { error: "Counter unavailable" }, origin);
+      const response = reply(503, { error: "Counter unavailable" }, origin);
+      response.headers.set("X-Visitor-Counter-Error", failureCode);
+      return response;
     }
   },
 };

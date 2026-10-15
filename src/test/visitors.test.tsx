@@ -54,16 +54,20 @@ describe("visitor lifecycle", () => {
     expect(fetch).toHaveBeenCalledTimes(2);
   });
 
-  it("stops idle heartbeats and resumes after interaction without request bursts", async () => {
+  it("keeps visible readers counted and polls new totals every 15 seconds without input", async () => {
     const onCounts = vi.fn();
     stop = startVisitorTracking(onCounts);
-    await vi.advanceTimersByTimeAsync(120000);
-    expect(fetch).toHaveBeenCalledTimes(2);
-    expect(onCounts).toHaveBeenLastCalledWith(null);
+    await vi.advanceTimersByTimeAsync(0);
+    vi.mocked(fetch).mockResolvedValue({ ok: true, json: async () => ({ visits: 1241, active: 4 }) } as Response);
+    await vi.advanceTimersByTimeAsync(15000);
+    expect(onCounts).toHaveBeenLastCalledWith({ visits: 1241, active: 4 });
+    await vi.advanceTimersByTimeAsync(105000);
+    expect(fetch).toHaveBeenCalledTimes(9);
+    expect(onCounts).not.toHaveBeenCalledWith(null);
     window.dispatchEvent(new Event("pointerdown"));
     await vi.advanceTimersByTimeAsync(0);
     for (let i = 0; i < 10; i++) window.dispatchEvent(new Event("pointermove"));
-    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(fetch).toHaveBeenCalledTimes(9);
   });
 
   it("hides failed counts and backs off instead of displaying zero", async () => {

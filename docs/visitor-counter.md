@@ -37,11 +37,15 @@ If the Worker is renamed, update the endpoint in `src/lib/visitors.ts` and the
 production hostname in `worker/index.ts` together.
 
 Wait for both Cloudflare and GitHub Pages deployments to succeed. Open
-`https://jayesmalla.tech` and check below the hero buttons. A browser POST to
+`https://jayesmalla.tech` and check below the hero description. A browser POST to
 `/api/visitors` should return `{ "visits": ..., "active": ... }`. Opening that URL
 in a browser tab directly is not a health test: GET and missing Origin are rejected.
 If requests return 503, verify the two runtime bindings and the Upstash database
-status. The counter stays visible with dashes while real counts are unavailable.
+status. Failed responses include a safe `X-Visitor-Counter-Error` category:
+`configuration` (runtime bindings), `redis_auth` (invalid or unauthorized token),
+`redis_limit` (upstream limits), `redis_command` (rejected command), or a Redis
+connection/response category. Credentials and upstream messages are never exposed.
+The counter stays visible with dashes while real counts are unavailable.
 Local previews show the same placeholders and do not write visits to Redis.
 
 ## Meaning and limits
@@ -51,8 +55,9 @@ Local previews show the same placeholders and do not write visits to Redis.
   Redis expires a session after 30 minutes without a heartbeat. Clearing browser
   storage, using another browser, or switching between www and apex can count again.
 - Active now approximates sessions seen in the last 90 seconds. Visible tabs send
-  a heartbeat every 30 seconds while recently used; after 60 seconds without input
-  they stop. Returning to a hidden tab counts as activity. Navigation keeps the
+  a heartbeat every 15 seconds, including while someone reads without moving the
+  mouse. Hidden tabs pause; returning to a visible tab resumes immediately unless
+  recovering from an API failure. Navigation keeps the
   same tracker mounted. Development, preview domains and Worker previews are excluded.
 - Each of up to three recently active viewers gets a deterministic pixel glyph
   inside the site's bracket frame. The Worker derives daily rotating public seeds

@@ -87,6 +87,22 @@ describe("visitor Worker boundary", () => {
     expect((await worker.fetch(request(), { ...env, UPSTASH_REDIS_REST_URL: "" })).status).toBe(503);
   });
 
+  it.each([[401, "redis_auth"], [403, "redis_auth"], [429, "redis_limit"], [500, "redis_http"]])("classifies upstream HTTP %s without exposing its response", async (status, code) => {
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(async () => new Response(env.UPSTASH_REDIS_REST_TOKEN, { status: Number(status) })));
+    const response = await worker.fetch(request(), env);
+    expect(response.status).toBe(503);
+    expect(response.headers.get("X-Visitor-Counter-Error")).toBe(code);
+    expect(await response.json()).toEqual({ error: "Counter unavailable" });
+  });
+
+  it("classifies Redis command failures without returning private details", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(async () => Response.json({ error: env.UPSTASH_REDIS_REST_TOKEN })));
+    const response = await worker.fetch(request(), env);
+    expect(response.status).toBe(503);
+    expect(response.headers.get("X-Visitor-Counter-Error")).toBe("redis_command");
+    expect(await response.json()).toEqual({ error: "Counter unavailable" });
+  });
+
   it("supplies distinct, refresh-stable icons without exposing session IDs", async () => {
     vi.spyOn(Date, "now").mockReturnValue(Date.UTC(2026, 9, 16, 4));
     redis();

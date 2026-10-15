@@ -25,7 +25,7 @@ export default function VisitorCounter() {
   const viewerSeeds = counts?.viewers?.length ? counts.viewers.slice(0, 3) : [undefined];
   const live = shouldTrackVisitors(import.meta.env.PROD, window.location.origin);
   const description = counts
-    ? "Approximate active sessions in the last 90 seconds. Icons represent up to three recently active anonymous viewers and rotate daily. Visits restart after 30 minutes of inactivity."
+    ? "Updates every 15 seconds while this page is visible. Approximate active sessions in the last 90 seconds. Icons represent up to three recently active anonymous viewers and rotate daily. Visits restart after 30 minutes away."
     : live ? "Live viewer statistics are temporarily unavailable."
       : "Live viewer statistics appear on the published portfolio. Local previews do not record visits.";
   return (
