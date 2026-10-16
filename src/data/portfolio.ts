@@ -29,6 +29,26 @@ export interface Skill {
 
 export const projects: Project[] = [
   {
+    id: "vulshop",
+    title: "1561 VULSHOP",
+    summary: "Workshop jobs, inventory, crew payroll, and cash flow in one operations system.",
+    description: "A full-stack operations platform for a custom fabrication and vulcanizing workshop, connecting job orders, material tracking, customers, attendance, payroll, and shop finances.",
+    category: "web",
+    technologies: ["TypeScript", "React 19", "TanStack Start", "TanStack Router", "Tailwind CSS v4", "MySQL 8", "mysql2"],
+    image: "/projects/vulshop-800.webp",
+    imageSrcSet: "/projects/vulshop-480.webp 480w, /projects/vulshop-800.webp 800w, /projects/vulshop-1200.webp 1200w",
+    fullImage: "/projects/vulshop-full.webp",
+    imageAlt: "1561 VULSHOP dashboard showing job orders, low-stock alerts, outstanding payments, net profit, and inventory value in a laptop mockup",
+    imageFit: "contain",
+    imageBackground: "#e5e7e9",
+    preview: "screen",
+    previewLabel: "WORKSHOP OPERATIONS & CASH FLOW",
+    proofPoints: ["Four-stage job queue & split payments", "Transactional stock deductions & audited reversals", "Attendance, cash advances & payroll"],
+    role: "Full-Stack Developer",
+    problemSolved: "Paper job records, missing material counts, untracked downpayments, and crew cash advances made it difficult to coordinate workshop work and understand actual earnings.",
+    outcome: "Built a workshop control center with a four-stage job queue, split payments, transaction-based inventory deductions and reversals, customer and vehicle history, attendance-based payroll with overtime and cash advances, and income, expense, and net-profit reporting.",
+  },
+  {
     id: "lolas-kusina",
     title: "LolasKusina",
     summary: "Catering packages, online ordering, and customer request management.",

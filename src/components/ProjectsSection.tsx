@@ -26,7 +26,7 @@ const filters: { key: Filter; label: string }[] = [
   { key: "web", label: "WEB" },
 ];
 
-const featuredOrder = ["aralytics", "lakbai", "prism", "thryfto"];
+const featuredOrder = ["vulshop", "aralytics", "lakbai", "prism", "thryfto"];
 const projectRank = (project: Project) => {
   const rank = featuredOrder.indexOf(project.id);
   return rank === -1 ? featuredOrder.length : rank;
@@ -141,7 +141,7 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
           </div>
           <div className="flex flex-col justify-end">
             <p className="max-w-md text-[16px] leading-[1.6] text-smoke">
-              {projects.length} selected mobile and web builds spanning commerce, education, travel, hospital staff management, and safety simulation.
+              {projects.length} mobile and web builds for local businesses, study, travel, hospital teams, and safety simulation.
             </p>
             <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label="Filter projects">
               {filters.map((item) => (

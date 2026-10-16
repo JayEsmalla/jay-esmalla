@@ -83,18 +83,32 @@ describe("ProjectsSection", () => {
       </MemoryRouter>,
     );
     expect(screen.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
-      "Aralytics", "LakBai", "PRISM", "Thryfto",
+      "1561 VULSHOP", "Aralytics", "LakBai", "PRISM", "Thryfto", "LolasKusina",
     ]);
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 4 of 6 projects");
-    const allProjectsLink = screen.getByRole("link", { name: "VIEW ALL 6 PROJECTS" });
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 6 of 7 projects");
+    const allProjectsLink = screen.getByRole("link", { name: "VIEW ALL 7 PROJECTS" });
     expect(allProjectsLink).toHaveAttribute("href", "/projects");
     fireEvent.click(allProjectsLink);
     expect(screen.getByRole("heading", { name: "All projects. One place." })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "LolasKusina" })).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 6 of 6 projects");
+    expect(screen.getByRole("heading", { name: "1561 VULSHOP" })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 7 of 7 projects");
     fireEvent.click(screen.getByRole("button", { name: "WEB" }));
     await waitFor(() => expect(screen.queryByRole("heading", { name: "LakBai" })).not.toBeInTheDocument());
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 4 of 4 web projects");
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 5 of 5 web projects");
+  });
+
+  it("shows VULSHOP's supplied dashboard and README-based case study without invented links", () => {
+    render(<MemoryRouter><ProjectsSection showAllByDefault /></MemoryRouter>);
+    const card = screen.getByRole("heading", { name: "1561 VULSHOP" }).closest("article") as HTMLElement;
+    expect(within(card).getByRole("img", { name: /1561 VULSHOP dashboard/ })).toHaveAttribute("src", "/projects/vulshop-800.webp");
+    expect(within(card).queryByRole("link")).not.toBeInTheDocument();
+    fireEvent.click(within(card).getByRole("button", { name: "View 1561 VULSHOP case study" }));
+    const dialog = screen.getByRole("dialog", { name: "1561 VULSHOP" });
+    expect(within(dialog).getByText("Four-stage job queue & split payments")).toBeInTheDocument();
+    expect(within(dialog).getByText("Transactional stock deductions & audited reversals")).toBeInTheDocument();
+    expect(within(dialog).getByText("MySQL 8")).toBeInTheDocument();
+    expect(within(dialog).getByText("TanStack Start")).toBeInTheDocument();
   });
 });
 
