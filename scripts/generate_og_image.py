@@ -4,7 +4,8 @@ from PIL import Image, ImageDraw, ImageEnhance, ImageFont, ImageOps
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "public" / "og-image.jpg"
+OUTPUT = ROOT / "local-artifacts" / "output" / "social" / "og-image.jpg"
+OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 PORTRAIT = ROOT / "public" / "profile.webp"
 DISPLAY_FONT = Path(r"C:\Windows\Fonts\bahnschrift.ttf")
 MONO_FONT = Path(r"C:\Windows\Fonts\consola.ttf")

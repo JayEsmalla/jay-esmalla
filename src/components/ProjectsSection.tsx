@@ -13,14 +13,14 @@ import {
   Upload,
   Users,
 } from "lucide-react";
-import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { projects, type Project } from "@/data/portfolio";
+import { PROJECTS_PER_PAGE, projectPageNumbers, projectPagination, projectSearch, readProjectFilter, type ProjectFilter } from "@/lib/project-pagination";
 
-type Filter = "all" | "mobile" | "web";
-
-const filters: { key: Filter; label: string }[] = [
+const filters: { key: ProjectFilter; label: string }[] = [
   { key: "all", label: "ALL WORK" },
   { key: "mobile", label: "MOBILE" },
   { key: "web", label: "WEB" },
@@ -38,7 +38,7 @@ const FLOW_ICONS = {
   "simulation-flow": [Users, Route, BarChart3],
 } as const;
 
-const ProjectPreview = ({ project, fullCollection }: { project: Project; fullCollection: boolean }) => {
+const ProjectPreview = ({ project }: { project: Project }) => {
   if (project.preview === "screen" && project.imageFit === "contain") {
     return (
       <figure className="flex min-w-0 shrink-0 flex-col bg-preview-surface">
@@ -121,16 +121,45 @@ export interface ProjectsSectionProps {
 const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: ProjectsSectionProps = {}) => {
   const reveal = useReveal();
   const { reduced, compact } = useMotionSettings();
-  const animateLayout = !reduced && !compact;
-  const [filter, setFilter] = useState<Filter>("all");
+  const animateLayout = !reduced && !compact && !showAllByDefault;
+  const [localFilter, setLocalFilter] = useState<ProjectFilter>("all");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const filter = showAllByDefault ? readProjectFilter(searchParams) : localFilter;
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogTitleRef = useRef<HTMLHeadingElement | null>(null);
+  const resultsRef = useRef<HTMLParagraphElement | null>(null);
 
-  const filtered = filter === "all" ? orderedProjects : orderedProjects.filter((project) =>
+  const filtered = useMemo(() => filter === "all" ? orderedProjects : orderedProjects.filter((project) =>
     filter === "mobile" ? project.category === "flutter" || project.category === "mobile" : project.category === filter,
-  );
-  const visibleProjects = showAllByDefault ? filtered : filtered.slice(0, initialVisibleCount);
+  ), [filter]);
+  const { page, totalPages, start, canonicalSearch } = projectPagination(searchParams, filtered.length);
+  const visibleProjects = useMemo(() => showAllByDefault
+    ? filtered.slice(start, start + PROJECTS_PER_PAGE)
+    : filtered.slice(0, initialVisibleCount), [showAllByDefault, filtered, start, initialVisibleCount]);
+
+  useEffect(() => {
+    if (showAllByDefault && searchParams.toString() !== canonicalSearch) {
+      navigate({ pathname: location.pathname, search: canonicalSearch, hash: location.hash }, { replace: true, state: { ...location.state, projectNavigation: "normalize" } });
+    }
+  }, [showAllByDefault, searchParams, canonicalSearch, navigate, location.pathname, location.hash, location.state]);
+
+  useEffect(() => {
+    if (selectedProject && !visibleProjects.some((project) => project.id === selectedProject.id)) setSelectedProject(null);
+  }, [visibleProjects, selectedProject]);
+
+  const selectFilter = (next: ProjectFilter) => {
+    if (next === filter) return;
+    if (showAllByDefault) navigate({ pathname: location.pathname, search: projectSearch(searchParams, next, 1), hash: location.hash }, { state: { projectNavigation: "filter" } });
+    else setLocalFilter(next);
+  };
+  const pageDestination = (next: number) => ({
+    pathname: location.pathname,
+    search: projectSearch(searchParams, filter, next),
+    hash: location.hash,
+  });
 
   return (
     <section id="projects" className="section-shell scroll-mt-[72px]">
@@ -149,7 +178,7 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
                 <button
                   key={item.key}
                   type="button"
-                  onClick={() => setFilter(item.key)}
+                  onClick={() => selectFilter(item.key)}
                   aria-pressed={filter === item.key}
                   aria-controls="project-list"
                   className={`min-h-11 rounded-[4px] border px-4 py-2 text-[12px] font-normal tracking-[0.03em] transition-colors ${
@@ -165,14 +194,22 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
           </div>
         </Reveal>
 
-        <p className="meta-text mt-6 text-smoke" role="status" aria-live="polite" aria-atomic="true">
-          Showing {visibleProjects.length} of {filtered.length} {filter === "all" ? "projects" : `${filter} projects`}
+        <p ref={resultsRef} id="project-results" tabIndex={-1} className="meta-text mt-6 scroll-mt-24 text-smoke" role="status" aria-live="polite" aria-atomic="true">
+          Showing {showAllByDefault && filtered.length > 0 ? `${start + 1}–${start + visibleProjects.length}` : visibleProjects.length} of {filtered.length} {filter === "all" ? "projects" : `${filter} projects`}
+          {showAllByDefault && ` · Page ${page} of ${totalPages}`}
         </p>
-        <motion.div id="project-list" layout={animateLayout} className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <motion.div
+          key={showAllByDefault ? `${filter}-${page}` : "selected-work"}
+          id="project-list" layout={animateLayout}
+          initial={showAllByDefault && !reduced ? { opacity: 0 } : false}
+          animate={{ opacity: 1 }}
+          transition={{ duration: reduced ? 0 : motionTokens.feedback, ease: motionTokens.ease }}
+          className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+        >
           <AnimatePresence mode={animateLayout ? "popLayout" : "sync"}>
             {visibleProjects.map((project, index) => {
               const projectNumber = String(orderedProjects.findIndex((item) => item.id === project.id) + 1).padStart(2, "0");
-              const cardReveal = reveal(index, compact ? 0 : 12);
+              const cardReveal = showAllByDefault ? { initial: false as const, transition: undefined } : reveal(index, compact ? 0 : 12);
               return (
                 <motion.article
                   layout={animateLayout}
@@ -186,7 +223,7 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
                   }}
                   className="motion-feedback group flex min-w-0 flex-col overflow-hidden rounded-[8px] border border-graphite bg-carbon transition-[border-color,box-shadow] hover:border-iron hover:shadow-[0_8px_32px_rgb(var(--signal)/0.06)] focus-within:border-iron"
                 >
-                  <ProjectPreview project={project} fullCollection={showAllByDefault} />
+                  <ProjectPreview project={project} />
 
                   <div className="flex min-w-0 flex-1 flex-col p-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -227,6 +264,33 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
           </AnimatePresence>
         </motion.div>
 
+        {showAllByDefault && totalPages > 1 && (
+          <Pagination className="mt-8" aria-label="Project pages">
+            <PaginationContent className="flex-wrap gap-1.5">
+              <PaginationItem>
+                <PaginationPrevious disabled={page === 1} to={page > 1 ? pageDestination(page - 1) : undefined} state={{ projectNavigation: "page" }} aria-controls="project-list" />
+              </PaginationItem>
+              {projectPageNumbers(page, totalPages).map((item, index) => (
+                <PaginationItem key={item === "ellipsis" ? `gap-${index}` : item}>
+                  {item === "ellipsis" ? <PaginationEllipsis /> : (
+                    <PaginationLink
+                      to={pageDestination(item)} state={{ projectNavigation: "page" }}
+                      isActive={page === item} aria-label={`Page ${item}`} aria-controls="project-list"
+                      onClick={(event) => {
+                        if (page === item && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) event.preventDefault();
+                      }}
+                      className={page === item ? "border-pulse-green bg-pulse-green/5 text-pulse-green hover:bg-pulse-green/10" : "text-smoke hover:text-chalk"}
+                    >{item}</PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext disabled={page === totalPages} to={page < totalPages ? pageDestination(page + 1) : undefined} state={{ projectNavigation: "page" }} aria-controls="project-list" />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
+
         {!showAllByDefault && (
           <div className="mt-8 flex justify-center">
             <Link to="/projects" className="ghost-button">
@@ -239,7 +303,10 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
           <DialogContent
             className="flex max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] flex-col gap-0 overflow-hidden rounded-lg border-iron bg-carbon p-0 text-chalk shadow-none sm:max-w-4xl"
             onOpenAutoFocus={(event) => { event.preventDefault(); dialogTitleRef.current?.focus(); }}
-            onCloseAutoFocus={(event) => { event.preventDefault(); triggerRef.current?.focus({ preventScroll: true }); }}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault();
+              (triggerRef.current?.isConnected ? triggerRef.current : resultsRef.current)?.focus({ preventScroll: true });
+            }}
           >
             {selectedProject && (
               <>

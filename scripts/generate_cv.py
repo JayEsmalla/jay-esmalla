@@ -1,5 +1,4 @@
 from pathlib import Path
-from shutil import copyfile
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
@@ -11,10 +10,9 @@ from reportlab.platypus import KeepTogether, Paragraph, SimpleDocTemplate, Space
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = ROOT / "output" / "pdf"
+OUTPUT_DIR = ROOT / "local-artifacts" / "output" / "pdf"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 FINAL = OUTPUT_DIR / "Jay_Factolarin_Esmalla_CV.pdf"
-PUBLIC_COPY = ROOT / "public" / "cv.pdf"
 
 INK = colors.HexColor("#111111")
 MUTED = colors.HexColor("#4b5563")
@@ -216,6 +214,4 @@ story = [
 ]
 
 doc.build(story)
-copyfile(FINAL, PUBLIC_COPY)
 print(FINAL)
-print(PUBLIC_COPY)

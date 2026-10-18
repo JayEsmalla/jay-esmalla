@@ -30,6 +30,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   cleanup(); vi.restoreAllMocks(); document.documentElement.className = ""; localStorage.clear();
+  vi.unstubAllGlobals();
   if (originalTransition) Object.defineProperty(document, "startViewTransition", originalTransition);
   else Reflect.deleteProperty(document, "startViewTransition");
   if (originalTimeline) Object.defineProperty(document, "timeline", originalTimeline);
@@ -41,19 +42,30 @@ function Fixture() { return <ThemeProvider><ThemeSwitch /><input aria-label="Dra
 function mockReveal(finished = Promise.resolve()) {
   const transition = { ready: Promise.resolve(), finished, updateCallbackDone: Promise.resolve(), skipTransition: vi.fn() };
   const start = vi.fn((update: () => void) => { update(); return transition; });
-  const animate = vi.fn((_frames: PropertyIndexedKeyframes, _options: KeyframeAnimationOptions) => ({ startTime: null as CSSNumberish | null }));
+  const animate = vi.fn((_frames: PropertyIndexedKeyframes, _options: KeyframeAnimationOptions) => ({ startTime: null as CSSNumberish | null, cancel: vi.fn() }));
   Object.defineProperty(document, "startViewTransition", { configurable: true, value: start });
   Object.defineProperty(document.documentElement, "animate", { configurable: true, value: animate });
   return { start, animate, transition };
 }
-function visiblePortrait(name = "theme-portrait", top = 100) {
+function portraitAt(top = 100) {
   const { container } = render(<figure className="portrait-frame" />);
   const frame = container.querySelector("figure")!;
   vi.spyOn(frame, "getBoundingClientRect").mockReturnValue({
     top, bottom: top + 320, left: 20, right: 260, width: 240, height: 320,
   } as DOMRect);
-  vi.spyOn(window, "getComputedStyle").mockReturnValue({ viewTransitionName: name } as CSSStyleDeclaration);
   return frame;
+}
+function triggerAt(left = 578, top = 378, width = 44, height = 44, icon = false) {
+  const { container } = render(<button>{icon && <span className="theme-toggle-glyph" />}</button>);
+  const trigger = container.querySelector("button")!;
+  vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({
+    left, top, right: left + width, bottom: top + height, width, height,
+  } as DOMRect);
+  return trigger;
+}
+function viewport(width: number, height: number) {
+  vi.stubGlobal("innerWidth", width);
+  vi.stubGlobal("innerHeight", height);
 }
 
 describe("first paint", () => {
@@ -116,54 +128,112 @@ describe("direct theme toggle", () => {
   });
 });
 
-describe("synchronized theme fade", () => {
-  it("fades the new page without a clip-path wipe and cleans up after finishing", async () => {
+describe("theme reveal from the toggle", () => {
+  it("reveals the whole new page from the toggle center and cleans up after finishing", async () => {
+    viewport(1200, 800);
     const { start, animate } = mockReveal();
     const update = vi.fn();
-    await revealTheme(document.createElement("button"), update, false);
+    const trigger = triggerAt();
+    await revealTheme(trigger, update, false);
     expect(start).toHaveBeenCalledOnce();
     expect(update).toHaveBeenCalledOnce();
     expect(animate).toHaveBeenCalledOnce();
-    expect(animate).toHaveBeenCalledWith({ opacity: [0, 1] }, expect.objectContaining({ duration: 260, pseudoElement: "::view-transition-new(root)" }));
+    expect(animate).toHaveBeenCalledWith({ clipPath: ["circle(0px at 600px 400px)", "circle(724px at 600px 400px)"] }, expect.objectContaining({
+      duration: 480, easing: "cubic-bezier(.4, 0, .2, 1)", fill: "both", pseudoElement: "::view-transition-new(root)",
+    }));
+    expect(animate.mock.results[0].value.cancel).toHaveBeenCalledOnce();
+    expect(trigger).not.toHaveAttribute("aria-busy");
     expect(document.documentElement).not.toHaveClass("theme-reveal");
+  });
+  it.each([
+    { width: 1200, height: 500, left: 78, top: 58, x: 100, y: 80, radius: 1180 },
+    { width: 300, height: 400, left: -80, top: -90, x: 0, y: 0, radius: 502 },
+    { width: 300, height: 400, left: 350, top: 450, x: 300, y: 400, radius: 502 },
+  ])("covers every corner of a $width×$height viewport, including offscreen origins", async ({ width, height, left, top, x, y, radius }) => {
+    viewport(width, height);
+    const { animate } = mockReveal();
+
+    await revealTheme(triggerAt(left, top), vi.fn(), false);
+
+    expect(animate).toHaveBeenCalledWith({ clipPath: [
+      `circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`,
+    ] }, expect.objectContaining({ pseudoElement: "::view-transition-new(root)" }));
   });
   it("changes instantly for reduced motion without starting the reveal", async () => {
     const { start } = mockReveal();
     const update = vi.fn();
-    await revealTheme(document.createElement("button"), update, true);
+    const trigger = triggerAt(578, 378, 44, 44, true);
+    await revealTheme(trigger, update, true);
     expect(update).toHaveBeenCalledOnce();
     expect(start).not.toHaveBeenCalled();
+    expect(trigger.querySelector(".theme-toggle-glyph")).not.toHaveClass("theme-reveal-icon");
   });
-  it("starts the page and visible portrait fades together with identical timing", async () => {
+  it("starts the root reveal and icon effects on the same animation clock", async () => {
+    viewport(1200, 800);
     const { animate } = mockReveal();
-    visiblePortrait();
     const timeline = { currentTime: 125 };
     Object.defineProperty(document, "timeline", { configurable: true, value: timeline });
 
-    await revealTheme(document.createElement("button"), vi.fn(), false);
+    const trigger = triggerAt(578, 378, 44, 44, true);
+    await revealTheme(trigger, vi.fn(), false);
 
-    expect(animate.mock.calls).toEqual([
-      [{ opacity: [0, 1] }, { duration: 260, easing: "cubic-bezier(.22, 1, .36, 1)", pseudoElement: "::view-transition-new(root)", timeline }],
-      [{ opacity: [0, 1] }, { duration: 260, easing: "cubic-bezier(.22, 1, .36, 1)", pseudoElement: "::view-transition-new(theme-portrait)", timeline }],
+    expect(animate.mock.calls.map(([, options]) => options.pseudoElement)).toEqual([
+      "::view-transition-new(root)", "::view-transition-old(theme-icon)", "::view-transition-new(theme-icon)",
     ]);
-    expect(animate.mock.results.map(({ value }) => value.startTime)).toEqual([125, 125]);
+    for (const [, options] of animate.mock.calls) expect(options).toMatchObject({ timeline });
+    expect(animate.mock.results.map(({ value }) => value.startTime)).toEqual([125, 125, 125]);
+    expect(trigger.querySelector(".theme-toggle-glyph")).not.toHaveClass("theme-reveal-icon");
   });
-  it("uses the same shorter fade for page and portrait on mobile", async () => {
-    const { animate } = mockReveal();
-    visiblePortrait();
-    await revealTheme(document.createElement("button"), vi.fn(), false, { compact: true });
-    expect(animate).toHaveBeenCalledTimes(2);
-    for (const [frames, options] of animate.mock.calls) {
-      expect(frames).toEqual({ opacity: [0, 1] });
-      expect(options).toMatchObject({ duration: 220, easing: "cubic-bezier(.22, 1, .36, 1)" });
-    }
+  it("keeps all snapshot animations until the reveal finishes, then releases their effects", async () => {
+    let finish: () => void;
+    const { animate } = mockReveal(new Promise<void>((resolve) => { finish = resolve; }));
+    const trigger = triggerAt(578, 378, 44, 44, true);
+    const pending = revealTheme(trigger, vi.fn(), false);
+    await Promise.resolve();
+    expect(animate).toHaveBeenCalledTimes(3);
+    const animations = animate.mock.results.map(({ value }) => value);
+    for (const animation of animations) expect(animation.cancel).not.toHaveBeenCalled();
+    expect(trigger).toHaveAttribute("aria-busy", "true");
+
+    finish!();
+    await pending;
+
+    for (const animation of animations) expect(animation.cancel).toHaveBeenCalledOnce();
+    expect(trigger).not.toHaveAttribute("aria-busy");
+    expect(trigger.querySelector(".theme-toggle-glyph")).not.toHaveClass("theme-reveal-icon");
   });
-  it.each([["none", 100], ["theme-portrait", -400], ["theme-portrait", 2000]])("only fades the root for unnamed or offscreen portraits (%s, %i)", async (name, top) => {
+  it("uses the shorter radial reveal on mobile", async () => {
+    viewport(390, 844);
     const { animate } = mockReveal();
-    visiblePortrait(name, top);
-    await revealTheme(document.createElement("button"), vi.fn(), false);
+    await revealTheme(triggerAt(328, 14), vi.fn(), false, { compact: true });
     expect(animate).toHaveBeenCalledOnce();
-    expect(animate).toHaveBeenCalledWith({ opacity: [0, 1] }, expect.objectContaining({ pseudoElement: "::view-transition-new(root)" }));
+    expect(animate).toHaveBeenCalledWith({ clipPath: ["circle(0px at 350px 36px)", "circle(883px at 350px 36px)"] }, expect.objectContaining({
+      duration: 400, easing: "cubic-bezier(.4, 0, .2, 1)", fill: "both",
+    }));
+  });
+  it.each([100, -400, 2000])("keeps the portrait inside the root reveal at vertical position %i", async (top) => {
+    viewport(1200, 800);
+    const { animate } = mockReveal();
+    const portrait = portraitAt(top);
+    await revealTheme(triggerAt(), vi.fn(), false);
+    expect(animate).toHaveBeenCalledOnce();
+    expect(animate).toHaveBeenCalledWith(expect.objectContaining({ clipPath: expect.any(Array) }), expect.objectContaining({ pseudoElement: "::view-transition-new(root)" }));
+    expect(portrait.getBoundingClientRect).not.toHaveBeenCalled();
+  });
+  it("uses the button rectangle for a keyboard click instead of zero pointer coordinates", async () => {
+    viewport(1200, 800);
+    const { animate } = mockReveal();
+    render(<Fixture />);
+    const toggle = screen.getByRole("button", { name: "Switch to light mode" });
+    vi.spyOn(toggle, "getBoundingClientRect").mockReturnValue({ left: 1078, top: 18, width: 44, height: 44, right: 1122, bottom: 62 } as DOMRect);
+    toggle.focus();
+
+    fireEvent.click(toggle, { detail: 0, clientX: 0, clientY: 0 });
+
+    await waitFor(() => expect(animate).toHaveBeenCalled());
+    expect(animate.mock.calls[0][0]).toEqual({ clipPath: ["circle(0px at 1100px 40px)", "circle(1340px at 1100px 40px)"] });
+    expect(toggle).toHaveFocus();
+    await waitFor(() => expect(document.documentElement).not.toHaveClass("theme-reveal"));
   });
   it("starts on click without waiting for or decoding an unready image", async () => {
     const { start } = mockReveal();
@@ -201,19 +271,45 @@ describe("synchronized theme fade", () => {
     const { start } = mockReveal();
     start.mockImplementation(() => { throw new Error("snapshot unavailable"); });
     const update = vi.fn();
-    await revealTheme(document.createElement("button"), update, false);
+    const trigger = triggerAt(578, 378, 44, 44, true);
+    await revealTheme(trigger, update, false);
     expect(update).toHaveBeenCalledOnce();
+    expect(trigger.querySelector(".theme-toggle-glyph")).not.toHaveClass("theme-reveal-icon");
     expect(document.documentElement).not.toHaveClass("theme-reveal");
   });
-  it("cleans up and preserves the committed theme when animation creation fails", async () => {
-    const { animate, transition } = mockReveal();
-    animate.mockImplementation(() => { throw new Error("animation unavailable"); });
+  it("cleans up both snapshots if the browser rejects transition readiness", async () => {
+    const { start, transition, animate } = mockReveal();
+    start.mockImplementation((update: () => void) => {
+      update();
+      return { ...transition, ready: Promise.reject(new Error("snapshot skipped")) };
+    });
+    const trigger = triggerAt(578, 378, 44, 44, true);
     const update = vi.fn();
-    const trigger = document.createElement("button");
+
+    await revealTheme(trigger, update, false);
+
+    expect(update).toHaveBeenCalledOnce();
+    expect(animate).not.toHaveBeenCalled();
+    expect(transition.skipTransition).toHaveBeenCalledOnce();
+    expect(trigger).not.toHaveAttribute("aria-busy");
+    expect(trigger.querySelector(".theme-toggle-glyph")).not.toHaveClass("theme-reveal-icon");
+    expect(document.documentElement).not.toHaveClass("theme-reveal");
+  });
+  it("cancels already created effects and preserves the committed theme if a later animation fails", async () => {
+    const { animate, transition } = mockReveal();
+    const rootAnimation = { startTime: null as CSSNumberish | null, cancel: vi.fn() };
+    const oldIconAnimation = { startTime: null as CSSNumberish | null, cancel: vi.fn() };
+    animate.mockImplementation(() => { throw new Error("animation unavailable"); });
+    animate.mockReturnValueOnce(rootAnimation).mockReturnValueOnce(oldIconAnimation);
+    const update = vi.fn();
+    const trigger = triggerAt(578, 378, 44, 44, true);
     await revealTheme(trigger, update, false);
     expect(update).toHaveBeenCalledOnce();
     expect(transition.skipTransition).toHaveBeenCalledOnce();
+    expect(rootAnimation.cancel).toHaveBeenCalledOnce();
+    expect(oldIconAnimation.cancel).toHaveBeenCalledOnce();
     expect(trigger).not.toHaveAttribute("aria-busy");
+    expect(trigger.querySelector(".theme-toggle-glyph")).not.toHaveClass("theme-reveal-icon");
     expect(document.documentElement).not.toHaveClass("theme-reveal");
   });
   it("commits immediately when view transitions are unsupported", async () => {
@@ -236,5 +332,24 @@ describe("synchronized theme fade", () => {
     finish!();
     await first;
     expect(document.documentElement).not.toHaveClass("theme-reveal");
+  });
+  it("skips a reveal when viewport geometry changes and releases its resize listener", async () => {
+    let finish: () => void;
+    const { transition } = mockReveal(new Promise<void>((resolve) => { finish = resolve; }));
+    const trigger = triggerAt(578, 378, 44, 44, true);
+    const pending = revealTheme(trigger, vi.fn(), false);
+    await Promise.resolve();
+    expect(trigger.querySelector(".theme-toggle-glyph")).toHaveClass("theme-reveal-icon");
+
+    window.dispatchEvent(new Event("resize"));
+
+    expect(transition.skipTransition).toHaveBeenCalledOnce();
+    finish!();
+    await pending;
+    expect(trigger).not.toHaveAttribute("aria-busy");
+    expect(trigger.querySelector(".theme-toggle-glyph")).not.toHaveClass("theme-reveal-icon");
+    expect(document.documentElement).not.toHaveClass("theme-reveal");
+    window.dispatchEvent(new Event("resize"));
+    expect(transition.skipTransition).toHaveBeenCalledOnce();
   });
 });

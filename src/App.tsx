@@ -1,7 +1,3 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig } from "framer-motion";
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
@@ -19,12 +15,11 @@ const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Projects = lazy(() => import("./pages/Projects"));
 
-const queryClient = new QueryClient();
-
 export const ScrollToHash = () => {
   const location = useLocation();
   const navigationType = useNavigationType();
   const positions = useRef(new Map<string, number>());
+  const previousLocation = useRef<typeof location | null>(null);
 
   useEffect(() => {
     const previousRestoration = window.history.scrollRestoration;
@@ -33,6 +28,12 @@ export const ScrollToHash = () => {
   }, []);
 
   useEffect(() => {
+    const previous = previousLocation.current;
+    previousLocation.current = location;
+    const collectionQuery = previous?.pathname === "/projects" && location.pathname === "/projects"
+      && previous.hash === location.hash && previous.search !== location.search
+      && !(navigationType === "REPLACE" && location.state?.projectNavigation === "normalize");
+    const keepFilterFocus = collectionQuery && navigationType !== "POP" && location.state?.projectNavigation !== "page";
     const savedTop = navigationType === "POP" ? positions.current.get(location.key) : undefined;
     let frame = 0;
     let settled = false;
@@ -49,10 +50,18 @@ export const ScrollToHash = () => {
       const main = document.getElementById("main-content");
       const route = main?.querySelector<HTMLElement>("[data-route-path]");
       if (route && (route.dataset.routePath !== location.pathname || route.hasAttribute("data-route-exiting"))) return;
-      const target = hashId ? document.getElementById(hashId) : main;
+      const target = collectionQuery ? document.getElementById("project-results") : hashId ? document.getElementById(hashId) : main;
       if (!main || (!target && savedTop === undefined && !allowFallback)) return;
       const hasPendingSections = Boolean(main.querySelector("[data-section-loading]"));
       if (main.querySelector("[data-page-loading]")) return;
+      if (collectionQuery && !target) return;
+      if (keepFilterFocus) {
+        positions.current.set(location.key, window.scrollY);
+        settled = true;
+        mutationObserver.disconnect();
+        resizeObserver?.disconnect();
+        return;
+      }
       // Concurrent lazy sections above an anchor can still move its final position.
       if (hashId && savedTop === undefined && hasPendingSections && !allowFallback) return;
 
@@ -66,10 +75,10 @@ export const ScrollToHash = () => {
       const sectionContentTop = window.scrollY + destination.getBoundingClientRect().top + sectionPaddingTop;
       const top = savedTop !== undefined
         ? Math.min(savedTop, maxTop)
-        : hashId && target ? Math.max(0, sectionContentTop - headerHeight - 20) : 0;
+        : (hashId || collectionQuery) && target ? Math.max(0, sectionContentTop - headerHeight - 20) : 0;
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      if (!restorationStarted && (hashId || savedTop !== undefined || navigationType !== "POP")) {
+      if (!restorationStarted && (hashId || collectionQuery || savedTop !== undefined || navigationType !== "POP")) {
         const focusTarget = savedTop !== undefined ? main : destination.querySelector<HTMLElement>("h1, h2") ?? destination;
         if (!focusTarget.hasAttribute("tabindex")) {
           focusTarget.setAttribute("tabindex", "-1");
@@ -77,7 +86,7 @@ export const ScrollToHash = () => {
         }
         focusTarget.focus({ preventScroll: true });
       }
-      window.scrollTo({ top, behavior: reduceMotion || savedTop !== undefined || !hashId ? "instant" : "smooth" });
+      window.scrollTo({ top, behavior: reduceMotion || savedTop !== undefined || (!hashId && !collectionQuery) ? "instant" : "smooth" });
       positions.current.set(location.key, top);
       restorationStarted = savedTop !== undefined;
       if (awaitingHeight) return;
@@ -118,7 +127,7 @@ export const ScrollToHash = () => {
       window.removeEventListener("wheel", stopPendingNavigationOnInteraction);
       window.removeEventListener("keydown", stopPendingNavigationOnInteraction);
     };
-  }, [location.key, location.pathname, location.hash, navigationType]);
+  }, [location, navigationType]);
 
   return null;
 };
@@ -169,20 +178,14 @@ const App = () => {
 
   return (
     <ThemeProvider><MotionConfig reducedMotion="user">
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <FocusCursor enabled={!introActive} />
-          {introActive && <IntroScreen onReveal={() => setIntroPhase("revealing")} onComplete={handleIntroComplete} />}
-          <div data-intro-phase={introPhase} {...(introActive ? { inert: "" } : {})} aria-hidden={introActive ? true : undefined}>
-          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <ScrollToHash />
-            <VisitorProvider><PageLayout><PortfolioRoutes heroReady={introPhase !== "playing"} /></PageLayout></VisitorProvider>
-          </BrowserRouter>
-          </div>
-        </TooltipProvider>
-      </QueryClientProvider>
+      <FocusCursor enabled={!introActive} />
+      {introActive && <IntroScreen onReveal={() => setIntroPhase("revealing")} onComplete={handleIntroComplete} />}
+      <div data-intro-phase={introPhase} {...(introActive ? { inert: "" } : {})} aria-hidden={introActive ? true : undefined}>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ScrollToHash />
+          <VisitorProvider><PageLayout><PortfolioRoutes heroReady={introPhase !== "playing"} /></PageLayout></VisitorProvider>
+        </BrowserRouter>
+      </div>
     </MotionConfig></ThemeProvider>
   );
 };

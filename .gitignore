@@ -26,3 +26,6 @@ dist-ssr
 .env*
 .dev.vars*
 .wrangler/
+
+# Local documentation, source media, screenshots, and validation reports
+/local-artifacts/

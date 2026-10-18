@@ -27,7 +27,7 @@ describe("compact project interactions", () => {
     await waitFor(() => expect(screen.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual(["LakBai", "Thryfto"]));
     expect(mobileFilter).toHaveAttribute("aria-pressed", "true");
     expect(mobileFilter).toHaveFocus();
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 2 of 2 mobile projects");
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 1–2 of 2 mobile projects");
 
     const trigger = screen.getByRole("button", { name: "View Thryfto case study" });
     fireEvent.click(trigger);
@@ -38,13 +38,16 @@ describe("compact project interactions", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "WEB" }));
     await waitFor(() => expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(5));
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 5 of 5 web projects");
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 1–5 of 5 web projects");
     expect(screen.queryByRole("heading", { name: "Thryfto" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "LakBai" })).not.toBeInTheDocument();
 
     fireEvent.click(mobileFilter);
     fireEvent.click(screen.getByRole("button", { name: "ALL WORK" }));
-    await waitFor(() => expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(7));
+    await waitFor(() => expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(6));
     expect(screen.getByRole("button", { name: "ALL WORK" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("link", { name: "Page 2" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 7–7 of 7 projects");
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(1);
   });
 });

@@ -18,7 +18,9 @@ export default function ThemeSwitch() {
     }}
     className="theme-toggle relative grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-[8px] border border-graphite text-chalk transition-colors hover:border-iron hover:bg-chalk/5"
   >
-    <Sun className="theme-sun absolute" size={17} strokeWidth={1.5} aria-hidden="true" />
-    <Moon className="theme-moon absolute" size={17} strokeWidth={1.5} aria-hidden="true" />
+    <span className="theme-toggle-glyph relative block h-[17px] w-[17px]" aria-hidden="true">
+      <Sun className="theme-sun absolute inset-0" size={17} strokeWidth={1.5} />
+      <Moon className="theme-moon absolute inset-0" size={17} strokeWidth={1.5} />
+    </span>
   </button>;
 }

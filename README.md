@@ -16,6 +16,17 @@
 
 </div>
 
+## Local development files
+
+Supporting documentation, design plans, screenshots, validation reports, and older
+media are kept in `local-artifacts/`, which is excluded from Git. The website's
+required images, certificate originals, icons, and linked CV stay in `public/`.
+The local cleanup inventory is in `local-artifacts/cleanup/manifest.json`.
+
+The scripts in `scripts/` maintain image previews or generate local CV/social
+drafts. Generated drafts go into `local-artifacts/output/` and do not replace the
+linked résumé.
+
 ---
 
 ## 👤 About Me

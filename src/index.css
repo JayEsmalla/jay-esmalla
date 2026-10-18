@@ -365,23 +365,24 @@
 .portrait-frame[data-portrait-theme="dark"] [data-theme-portrait="dark"][data-portrait-state="ready"],
 .portrait-frame[data-portrait-theme="light"] [data-theme-portrait="light"][data-portrait-state="ready"] { opacity: 1; }
 .portrait-caption { background: linear-gradient(transparent, rgb(var(--surface) / .92) 70%, rgb(var(--surface))); }
-/* Palette and portrait snapshots share one compositor-only crossfade. */
+/* One screen snapshot keeps the portrait inside the icon-origin reveal. */
 html.theme-reveal *, html.theme-reveal { transition: none !important; }
-html.theme-reveal .portrait-frame { view-transition-name: theme-portrait; }
+html.theme-reveal .theme-reveal-icon { view-transition-name: theme-icon; }
 html.theme-reveal::view-transition { pointer-events: none; }
 html.theme-reveal::view-transition-group(root),
-html.theme-reveal::view-transition-group(theme-portrait) { animation: none; }
+html.theme-reveal::view-transition-group(theme-icon) { animation: none; }
+html.theme-reveal::view-transition-group(theme-icon) { z-index: 3; }
 html.theme-reveal::view-transition-image-pair(root),
-html.theme-reveal::view-transition-image-pair(theme-portrait) { isolation: auto; }
+html.theme-reveal::view-transition-image-pair(theme-icon) { isolation: auto; }
 html.theme-reveal::view-transition-old(root), html.theme-reveal::view-transition-new(root),
-html.theme-reveal::view-transition-old(theme-portrait), html.theme-reveal::view-transition-new(theme-portrait) {
+html.theme-reveal::view-transition-old(theme-icon), html.theme-reveal::view-transition-new(theme-icon) {
   animation: none;
   mix-blend-mode: normal;
 }
 html.theme-reveal::view-transition-old(root),
-html.theme-reveal::view-transition-old(theme-portrait) { z-index: 1; }
+html.theme-reveal::view-transition-old(theme-icon) { z-index: 1; }
 html.theme-reveal::view-transition-new(root),
-html.theme-reveal::view-transition-new(theme-portrait) { z-index: 2; }
+html.theme-reveal::view-transition-new(theme-icon) { z-index: 2; }
 .portfolio-dialog-overlay[data-state="open"], .portfolio-dialog-content[data-state="open"] {
   animation-fill-mode: both;
   animation-duration: var(--motion-overlay);

@@ -4,10 +4,10 @@ import ContactSection from "@/components/ContactSection";
 import { socialLinks } from "@/data/portfolio";
 
 const fillDraft = () => {
-  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Juan Dela Cruz" } });
-  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "juan@example.com" } });
+  fireEvent.change(screen.getByLabelText(/^Name/), { target: { value: "Juan Dela Cruz" } });
+  fireEvent.change(screen.getByLabelText(/^Email/), { target: { value: "juan@example.com" } });
   fireEvent.change(screen.getByLabelText("Subject"), { target: { value: "Mobile app enquiry" } });
-  fireEvent.change(screen.getByLabelText("Message"), { target: { value: "I would like to discuss a mobile project." } });
+  fireEvent.change(screen.getByLabelText(/^Message/), { target: { value: "I would like to discuss a mobile project." } });
 };
 
 afterEach(() => {
@@ -23,16 +23,16 @@ describe("contact validation and recovery", () => {
     vi.stubGlobal("fetch", fetchMock);
     render(<ContactSection />);
 
-    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "   " } });
-    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "invalid-address" } });
-    fireEvent.change(screen.getByLabelText("Message"), { target: { value: "          " } });
+    fireEvent.change(screen.getByLabelText(/^Name/), { target: { value: "   " } });
+    fireEvent.change(screen.getByLabelText(/^Email/), { target: { value: "invalid-address" } });
+    fireEvent.change(screen.getByLabelText(/^Message/), { target: { value: "          " } });
     fireEvent.click(screen.getByRole("button", { name: /send message/i }));
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(screen.getByLabelText("Name")).toHaveFocus();
-    expect(screen.getByLabelText("Name")).toHaveAttribute("aria-invalid", "true");
-    expect(screen.getByLabelText("Email")).toHaveAccessibleDescription("Enter an email address I can reply to.");
-    expect(screen.getByLabelText("Message")).toHaveAccessibleDescription(/Write at least 10 characters/);
+    expect(screen.getByLabelText(/^Name/)).toHaveFocus();
+    expect(screen.getByLabelText(/^Name/)).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText(/^Email/)).toHaveAccessibleDescription("Enter a valid email address.");
+    expect(screen.getByLabelText(/^Message/)).toHaveAccessibleDescription(/Write at least 10 characters/);
   });
 
   it("preserves a failed draft, provides an email fallback, and allows a successful retry", async () => {
@@ -44,17 +44,17 @@ describe("contact validation and recovery", () => {
     fillDraft();
     fireEvent.click(screen.getByRole("button", { name: /send message/i }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Your message is still here");
-    expect(screen.getByLabelText("Name")).toHaveValue("Juan Dela Cruz");
-    expect(screen.getByLabelText("Message")).toHaveValue("I would like to discuss a mobile project.");
-    const emailLink = screen.getByRole("link", { name: /email me directly/i }).getAttribute("href");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Delivery couldn't be confirmed");
+    expect(screen.getByLabelText(/^Name/)).toHaveValue("Juan Dela Cruz");
+    expect(screen.getByLabelText(/^Message/)).toHaveValue("I would like to discuss a mobile project.");
+    const emailLink = screen.getByRole("link", { name: /email directly/i }).getAttribute("href");
     expect(emailLink).toContain(`mailto:${socialLinks.email}`);
     expect(decodeURIComponent(emailLink!)).toContain("body=I would like to discuss a mobile project.");
 
     fireEvent.click(screen.getByRole("button", { name: /try again/i }));
-    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Message sent successfully"));
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Message sent. I'll get back to you soon."));
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(screen.getByLabelText("Message")).toHaveValue("");
+    expect(screen.getByLabelText(/^Message/)).toHaveValue("");
   });
 
   it("ends a stalled request after 15 seconds and keeps the draft available", async () => {
@@ -73,9 +73,9 @@ describe("contact validation and recovery", () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(15_000); });
 
     expect(requestSignal?.aborted).toBe(true);
-    expect(screen.getByRole("alert")).toHaveTextContent("Sending took too long");
+    expect(screen.getByRole("alert")).toHaveTextContent("Sending timed out");
     expect(screen.getByRole("button", { name: /try again/i })).toBeEnabled();
-    expect(screen.getByLabelText("Message")).toHaveValue("I would like to discuss a mobile project.");
+    expect(screen.getByLabelText(/^Message/)).toHaveValue("I would like to discuss a mobile project.");
   });
 });
 

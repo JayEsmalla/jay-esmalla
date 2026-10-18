@@ -1,15 +1,14 @@
 import Reveal from "@/components/Reveal";
-import { useReveal } from "@/lib/motion";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMotionSettings, useReveal } from "@/lib/motion";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowUpRight, Loader2 } from "lucide-react";
 import { githubConfig } from "@/data/portfolio";
+import { loadContributionFeed, readContributionFeed, type PublicContributionFeed } from "@/lib/github-activity";
 
 type Day = { date: string; count: number; color: string };
 type Week = { days: Day[] };
 type CalendarData = { total: number; weeks: Week[] };
-type JogContribution = { date: string; count: number; level: number };
-type JogRaw = { contributions: JogContribution[]; total?: Record<string, number> };
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_TABS = [
@@ -21,7 +20,6 @@ const YEAR_TABS = [
 ];
 
 const CELL = 10;
-const REQUEST_TIMEOUT_MS = 12_000;
 const UNAVAILABLE_MESSAGE = "Activity is temporarily unavailable. You can still explore my repositories on GitHub.";
 const LEVELS = Array.from({ length: 5 }, (_, level) => `var(--graph-${level})`);
 const formatDate = (date: string) => new Date(`${date}T12:00:00`).toLocaleDateString(undefined, {
@@ -56,7 +54,7 @@ const groupChronologicalDays = (days: Day[]): Week[] => {
   return weeks;
 };
 
-const jogruberToCalendar = (raw: JogRaw, year: string): CalendarData => {
+const jogruberToCalendar = (raw: PublicContributionFeed, year: string): CalendarData => {
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
   let contributions = raw.contributions;
@@ -95,90 +93,81 @@ const buildColumns = (weeks: Week[]): (Day | null)[][] =>
     return column;
   });
 
+// Counter state stays here so each animation frame leaves the calendar untouched.
+const ContributionTotal = ({ total }: { total: number }) => {
+  const { reduced } = useMotionSettings();
+  const [displayTotal, setDisplayTotal] = useState(reduced ? total : 0);
+  const displayed = useRef(displayTotal);
+  useEffect(() => {
+    if (reduced) {
+      displayed.current = total;
+      setDisplayTotal(total);
+      return;
+    }
+    let frame = 0;
+    const startTime = performance.now();
+    const startValue = displayed.current;
+    const animate = (now: number) => {
+      const progress = Math.min((now - startTime) / 900, 1);
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      displayed.current = Math.round(startValue + (total - startValue) * eased);
+      setDisplayTotal(displayed.current);
+      if (progress < 1) frame = window.requestAnimationFrame(animate);
+    };
+    if (startValue !== total) frame = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frame);
+  }, [total, reduced]);
+  return <>{displayTotal.toLocaleString()}</>;
+};
+
 const GitHubSection = () => {
   const reveal = useReveal();
   const [activeTab, setActiveTab] = useState("last");
-  const [data, setData] = useState<CalendarData | null>(null);
-  const [loading, setLoading] = useState(true);
+  // GitHub Pages serves static files, so production uses the public feed directly.
+  const publicUrl = import.meta.env.DEV
+    ? `/api/github-public/${githubConfig.username}`
+    : `https://github-contributions-api.jogruber.de/v4/${githubConfig.username}`;
+  const [raw, setRaw] = useState(() => readContributionFeed(publicUrl));
+  const [loading, setLoading] = useState(!raw);
   const [error, setError] = useState<string | null>(null);
-  const [displayTotal, setDisplayTotal] = useState(0);
-  const countUpRef = useRef<number | null>(null);
+  const request = useRef<AbortController | null>(null);
 
-  useEffect(() => {
+  const loadFeed = useCallback(() => {
+    if (request.current) return;
+    const cached = readContributionFeed(publicUrl);
+    if (cached) {
+      setRaw(cached);
+      setLoading(false);
+      setError(null);
+      return;
+    }
     const controller = new AbortController();
-    let disposed = false;
-
+    request.current = controller;
     setLoading(true);
     setError(null);
-    setData(null);
+    void loadContributionFeed(publicUrl, controller.signal)
+      .then((feed) => { if (!controller.signal.aborted) setRaw(feed); })
+      .catch(() => { if (!controller.signal.aborted) setError(UNAVAILABLE_MESSAGE); })
+      .finally(() => {
+        if (request.current === controller) request.current = null;
+        if (!controller.signal.aborted) setLoading(false);
+      });
+  }, [publicUrl]);
 
-    const timeout = window.setTimeout(() => {
-      if (disposed) return;
-      controller.abort();
-      setError(UNAVAILABLE_MESSAGE);
-      setLoading(false);
-    }, REQUEST_TIMEOUT_MS);
-
-    // GitHub Pages serves static files, so production uses the public feed directly.
-    const publicUrl = import.meta.env.DEV
-      ? `/api/github-public/${githubConfig.username}`
-      : `https://github-contributions-api.jogruber.de/v4/${githubConfig.username}`;
-
-    const fetchPublicCalendar = async (): Promise<CalendarData> => {
-      const response = await fetch(publicUrl, { signal: controller.signal });
-      if (!response.ok) throw new Error(`Public GitHub activity returned HTTP ${response.status}`);
-
-      const raw = (await response.json()) as JogRaw;
-      if (!Array.isArray(raw.contributions)) {
-        throw new Error("Public GitHub activity returned an invalid contribution payload.");
-      }
-
-      return jogruberToCalendar(raw, activeTab);
-    };
-
-    const load = async () => {
-      try {
-        const publicCalendar = await fetchPublicCalendar();
-        if (disposed || controller.signal.aborted) return;
-        setData(publicCalendar);
-      } catch {
-        if (controller.signal.aborted || disposed) return;
-        setError(UNAVAILABLE_MESSAGE);
-      } finally {
-        window.clearTimeout(timeout);
-        if (!disposed) setLoading(false);
-      }
-    };
-
-    void load();
-
-    return () => {
-      disposed = true;
-      window.clearTimeout(timeout);
-      controller.abort();
-    };
-  }, [activeTab]);
-
-  // Count-up animation when total changes
   useEffect(() => {
-    if (!data) return;
-    const target = data.total;
-    if (countUpRef.current) window.cancelAnimationFrame(countUpRef.current);
-    const duration = 900;
-    const startTime = performance.now();
-    const startValue = displayTotal;
-    const animate = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // easeOutExpo
-      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      setDisplayTotal(Math.round(startValue + (target - startValue) * eased));
-      if (progress < 1) countUpRef.current = window.requestAnimationFrame(animate);
+    loadFeed();
+    const refreshVisible = () => { if (!document.hidden) loadFeed(); };
+    window.addEventListener("focus", refreshVisible);
+    document.addEventListener("visibilitychange", refreshVisible);
+    return () => {
+      window.removeEventListener("focus", refreshVisible);
+      document.removeEventListener("visibilitychange", refreshVisible);
+      request.current?.abort();
+      request.current = null;
     };
-    countUpRef.current = window.requestAnimationFrame(animate);
-    return () => { if (countUpRef.current) window.cancelAnimationFrame(countUpRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [loadFeed]);
+
+  const data = useMemo(() => raw ? jogruberToCalendar(raw, activeTab) : null, [raw, activeTab]);
 
   const columns = useMemo(() => (data ? buildColumns(data.weeks) : []), [data]);
   const days = useMemo(() => data?.weeks.flatMap((week) => week.days) ?? [], [data]);
@@ -212,7 +201,7 @@ const GitHubSection = () => {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-graphite pb-3">
             <div className="flex items-baseline gap-2.5">
               <p className="text-[26px] font-normal tracking-[-0.03em] text-chalk leading-none">
-                {loading ? "—" : error ? "—" : displayTotal.toLocaleString()}
+                {loading || error ? "—" : <ContributionTotal total={data?.total ?? 0} />}
               </p>
               <div className="leading-none">
                 <span className="meta-text text-smoke">CONTRIBUTIONS</span>
@@ -227,7 +216,7 @@ const GitHubSection = () => {
                   key={tab.key}
                   type="button"
                   aria-pressed={activeTab === tab.key}
-                  onClick={() => setActiveTab(tab.key)}
+                  onClick={() => { setActiveTab(tab.key); loadFeed(); }}
                   className={`rounded-[4px] border px-2.5 py-1 text-[11px] tracking-[0.03em] transition-colors ${
                     activeTab === tab.key
                       ? "border-pulse-green text-pulse-green"
@@ -330,4 +319,4 @@ const GitHubSection = () => {
   );
 };
 
-export default GitHubSection;
+export default memo(GitHubSection);

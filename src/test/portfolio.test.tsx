@@ -30,6 +30,7 @@ describe("ProjectsSection", () => {
       "href",
       "https://github.com/JayEsmalla/thryfto-app",
     );
+    fireEvent.click(screen.getByRole("link", { name: "Page 2" }));
     expect(screen.getByRole("link", { name: "ComLab V3 Egress Simulation public source code" })).toHaveAttribute(
       "href",
       "https://github.com/JayEsmalla/simulation_comlabV3",
@@ -38,6 +39,7 @@ describe("ProjectsSection", () => {
       "href",
       "https://simulation-comlab-v3.vercel.app/",
     );
+    fireEvent.click(screen.getByRole("link", { name: "Page 1" }));
 
     const lolasCard = screen.getByRole("heading", { name: "LolasKusina" }).closest("article");
     expect(lolasCard).not.toBeNull();
@@ -53,7 +55,7 @@ describe("ProjectsSection", () => {
     });
   });
 
-  it("opens a project case study with imagery and restores the originating focus", async () => {
+  it("opens project case-study details and restores the originating focus", async () => {
     render(<MemoryRouter><ProjectsSection /></MemoryRouter>);
     const thryftoCard = screen.getByRole("heading", { name: "Thryfto" }).closest("article");
     expect(thryftoCard).not.toBeNull();
@@ -63,8 +65,8 @@ describe("ProjectsSection", () => {
     fireEvent.click(trigger);
     const dialog = screen.getByRole("dialog", { name: "Thryfto" });
     expect(within(dialog).getByText("Real-time feed")).toBeInTheDocument();
-    expect(within(dialog).getByRole("img", { name: /Thryfto mobile app/ })).toBeInTheDocument();
-    expect(within(dialog).getByRole("link", { name: /View full-size Thryfto image/ })).toHaveAttribute("href", "/thryfto.png");
+    expect(within(dialog).getByRole("heading", { name: "Thryfto" })).toHaveFocus();
+    expect(within(dialog).getByText("MY ROLE")).toBeInTheDocument();
     expect(within(dialog).getByRole("link", { name: "PUBLIC SOURCE" })).toHaveAttribute(
       "href",
       "https://github.com/JayEsmalla/thryfto-app",
@@ -92,10 +94,12 @@ describe("ProjectsSection", () => {
     expect(screen.getByRole("heading", { name: "All projects. One place." })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "LolasKusina" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "1561 VULSHOP" })).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 7 of 7 projects");
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 1–6 of 7 projects");
+    fireEvent.click(screen.getByRole("link", { name: "Page 2" }));
+    expect(screen.getByRole("heading", { name: "ComLab V3 Egress Simulation" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "WEB" }));
     await waitFor(() => expect(screen.queryByRole("heading", { name: "LakBai" })).not.toBeInTheDocument());
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 5 of 5 web projects");
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 1–5 of 5 web projects");
   });
 
   it("shows VULSHOP's supplied dashboard and README-based case study without invented links", () => {
@@ -122,9 +126,9 @@ describe("ContactSection", () => {
 
     render(<ContactSection />);
 
-    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Juan Dela Cruz" } });
-    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "juan@example.com" } });
-    fireEvent.change(screen.getByLabelText("Message"), { target: { value: "I would like to discuss a web project." } });
+    fireEvent.change(screen.getByLabelText(/^Name/), { target: { value: "Juan Dela Cruz" } });
+    fireEvent.change(screen.getByLabelText(/^Email/), { target: { value: "juan@example.com" } });
+    fireEvent.change(screen.getByLabelText(/^Message/), { target: { value: "I would like to discuss a web project." } });
     fireEvent.click(screen.getByRole("button", { name: /send message/i }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
@@ -134,8 +138,8 @@ describe("ContactSection", () => {
     expect(fetchMock.mock.calls[0][0]).toBe("https://api.web3forms.com/submit");
     expect(request.method).toBe("POST");
     expect(body.get("access_key")).toBe("e89329f9-ed99-4cb5-82e5-27be3bc74979");
-    expect(body.get("subject")).toBe("Portfolio Contact from Juan Dela Cruz");
-    expect(await screen.findByRole("status")).toHaveTextContent("Message sent successfully");
-    expect(screen.getByLabelText("Name")).toHaveValue("");
+    expect(body.get("subject")).toBe("Portfolio contact from Juan Dela Cruz");
+    expect(await screen.findByRole("status")).toHaveTextContent("Message sent. I'll get back to you soon.");
+    expect(screen.getByLabelText(/^Name/)).toHaveValue("");
   });
 });

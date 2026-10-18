@@ -1,9 +1,16 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import GitHubSection from "@/components/GitHubSection";
 import { githubConfig } from "@/data/portfolio";
+import { clearContributionFeedCache, CONTRIBUTION_CACHE_MAX_AGE_MS } from "@/lib/github-activity";
+import * as motionSettings from "@/lib/motion";
+import { MemoryRouter, useLocation, useNavigate } from "react-router-dom";
+
+beforeEach(() => clearContributionFeedCache());
 
 afterEach(() => {
+  clearContributionFeedCache();
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   vi.useRealTimers();
@@ -87,7 +94,7 @@ describe("GitHub activity", () => {
     expect(contributions[0].date).toBe("2026-01-02");
   });
 
-  it("filters the selected year and cancels the previous period request", async () => {
+  it("filters selected years locally without refetching or flashing a loading state", async () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-01-03T12:00:00Z"));
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ contributions: [
@@ -108,31 +115,155 @@ describe("GitHub activity", () => {
 
     const selectedCalendar = await screen.findByRole("region", { name: "Contribution calendar" });
     expect(screen.getByRole("button", { name: "2025", pressed: true })).toBeInTheDocument();
-    expect(previousRequest.signal?.aborted).toBe(true);
+    expect(previousRequest.signal?.aborted).toBe(false);
+    expect(screen.queryByText("QUERYING GITHUB")).not.toBeInTheDocument();
     expect(Array.from(selectedCalendar.querySelectorAll("[title]"), (day) => day.getAttribute("title"))).toEqual([
       "2 contributions on 2025-12-31",
     ]);
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    fireEvent.click(screen.getByRole("button", { name: "2026" }));
+    expect(screen.getByTitle("4 contributions on 2026-01-02")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("ignores a previous period response that arrives after the selected year", async () => {
+  it("uses the latest selected year when the shared initial response arrives", async () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-01-03T12:00:00Z"));
     let resolvePrevious!: (response: unknown) => void;
     const fetchMock = vi.fn()
-      .mockImplementationOnce(() => new Promise((resolve) => { resolvePrevious = resolve; }))
-      .mockResolvedValue({ ok: true, json: async () => ({ contributions: [{ date: "2025-12-31", count: 2, level: 1 }] }) });
+      .mockImplementationOnce(() => new Promise((resolve) => { resolvePrevious = resolve; }));
     vi.stubGlobal("fetch", fetchMock);
     render(<GitHubSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "2025" }));
-    await screen.findByTitle("2 contributions on 2025-12-31");
+    fireEvent.click(screen.getByRole("button", { name: "2026" }));
+    fireEvent.click(screen.getByRole("button", { name: "2025" }));
     await act(async () => {
-      resolvePrevious({ ok: true, json: async () => ({ contributions: [{ date: "2026-01-02", count: 9, level: 2 }] }) });
+      resolvePrevious({ ok: true, json: async () => ({ contributions: [
+        { date: "2025-12-31", count: 2, level: 1 },
+        { date: "2026-01-02", count: 9, level: 2 },
+      ] }) });
     });
 
     expect(screen.getByTitle("2 contributions on 2025-12-31")).toBeInTheDocument();
     expect(screen.queryByTitle("9 contributions on 2026-01-02")).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps a fresh feed across section remounts and refreshes it when returning after expiry", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-01-03T12:00:00Z"));
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ contributions: [] }) });
+    vi.stubGlobal("fetch", fetchMock);
+    const first = render(<GitHubSection />);
+    await screen.findByText("No activity recorded for this period yet.");
+    first.unmount();
+
+    render(<GitHubSection />);
+    expect(screen.getByText("No activity recorded for this period yet.")).toBeInTheDocument();
+    expect(screen.queryByText("QUERYING GITHUB")).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    vi.setSystemTime(Date.now() + CONTRIBUTION_CACHE_MAX_AGE_MS);
+    await act(async () => { window.dispatchEvent(new Event("focus")); });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(screen.getByText("No activity recorded for this period yet.")).toBeInTheDocument();
+  });
+
+  it("can recover from an unavailable feed by selecting a period", async () => {
+    const fetchMock = vi.fn()
+      .mockRejectedValueOnce(new Error("Offline"))
+      .mockResolvedValue({ ok: true, json: async () => ({ contributions: [] }) });
+    vi.stubGlobal("fetch", fetchMock);
+    render(<GitHubSection />);
+    await screen.findByText(/Activity is temporarily unavailable/);
+    fireEvent.click(screen.getByRole("button", { name: "PAST 12 MONTHS" }));
+    expect(await screen.findByText("No activity recorded for this period yet.")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("animates the total without rerendering the calendar's owner", async () => {
+    vi.useFakeTimers();
+    const reveal = vi.spyOn(motionSettings, "useReveal");
+    const today = new Date().toISOString().slice(0, 10);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({
+      contributions: [{ date: today, count: 100, level: 4 }],
+    }) }));
+    render(<GitHubSection />);
+    await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+    const calendar = screen.getByRole("region", { name: "Contribution calendar" });
+    const parentRenders = reveal.mock.calls.length;
+
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_000); });
+
+    expect(screen.getByText("100")).toBeInTheDocument();
+    expect(reveal).toHaveBeenCalledTimes(parentRenders);
+    expect(screen.getByRole("region", { name: "Contribution calendar" })).toBe(calendar);
+  });
+
+  it("skips unrelated query renders while its own period and motion settings remain reactive", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-01-03T12:00:00Z"));
+    let reduced = false;
+    const listeners = new Set<() => void>();
+    const matchMedia = window.matchMedia;
+    vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+      ...matchMedia(query),
+      get matches() { return query.includes("prefers-reduced-motion") && reduced; },
+      addEventListener: (_event, listener) => {
+        if (query.includes("prefers-reduced-motion")) listeners.add(listener as () => void);
+      },
+      removeEventListener: (_event, listener) => { listeners.delete(listener as () => void); },
+    }));
+    const reveal = vi.spyOn(motionSettings, "useReveal");
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ contributions: [
+      { date: "2026-01-02", count: 4, level: 2 },
+      { date: "2025-12-31", count: 2, level: 1 },
+    ] }) });
+    vi.stubGlobal("fetch", fetchMock);
+    function QueryParent() {
+      const location = useLocation();
+      const navigate = useNavigate();
+      return <>
+        <button onClick={() => navigate("?page=2")}>Change parent query</button>
+        <output data-testid="parent-query">{location.search}</output>
+        <GitHubSection />
+      </>;
+    }
+    render(<MemoryRouter initialEntries={["/projects"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><QueryParent /></MemoryRouter>);
+    const calendar = await screen.findByRole("region", { name: "Contribution calendar" });
+    // Settle post-mount work before attributing later renders to navigation.
+    await act(async () => { await Promise.resolve(); });
+    const rendersAfterLoad = reveal.mock.calls.length;
+
+    fireEvent.click(screen.getByRole("button", { name: "Change parent query" }));
+
+    expect(screen.getByTestId("parent-query")).toHaveTextContent("?page=2");
+    expect(reveal).toHaveBeenCalledTimes(rendersAfterLoad);
+    expect(screen.getByRole("region", { name: "Contribution calendar" })).toBe(calendar);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "2025" }));
+    expect(screen.getByTitle("2 contributions on 2025-12-31")).toBeInTheDocument();
+    expect(screen.queryByTitle("4 contributions on 2026-01-02")).not.toBeInTheDocument();
+    expect(reveal.mock.calls.length).toBeGreaterThan(rendersAfterLoad);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    act(() => { reduced = true; listeners.forEach((notify) => notify()); });
+    expect(screen.getByText("2")).toBeInTheDocument();
+  });
+
+  it("shows the exact total immediately with reduced motion", async () => {
+    const matchMedia = window.matchMedia;
+    vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+      ...matchMedia(query), matches: query.includes("prefers-reduced-motion"),
+    }));
+    const today = new Date().toISOString().slice(0, 10);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({
+      contributions: [{ date: today, count: 123, level: 4 }],
+    }) }));
+    render(<GitHubSection />);
+    await screen.findByRole("region", { name: "Contribution calendar" });
+    expect(screen.getByText("123")).toBeInTheDocument();
   });
 
   it("ends a stalled request with a useful unavailable state", async () => {

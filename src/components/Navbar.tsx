@@ -93,21 +93,31 @@ const Navbar = () => {
       }
     );
 
-    const observedSections = new Set<HTMLElement>();
+    const pendingSections = new Set(HOME_SECTIONS);
     const observeAvailableSections = () => {
-      HOME_SECTIONS.forEach((id) => {
-        const section = document.getElementById(id);
-        if (!section || observedSections.has(section)) return;
+      // An outgoing collection can still own the same IDs during the route fade.
+      const homeFrame = document.querySelector<HTMLElement>('[data-route-path="/"]:not([data-route-exiting])');
+      const hasRouteFrame = Boolean(homeFrame || document.querySelector("[data-route-path]"));
+      pendingSections.forEach((id) => {
+        const section = homeFrame
+          ? homeFrame.querySelector<HTMLElement>(`#${id}`)
+          : hasRouteFrame ? null : document.getElementById(id);
+        if (!section) return;
 
         observer.observe(section);
-        observedSections.add(section);
+        pendingSections.delete(id);
       });
+      if (pendingSections.size === 0) sectionLoaderObserver.disconnect();
     };
 
-    observeAvailableSections();
-
     const sectionLoaderObserver = new MutationObserver(observeAvailableSections);
-    sectionLoaderObserver.observe(document.body, { childList: true, subtree: true });
+    sectionLoaderObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-route-path", "data-route-exiting"],
+    });
+    observeAvailableSections();
 
     return () => {
       sectionLoaderObserver.disconnect();
@@ -176,8 +186,8 @@ const Navbar = () => {
 
         <div className="hidden items-center gap-3 lg:flex">
           <ThemeSwitch />
-          <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View résumé (opens in a new tab)" className="ghost-button">
-            RÉSUMÉ <FileText size={13} />
+          <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button">
+            VIEW CV <FileText size={13} />
           </a>
           <Link
             to={contactHref}
@@ -239,11 +249,11 @@ const Navbar = () => {
                 );
               })}
               <div className="mt-5 grid grid-cols-2 gap-3">
-                <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View résumé (opens in a new tab)" className="ghost-button justify-center" onClick={() => {
+                <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button justify-center" onClick={() => {
                   setMobileOpen(false);
                   toggleRef.current?.focus();
                 }}>
-                  RÉSUMÉ <FileText size={13} />
+                  VIEW CV <FileText size={13} />
                 </a>
                 <Link to={contactHref} onClick={() => setMobileOpen(false)} className={contactActive ? "ghost-button justify-center" : "primary-pill justify-center"}>
                   LET&apos;S CHAT <ArrowUpRight size={14} />
