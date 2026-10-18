@@ -120,7 +120,8 @@ export interface ProjectsSectionProps {
 
 const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: ProjectsSectionProps = {}) => {
   const reveal = useReveal();
-  const { reduced } = useMotionSettings();
+  const { reduced, compact } = useMotionSettings();
+  const animateLayout = !reduced && !compact;
   const [filter, setFilter] = useState<Filter>("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -167,17 +168,22 @@ const ProjectsSection = ({ initialVisibleCount = 6, showAllByDefault = false }: 
         <p className="meta-text mt-6 text-smoke" role="status" aria-live="polite" aria-atomic="true">
           Showing {visibleProjects.length} of {filtered.length} {filter === "all" ? "projects" : `${filter} projects`}
         </p>
-        <motion.div id="project-list" layout={!reduced} className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          <AnimatePresence mode="popLayout">
+        <motion.div id="project-list" layout={animateLayout} className="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <AnimatePresence mode={animateLayout ? "popLayout" : "sync"}>
             {visibleProjects.map((project, index) => {
               const projectNumber = String(orderedProjects.findIndex((item) => item.id === project.id) + 1).padStart(2, "0");
+              const cardReveal = reveal(index, compact ? 0 : 12);
               return (
                 <motion.article
-                  layout={!reduced}
+                  layout={animateLayout}
                   key={project.id}
-                  {...reveal(index)}
-                  exit={{ opacity: 0, transition: { duration: reduced ? 0 : motionTokens.exit } }}
-                  transition={{ ...reveal(index).transition, layout: { duration: reduced ? 0 : motionTokens.page, ease: motionTokens.ease } }}
+                  {...cardReveal}
+                  exit={{ opacity: 0, transition: { duration: animateLayout ? motionTokens.exit : 0 } }}
+                  transition={{
+                    ...cardReveal.transition,
+                    ...(compact && cardReveal.initial !== false ? { duration: motionTokens.feedback, delay: 0 } : {}),
+                    layout: { duration: animateLayout ? motionTokens.page : 0, ease: motionTokens.ease },
+                  }}
                   className="motion-feedback group flex min-w-0 flex-col overflow-hidden rounded-[8px] border border-graphite bg-carbon transition-[border-color,box-shadow] hover:border-iron hover:shadow-[0_8px_32px_rgb(var(--signal)/0.06)] focus-within:border-iron"
                 >
                   <ProjectPreview project={project} fullCollection={showAllByDefault} />

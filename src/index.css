@@ -37,11 +37,9 @@
 .focus-cursor-brackets i:nth-child(3) { bottom: 0; right: 0; border-bottom-width: 1px; border-right-width: 1px; }
 .focus-cursor-brackets i:nth-child(4) { bottom: 0; left: 0; border-bottom-width: 1px; border-left-width: 1px; }
 .focus-cursor[data-mode="action"],
-.focus-cursor[data-mode="project"],
-.focus-cursor[data-mode="portrait"] { color: var(--color-pulse-green); }
+.focus-cursor[data-mode="project"] { color: var(--color-pulse-green); }
 .focus-cursor[data-mode="action"] .focus-cursor-brackets { width: 32px; height: 32px; }
 .focus-cursor[data-mode="project"] .focus-cursor-brackets { width: 38px; height: 38px; }
-.focus-cursor[data-mode="portrait"] .focus-cursor-brackets { width: 32px; height: 32px; transform: translate(-50%, -50%) rotate(45deg); }
 .focus-cursor-arrow {
   position: absolute;
   transform: translate(-50%, -50%) scale(.7);
@@ -362,16 +360,28 @@
 .theme-moon { opacity: 1; transform: rotate(0) scale(1); }
 .light .theme-sun { opacity: 1; transform: rotate(0) scale(1); }
 .light .theme-moon { opacity: 0; transform: rotate(90deg) scale(.55); }
-/* Snap the new palette before capture; the iris supplies the visual transition. */
+.theme-toggle[aria-busy="true"] { cursor: progress; }
+.portrait-image { opacity: 0; transition: opacity var(--motion-feedback) var(--motion-ease); }
+.portrait-frame[data-portrait-theme="dark"] [data-theme-portrait="dark"][data-portrait-state="ready"],
+.portrait-frame[data-portrait-theme="light"] [data-theme-portrait="light"][data-portrait-state="ready"] { opacity: 1; }
+.portrait-caption { background: linear-gradient(transparent, rgb(var(--surface) / .92) 70%, rgb(var(--surface))); }
+/* Palette and portrait snapshots share one compositor-only crossfade. */
 html.theme-reveal *, html.theme-reveal { transition: none !important; }
+html.theme-reveal .portrait-frame { view-transition-name: theme-portrait; }
 html.theme-reveal::view-transition { pointer-events: none; }
-html.theme-reveal::view-transition-image-pair(root) { isolation: auto; }
-html.theme-reveal::view-transition-old(root), html.theme-reveal::view-transition-new(root) {
+html.theme-reveal::view-transition-group(root),
+html.theme-reveal::view-transition-group(theme-portrait) { animation: none; }
+html.theme-reveal::view-transition-image-pair(root),
+html.theme-reveal::view-transition-image-pair(theme-portrait) { isolation: auto; }
+html.theme-reveal::view-transition-old(root), html.theme-reveal::view-transition-new(root),
+html.theme-reveal::view-transition-old(theme-portrait), html.theme-reveal::view-transition-new(theme-portrait) {
   animation: none;
   mix-blend-mode: normal;
 }
-html.theme-reveal::view-transition-old(root) { z-index: 1; }
-html.theme-reveal::view-transition-new(root) { z-index: 2; }
+html.theme-reveal::view-transition-old(root),
+html.theme-reveal::view-transition-old(theme-portrait) { z-index: 1; }
+html.theme-reveal::view-transition-new(root),
+html.theme-reveal::view-transition-new(theme-portrait) { z-index: 2; }
 .portfolio-dialog-overlay[data-state="open"], .portfolio-dialog-content[data-state="open"] {
   animation-fill-mode: both;
   animation-duration: var(--motion-overlay);

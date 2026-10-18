@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue } from "framer-motion";
 import { ArrowUpRight, FileText, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -17,7 +17,7 @@ const Navbar = () => {
   const { reduced } = useMotionSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const scrollProgress = useMotionValue(0);
   const [activeSection, setActiveSection] = useState("home");
   const toggleRef = useRef<HTMLButtonElement>(null);
   const mobileNavRef = useRef<HTMLElement>(null);
@@ -47,23 +47,34 @@ const Navbar = () => {
   }, [mobileOpen]);
 
   useEffect(() => {
+    let scrollFrame: number | null = null;
+    let wasScrolled = false;
     const updateScrollState = () => {
+      scrollFrame = null;
       const scrollTop = window.scrollY;
       const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const nextScrolled = scrollTop > 28;
 
-      setScrolled(scrollTop > 28);
-      setScrollProgress(scrollableHeight > 0 ? Math.min(1, scrollTop / scrollableHeight) : 0);
+      if (nextScrolled !== wasScrolled) {
+        wasScrolled = nextScrolled;
+        setScrolled(nextScrolled);
+      }
+      scrollProgress.set(scrollableHeight > 0 ? Math.max(0, Math.min(1, scrollTop / scrollableHeight)) : 0);
+    };
+    const scheduleScrollUpdate = () => {
+      if (scrollFrame === null) scrollFrame = window.requestAnimationFrame(updateScrollState);
     };
 
     updateScrollState();
-    window.addEventListener("scroll", updateScrollState, { passive: true });
-    window.addEventListener("resize", updateScrollState);
+    window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
+    window.addEventListener("resize", scheduleScrollUpdate);
 
     return () => {
-      window.removeEventListener("scroll", updateScrollState);
-      window.removeEventListener("resize", updateScrollState);
+      window.removeEventListener("scroll", scheduleScrollUpdate);
+      window.removeEventListener("resize", scheduleScrollUpdate);
+      if (scrollFrame !== null) window.cancelAnimationFrame(scrollFrame);
     };
-  }, []);
+  }, [scrollProgress]);
 
   useEffect(() => {
     if (!isHome) return undefined;
@@ -121,8 +132,8 @@ const Navbar = () => {
       }`}
     >
       <div
-        className={`page-container flex items-center justify-between gap-6 transition-[height] duration-300 ${
-          scrolled ? "h-[62px]" : "h-[72px]"
+        className={`page-container flex h-[72px] items-center justify-between gap-6 lg:transition-[height] lg:duration-300 ${
+          scrolled ? "lg:h-[62px]" : "lg:h-[72px]"
         }`}
       >
         <Link
@@ -196,8 +207,7 @@ const Navbar = () => {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-graphite" aria-hidden="true">
         <motion.div
           className="h-full origin-left bg-pulse-green"
-          animate={{ scaleX: scrollProgress }}
-          transition={{ duration: reduced ? 0 : motionTokens.feedback, ease: "linear" }}
+          style={{ scaleX: scrollProgress }}
         />
       </div>
 

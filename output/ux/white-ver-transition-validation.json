@@ -1,0 +1,103 @@
+{
+  "desktopFadeSamples": [
+    {
+      "active": true,
+      "portraitName": "theme-portrait",
+      "portraitOpacity": "0.99456",
+      "rootOpacity": "0.99456",
+      "theme": "dark"
+    },
+    {
+      "active": true,
+      "portraitName": "theme-portrait",
+      "portraitOpacity": "1",
+      "rootOpacity": "1",
+      "theme": "dark"
+    },
+    {
+      "active": false,
+      "portraitName": "none",
+      "portraitOpacity": "1",
+      "rootOpacity": "1",
+      "theme": "dark"
+    },
+    {
+      "active": false,
+      "portraitName": "none",
+      "portraitOpacity": "1",
+      "rootOpacity": "1",
+      "theme": "dark"
+    },
+    {
+      "active": false,
+      "portraitName": "none",
+      "portraitOpacity": "1",
+      "rootOpacity": "1",
+      "theme": "dark"
+    }
+  ],
+  "mobileFadeSamples": [
+    {
+      "active": true,
+      "portraitName": "theme-portrait",
+      "portraitOpacity": "0.31485",
+      "rootOpacity": "0.31485",
+      "theme": "light"
+    },
+    {
+      "active": true,
+      "portraitName": "theme-portrait",
+      "portraitOpacity": "0.903133",
+      "rootOpacity": "0.903133",
+      "theme": "light"
+    },
+    {
+      "active": true,
+      "portraitName": "theme-portrait",
+      "portraitOpacity": "0.984631",
+      "rootOpacity": "0.984631",
+      "theme": "light"
+    },
+    {
+      "active": true,
+      "portraitName": "theme-portrait",
+      "portraitOpacity": "0.999999",
+      "rootOpacity": "0.999999",
+      "theme": "light"
+    },
+    {
+      "active": false,
+      "portraitName": "none",
+      "portraitOpacity": "1",
+      "rootOpacity": "1",
+      "theme": "light"
+    }
+  ],
+  "frameBefore": {
+    "bottom": 753.1875,
+    "height": 260,
+    "left": 97.5,
+    "right": 292.5,
+    "top": 493.1875,
+    "width": 195,
+    "x": 97.5,
+    "y": 493.1875
+  },
+  "rapidCheck": {
+    "frame": {
+      "bottom": 753.1875,
+      "height": 260,
+      "left": 97.5,
+      "right": 292.5,
+      "top": 493.1875,
+      "width": 195,
+      "x": 97.5,
+      "y": 493.1875
+    },
+    "portrait": "light",
+    "theme": "light",
+    "visibleImages": [
+      "light"
+    ]
+  }
+}

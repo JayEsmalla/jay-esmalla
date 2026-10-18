@@ -7,11 +7,9 @@ import { githubConfig } from "@/data/portfolio";
 
 type Day = { date: string; count: number; color: string };
 type Week = { days: Day[] };
-type CalendarData = { total: number; weeks: Week[]; source?: "github" | "public" };
+type CalendarData = { total: number; weeks: Week[] };
 type JogContribution = { date: string; count: number; level: number };
 type JogRaw = { contributions: JogContribution[]; total?: Record<string, number> };
-
-type CalendarResponse = CalendarData & { error?: string };
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_TABS = [
@@ -82,7 +80,7 @@ const jogruberToCalendar = (raw: JogRaw, year: string): CalendarData => {
     ? contributions.reduce((sum, item) => sum + item.count, 0)
     : raw.total?.[year] ?? contributions.reduce((sum, item) => sum + item.count, 0);
 
-  return { total, weeks, source: "public" };
+  return { total, weeks };
 };
 
 const buildColumns = (weeks: Week[]): (Day | null)[][] =>
@@ -103,7 +101,6 @@ const GitHubSection = () => {
   const [data, setData] = useState<CalendarData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [fallback, setFallback] = useState(false);
   const [displayTotal, setDisplayTotal] = useState(0);
   const countUpRef = useRef<number | null>(null);
 
@@ -114,7 +111,6 @@ const GitHubSection = () => {
     setLoading(true);
     setError(null);
     setData(null);
-    setFallback(false);
 
     const timeout = window.setTimeout(() => {
       if (disposed) return;
@@ -123,23 +119,10 @@ const GitHubSection = () => {
       setLoading(false);
     }, REQUEST_TIMEOUT_MS);
 
-    const query = activeTab === "last" ? "" : `?year=${activeTab}`;
+    // GitHub Pages serves static files, so production uses the public feed directly.
     const publicUrl = import.meta.env.DEV
       ? `/api/github-public/${githubConfig.username}`
       : `https://github-contributions-api.jogruber.de/v4/${githubConfig.username}`;
-
-    const fetchServerCalendar = async (): Promise<CalendarData> => {
-      const response = await fetch(`/api/github-contributions${query}`, { signal: controller.signal });
-      if (!response.ok) throw new Error(`Portfolio API returned HTTP ${response.status}`);
-
-      const result = (await response.json()) as CalendarResponse;
-      if (result.error) throw new Error(result.error);
-      if (!Number.isFinite(result.total) || !Array.isArray(result.weeks)) {
-        throw new Error("Portfolio API returned an invalid contribution payload.");
-      }
-
-      return { ...result, weeks: groupChronologicalDays(result.weeks.flatMap((week) => week.days)) };
-    };
 
     const fetchPublicCalendar = async (): Promise<CalendarData> => {
       const response = await fetch(publicUrl, { signal: controller.signal });
@@ -155,26 +138,9 @@ const GitHubSection = () => {
 
     const load = async () => {
       try {
-        if (import.meta.env.DEV) {
-          const publicCalendar = await fetchPublicCalendar();
-          if (disposed || controller.signal.aborted) return;
-          setData(publicCalendar);
-          setFallback(true);
-          return;
-        }
-
-        try {
-          const serverCalendar = await fetchServerCalendar();
-          if (disposed || controller.signal.aborted) return;
-          setData(serverCalendar);
-          setFallback(serverCalendar.source === "public");
-        } catch {
-          if (controller.signal.aborted) return;
-          const publicCalendar = await fetchPublicCalendar();
-          if (disposed || controller.signal.aborted) return;
-          setData(publicCalendar);
-          setFallback(true);
-        }
+        const publicCalendar = await fetchPublicCalendar();
+        if (disposed || controller.signal.aborted) return;
+        setData(publicCalendar);
       } catch {
         if (controller.signal.aborted || disposed) return;
         setError(UNAVAILABLE_MESSAGE);
@@ -250,7 +216,7 @@ const GitHubSection = () => {
               </p>
               <div className="leading-none">
                 <span className="meta-text text-smoke">CONTRIBUTIONS</span>
-                {fallback && !loading && !error && (
+                {!loading && !error && (
                   <span className="meta-text ml-2 text-smoke/50">· PUBLIC ONLY</span>
                 )}
               </div>

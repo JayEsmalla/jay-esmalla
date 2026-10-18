@@ -1,5 +1,5 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { useState } from "react";
+import { Profiler, useState } from "react";
 import { Link, MemoryRouter, useLocation, useNavigate } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ScrollToHash } from "@/App";
@@ -177,6 +177,36 @@ describe("portfolio navigation", () => {
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.getByRole("button", { name: "Open navigation" })).toHaveFocus();
     expect(screen.getByRole("button", { name: "Open navigation" })).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("updates reading progress without rerendering navigation throughout a scroll", async () => {
+    const onRender = vi.fn();
+    render(
+      <MemoryRouter future={routerFlags}>
+        <Profiler id="navigation" onRender={onRender}><Navbar /></Profiler>
+      </MemoryRouter>,
+    );
+    const header = screen.getByRole("banner");
+    const progress = header.querySelector<HTMLElement>(".origin-left");
+
+    vi.stubGlobal("scrollY", 160);
+    fireEvent.scroll(window);
+    await waitFor(() => expect(header).toHaveClass("bg-carbon/95"));
+    const rendersAfterThreshold = onRender.mock.calls.length;
+
+    vi.stubGlobal("scrollY", 480);
+    fireEvent.scroll(window);
+    await waitFor(() => expect(progress?.style.transform).toBe(`scaleX(${480 / (4000 - window.innerHeight)})`));
+    expect(onRender).toHaveBeenCalledTimes(rendersAfterThreshold);
+
+    vi.stubGlobal("scrollY", 900);
+    fireEvent.scroll(window);
+    await waitFor(() => expect(progress?.style.transform).toBe(`scaleX(${900 / (4000 - window.innerHeight)})`));
+    expect(onRender).toHaveBeenCalledTimes(rendersAfterThreshold);
+
+    vi.stubGlobal("scrollY", 0);
+    fireEvent.scroll(window);
+    await waitFor(() => expect(header).toHaveClass("bg-obsidian/90"));
   });
 
   it("lets keyboard visitors skip repeated navigation", () => {
