@@ -1,6 +1,4 @@
 import { motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight, FileText } from "lucide-react";
-import { Link } from "react-router-dom";
 import { projects } from "@/data/portfolio";
 import { motionTokens, useMotionSettings } from "@/lib/motion";
 import VisitorCounter from "./VisitorCounter";
@@ -43,65 +41,38 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
 
       {/* ── Main Connected Editorial Grid ── */}
       <div className="grid border-b border-graphite bg-carbon lg:grid-cols-[minmax(0,1.42fr)_minmax(260px,0.58fr)]">
-        {/* ── Left: Editorial Headline + Bio + CTAs ── */}
-        <div className="editorial-grid-bg relative flex flex-col justify-between p-6 sm:p-8 lg:p-11">
-          <div>
-            <motion.p {...entrance(0.03)} className="section-kicker">
-              MOBILE + WEB DEVELOPER
-            </motion.p>
+        {/* ── Left: Editorial Headline + Bio ── */}
+        <div className="editorial-grid-bg relative flex flex-col justify-center p-6 sm:p-8 lg:p-11">
+          <motion.p {...entrance(0.03)} className="section-kicker">
+            MOBILE + WEB DEVELOPER
+          </motion.p>
 
-            <h1 className="mt-5 max-w-[680px] text-balance text-[42px] font-normal leading-[0.96] tracking-[-0.045em] text-chalk sm:text-[54px] md:text-[62px] lg:text-[68px]">
-              {["Practical apps.", "Clear interfaces."].map((line, index) => (
-                <span key={line} className="block overflow-hidden pb-[0.08em] -mb-[0.08em]">
-                  <motion.span
-                    className="block"
-                    initial={immediate ? false : { opacity: 0, y: "105%" }}
-                    animate={{ opacity: shown ? 1 : 0, y: shown ? "0%" : "105%" }}
-                    transition={{
-                      duration: immediate ? 0 : motionTokens.headline,
-                      delay: shown && !immediate ? index * (compact ? 0.04 : 0.07) : 0,
-                      ease: motionTokens.ease,
-                    }}
-                  >
-                    {line}
-                    {index === 0 ? " " : ""}
-                  </motion.span>
-                </span>
-              ))}
-            </h1>
+          <h1 className="mt-5 max-w-[680px] text-balance text-[42px] font-normal leading-[0.96] tracking-[-0.045em] text-chalk sm:text-[54px] md:text-[62px] lg:text-[68px]">
+            {["Practical apps.", "Clear interfaces."].map((line, index) => (
+              <span key={line} className="block overflow-hidden pb-[0.08em] -mb-[0.08em]">
+                <motion.span
+                  className="block"
+                  initial={immediate ? false : { opacity: 0, y: "105%" }}
+                  animate={{ opacity: shown ? 1 : 0, y: shown ? "0%" : "105%" }}
+                  transition={{
+                    duration: immediate ? 0 : motionTokens.headline,
+                    delay: shown && !immediate ? index * (compact ? 0.04 : 0.07) : 0,
+                    ease: motionTokens.ease,
+                  }}
+                >
+                  {line}
+                  {index === 0 ? " " : ""}
+                </motion.span>
+              </span>
+            ))}
+          </h1>
 
-            <motion.p
-              {...entrance(0.12)}
-              className="mt-6 max-w-[560px] text-[16px] leading-[1.65] text-smoke md:text-[17px]"
-            >
-              I&apos;m Jay, a full-stack developer building mobile and web apps with Flutter, React, React Native, and TypeScript.
-            </motion.p>
-          </div>
-
-          {/* ── Prominent Hero CTAs ── */}
-          <motion.div
-            {...entrance(0.16)}
-            className="mt-8 flex flex-wrap items-center gap-3 border-t border-graphite pt-6 sm:mt-10"
+          <motion.p
+            {...entrance(0.12)}
+            className="mt-6 max-w-[560px] text-[16px] leading-[1.65] text-smoke md:text-[17px]"
           >
-            <Link to="/#contact" className="primary-pill">
-              LET&apos;S CHAT <ArrowUpRight size={14} />
-            </Link>
-            <a
-              href="/Jay_Esmalla_Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="View CV (opens in a new tab)"
-              className="ghost-button"
-            >
-              VIEW CV <FileText size={13} />
-            </a>
-            <Link
-              to="/#projects"
-              className="ml-auto inline-flex min-h-11 items-center gap-1.5 px-2 font-mono-retro text-[11px] uppercase tracking-[0.05em] text-smoke transition-colors hover:text-pulse-green"
-            >
-              SELECTED WORK <ArrowDownRight size={14} className="text-pulse-green" />
-            </Link>
-          </motion.div>
+            I&apos;m Jay, a full-stack developer building mobile and web apps with Flutter, React, React Native, and TypeScript.
+          </motion.p>
         </div>
 
         {/* ── Right: Framed Portrait Cell ── */}

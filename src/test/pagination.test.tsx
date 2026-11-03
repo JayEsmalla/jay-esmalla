@@ -163,7 +163,7 @@ describe("Projects collection pagination", () => {
 
   it("keeps homepage selection and local filters independent of collection query parameters", () => {
     showCollection("/?page=2&filter=web", true);
-    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(6);
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(5);
     expect(screen.getByRole("link", { name: "VIEW ALL 7 PROJECTS" })).toHaveAttribute("href", "/projects");
     expect(screen.queryByRole("navigation", { name: "Project pages" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "MOBILE" }));

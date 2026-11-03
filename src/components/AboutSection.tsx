@@ -1,5 +1,4 @@
 import Reveal from "@/components/Reveal";
-import { projects } from "@/data/portfolio";
 import { useReveal } from "@/lib/motion";
 import { motion } from "framer-motion";
 import {
@@ -97,16 +96,6 @@ const STACK = [
   },
 ];
 
-const countProjectsUsingTech = (techName: string) => {
-  const normalized = techName.toLowerCase();
-  return projects.filter((project) =>
-    project.technologies.some((item) => {
-      const candidate = item.toLowerCase();
-      return candidate === normalized || candidate.startsWith(`${normalized} `);
-    })
-  ).length;
-};
-
 const AboutSection = () => {
   const reveal = useReveal();
   return (
@@ -175,7 +164,7 @@ const AboutSection = () => {
               Tools I work with.
             </h3>
             <p className="mt-3 max-w-md text-[14px] leading-[1.65] text-smoke">
-              Technologies from my mobile and web work, grouped by layer. Numbers indicate featured portfolio builds using that tool.
+              Technologies from my mobile and web work, grouped by purpose.
             </p>
           </div>
           <p className="meta-text mt-6 hidden text-smoke/50 lg:block">SPECIFICATION // STACK MATRIX</p>
@@ -201,20 +190,10 @@ const AboutSection = () => {
                 <div className="mt-3.5 flex flex-wrap gap-1.5">
                   {group.items.map((name) => {
                     const Icon = ICON_MAP[name.toLowerCase()] ?? Code2;
-                    const usedCount = countProjectsUsingTech(name);
                     return (
                       <span key={name} className="tech-tag">
                         <Icon size={12} strokeWidth={1.5} aria-hidden="true" />
                         <span>{name}</span>
-                        {usedCount > 0 && (
-                          <span
-                            aria-hidden="true"
-                            className="ml-0.5 rounded-[2px] bg-pulse-green/10 px-1 py-0.2 text-[10px] text-pulse-green"
-                            title={`Used in ${usedCount} portfolio project${usedCount > 1 ? "s" : ""}`}
-                          >
-                            {usedCount}
-                          </span>
-                        )}
                       </span>
                     );
                   })}
