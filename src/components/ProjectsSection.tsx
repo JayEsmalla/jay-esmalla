@@ -1,4 +1,4 @@
-import Reveal from "@/components/Reveal";
+import SectionHeader from "@/components/SectionHeader";
 import { useReveal, useMotionSettings, motionTokens } from "@/lib/motion";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -7,6 +7,8 @@ import {
   BarChart3,
   ExternalLink,
   Github,
+  LayoutGrid,
+  List,
   MessageCircle,
   Route,
   ShoppingBag,
@@ -43,7 +45,7 @@ const ProjectPreview = ({ project, featured = false }: { project: Project; featu
     return (
       <figure className={`flex min-w-0 shrink-0 flex-col bg-obsidian/70 p-4 sm:p-5 ${featured ? "lg:h-full lg:justify-between lg:p-6" : ""}`}>
         <div
-          className={`relative w-full overflow-hidden rounded-[4px] border border-graphite/80 bg-[#f5f3f5] transition-transform duration-500 ${
+          className={`relative w-full overflow-hidden rounded-[4px] border border-graphite/80 bg-[#f5f3f5] transition-transform duration-500 group-hover:-translate-y-1 ${
             featured ? "h-52 sm:h-64 lg:h-[280px]" : "h-44 sm:h-52"
           }`}
           style={{ backgroundColor: project.imageBackground }}
@@ -133,6 +135,7 @@ const ProjectsSection = ({ initialVisibleCount = 5, showAllByDefault = false }: 
   const { reduced, compact } = useMotionSettings();
   const animateLayout = !reduced && !compact && !showAllByDefault;
   const [localFilter, setLocalFilter] = useState<ProjectFilter>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "index">("grid");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -177,48 +180,162 @@ const ProjectsSection = ({ initialVisibleCount = 5, showAllByDefault = false }: 
   return (
     <section id="projects" className="section-shell scroll-mt-6">
       {/* ── Connected Section Header Band ── */}
-      <div className="section-header-band">
-        <Reveal className="section-heading-grid">
-          <div>
-            <p className="section-kicker">{showAllByDefault ? "01 / PROJECT COLLECTION" : "01 / SELECTED WORK"}</p>
-            <h2 className="section-title">{showAllByDefault ? "All projects. One place." : "Selected work. Real-world problems."}</h2>
-          </div>
-          <div className="flex flex-col justify-end">
-            <p className="max-w-md text-[16px] leading-[1.6] text-smoke">
-              {projects.length} mobile and web builds for local businesses, study, travel, hospital teams, and safety simulation.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label="Filter projects">
-              {filters.map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => selectFilter(item.key)}
-                  aria-pressed={filter === item.key}
-                  aria-controls="project-list"
-                  className={`min-h-11 rounded-[3px] border px-4 py-2 font-mono-retro text-[11px] font-normal tracking-[0.05em] transition-colors ${
-                    filter === item.key
-                      ? "border-pulse-green bg-pulse-green/10 text-pulse-green"
-                      : "border-graphite bg-carbon text-smoke hover:border-iron hover:text-chalk"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </Reveal>
-      </div>
+      <SectionHeader
+        number="01"
+        kicker={showAllByDefault ? "PROJECT COLLECTION" : "SELECTED WORK"}
+        title={showAllByDefault ? "All projects. One place." : "Selected work. Real-world problems."}
+      >
+        <p className="max-w-md text-[16px] leading-[1.6] text-smoke">
+          {projects.length} mobile and web builds for local businesses, study, travel, hospital teams, and safety simulation.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label="Filter projects">
+          {filters.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => selectFilter(item.key)}
+              aria-pressed={filter === item.key}
+              aria-controls="project-list"
+              className={`min-h-11 rounded-[3px] border px-4 py-2 font-mono-retro text-[11px] font-normal tracking-[0.05em] transition-colors ${
+                filter === item.key
+                  ? "border-pulse-green bg-pulse-green/10 text-pulse-green"
+                  : "border-graphite bg-carbon text-smoke hover:border-iron hover:text-chalk"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </SectionHeader>
 
-      {/* ── Connected Results & Index Status Strip ── */}
-      <div className="flex items-center justify-between border-b border-graphite bg-carbon px-5 py-3 sm:px-8 lg:px-10">
-        <p ref={resultsRef} id="project-results" tabIndex={-1} className="meta-text scroll-mt-24 text-smoke" role="status" aria-live="polite" aria-atomic="true">
+      {/* ── Connected Results & View Toggle Status Strip ── */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-graphite bg-carbon px-5 py-3 sm:px-8 lg:px-10">
+        <p ref={resultsRef} id="project-results" tabIndex={-1} className="meta-text scroll-mt-24 tabular-nums text-smoke" role="status" aria-live="polite" aria-atomic="true">
           Showing {showAllByDefault && filtered.length > 0 ? `${start + 1}–${start + visibleProjects.length}` : visibleProjects.length} of {filtered.length} {filter === "all" ? "projects" : `${filter} projects`}
           {showAllByDefault && ` · Page ${page} of ${totalPages}`}
         </p>
-        <span className="meta-text hidden text-smoke/50 sm:inline">CURATED // 01–{String(visibleProjects.length).padStart(2, "0")}</span>
+        {showAllByDefault && (
+          <div className="flex items-center gap-1.5" role="group" aria-label="View layout">
+            <button
+              type="button"
+              onClick={() => setViewMode("grid")}
+              aria-pressed={viewMode === "grid"}
+              className={`inline-flex min-h-9 items-center gap-1.5 rounded-[3px] border px-2.5 py-1 font-mono-retro text-[11px] uppercase tracking-[0.04em] transition-colors ${
+                viewMode === "grid"
+                  ? "border-pulse-green bg-pulse-green/10 text-pulse-green"
+                  : "border-graphite bg-carbon text-smoke hover:border-iron hover:text-chalk"
+              }`}
+            >
+              <LayoutGrid size={12} aria-hidden="true" />
+              <span>GRID</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("index")}
+              aria-pressed={viewMode === "index"}
+              className={`inline-flex min-h-9 items-center gap-1.5 rounded-[3px] border px-2.5 py-1 font-mono-retro text-[11px] uppercase tracking-[0.04em] transition-colors ${
+                viewMode === "index"
+                  ? "border-pulse-green bg-pulse-green/10 text-pulse-green"
+                  : "border-graphite bg-carbon text-smoke hover:border-iron hover:text-chalk"
+              }`}
+            >
+              <List size={12} aria-hidden="true" />
+              <span>INDEX</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* ── Clean 1 + 2 + 2 Connected Hairline Showcase Grid ── */}
+      {/* ── Dense Index Table View (available on /projects) ── */}
+      {showAllByDefault && viewMode === "index" ? (
+        <div id="project-list" className="divide-y divide-graphite bg-carbon">
+          <div className="hidden grid-cols-[52px_minmax(0,1.6fr)_110px_minmax(0,1.4fr)_64px_auto] items-center gap-4 px-5 py-3 sm:px-8 lg:grid lg:px-10">
+            <span className="meta-text text-smoke">NO.</span>
+            <span className="meta-text text-smoke">PROJECT</span>
+            <span className="meta-text text-smoke">TYPE</span>
+            <span className="meta-text text-smoke">STACK</span>
+            <span className="meta-text text-smoke">YEAR</span>
+            <span className="meta-text text-right text-smoke">INSPECT</span>
+          </div>
+          {visibleProjects.map((project) => {
+            const projectNumber = String(orderedProjects.findIndex((item) => item.id === project.id) + 1).padStart(2, "0");
+            const isMobile = project.category === "flutter" || project.category === "mobile";
+            return (
+              <article
+                key={project.id}
+                className="group grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 transition-colors hover:bg-obsidian/80 sm:px-8 lg:grid-cols-[52px_minmax(0,1.6fr)_110px_minmax(0,1.4fr)_64px_auto] lg:px-10"
+              >
+                <span className="font-mono-retro text-[11px] tabular-nums text-smoke">{projectNumber}</span>
+
+                <div className="min-w-0">
+                  <h3 className="truncate text-[20px] font-normal tracking-[-0.025em] text-chalk transition-colors group-hover:text-pulse-green sm:text-[22px]">
+                    <Link
+                      to={`/projects/${project.id}`}
+                      data-cursor="project"
+                      data-cursor-preview={project.image}
+                      data-cursor-bg={project.imageBackground ?? "#121212"}
+                      className="block truncate"
+                    >
+                      {project.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-0.5 truncate text-[13px] text-smoke lg:hidden">{project.summary}</p>
+                </div>
+
+                <span className="meta-text hidden text-smoke lg:inline">
+                  {isMobile ? "Mobile app" : "Web app"}
+                </span>
+
+                <span className="hidden truncate text-[13px] text-smoke lg:inline">
+                  {project.technologies.slice(0, 3).join(" · ")}
+                </span>
+
+                <span className="font-mono-retro hidden text-[11px] tabular-nums text-smoke lg:inline">
+                  {project.year ?? "2026"}
+                </span>
+
+                <div className="flex items-center justify-end gap-1.5">
+                  <button
+                    type="button"
+                    data-cursor="project"
+                    data-cursor-preview={project.image}
+                    data-cursor-bg={project.imageBackground ?? "#121212"}
+                    onClick={(event) => { triggerRef.current = event.currentTarget; setSelectedProject(project); }}
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-[3px] border border-graphite px-3 py-1.5 font-mono-retro text-[11px] uppercase tracking-[0.05em] text-chalk transition-colors hover:border-pulse-green hover:text-pulse-green"
+                    aria-label={`View ${project.title} case study`}
+                  >
+                    <span>CASE STUDY</span>
+                    <ArrowUpRight size={13} className="text-pulse-green" />
+                  </button>
+                  {project.liveUrl && (
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] border border-graphite/60 text-smoke transition-colors hover:border-iron hover:text-chalk"
+                      aria-label={`${project.title} live project`}
+                    >
+                      <ExternalLink size={15} />
+                    </a>
+                  )}
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] border border-graphite/60 text-smoke transition-colors hover:border-iron hover:text-chalk"
+                      aria-label={`${project.title} public source code`}
+                    >
+                      <Github size={15} />
+                    </a>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+      /* ── Clean 1 + 2 + 2 Connected Hairline Showcase Grid ── */
       <motion.div
         key={showAllByDefault ? `${filter}-${page}` : "selected-work"}
         id="project-list" layout={animateLayout}
@@ -255,7 +372,7 @@ const ProjectsSection = ({ initialVisibleCount = 5, showAllByDefault = false }: 
                 <div className={`flex min-w-0 flex-1 flex-col ${isLeadFlagship ? "p-6 sm:p-8 lg:p-9" : "p-5 sm:p-6"}`}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
-                      <span className="font-mono-retro text-[11px] text-pulse-green">{projectNumber}</span>
+                      <span className="font-mono-retro text-[11px] tabular-nums text-ash">{projectNumber}</span>
                       <span className="h-3 w-px bg-graphite" aria-hidden="true" />
                       <p className="meta-text text-smoke">
                         {project.category === "flutter" || project.category === "mobile" ? "Mobile app" : "Web app"}
@@ -347,6 +464,7 @@ const ProjectsSection = ({ initialVisibleCount = 5, showAllByDefault = false }: 
           })}
         </AnimatePresence>
       </motion.div>
+      )}
 
       {showAllByDefault && totalPages > 1 && (
         <div className="border-t border-graphite bg-carbon px-5 py-6 sm:px-8 lg:px-10">
@@ -418,8 +536,7 @@ const ProjectsSection = ({ initialVisibleCount = 5, showAllByDefault = false }: 
                     <img
                       src={selectedProject.image}
                       srcSet={selectedProject.imageSrcSet}
-                      alt=""
-                      aria-hidden="true"
+                      alt={selectedProject.imageAlt ?? selectedProject.title}
                       loading="lazy"
                       decoding="async"
                       className="h-full w-full object-contain"
@@ -460,8 +577,15 @@ const ProjectsSection = ({ initialVisibleCount = 5, showAllByDefault = false }: 
                 </div>
 
                 <div className="mt-6 flex flex-wrap gap-3">
+                  <Link
+                    to={`/projects/${selectedProject.id}`}
+                    onClick={() => setSelectedProject(null)}
+                    className="primary-pill"
+                  >
+                    FULL CASE STUDY <ArrowRight size={13} />
+                  </Link>
                   {selectedProject.liveUrl && (
-                    <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="primary-pill">
+                    <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="ghost-button">
                       OPEN PROJECT <ExternalLink size={13} />
                     </a>
                   )}

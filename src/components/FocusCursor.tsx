@@ -8,6 +8,8 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const previewImgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     if (!enabled) return;
@@ -30,6 +32,7 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
       visible = false;
       cursor.dataset.visible = "false";
       cursor.dataset.pressed = "false";
+      cursor.dataset.preview = "false";
       document.documentElement.classList.remove("focus-cursor-active");
       cancelAnimationFrame(animation);
       animation = 0;
@@ -56,6 +59,16 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
       y = event.clientY;
       dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       cursor.dataset.mode = action?.getAttribute("data-cursor") ?? (action ? "action" : "default");
+      const previewSrc = action?.getAttribute("data-cursor-preview");
+      if (previewSrc && previewRef.current && previewImgRef.current) {
+        cursor.dataset.preview = "true";
+        if (previewImgRef.current.getAttribute("src") !== previewSrc) {
+          previewImgRef.current.src = previewSrc;
+        }
+        previewRef.current.style.backgroundColor = action?.getAttribute("data-cursor-bg") || "rgb(var(--preview-surface))";
+      } else {
+        cursor.dataset.preview = "false";
+      }
       if (!visible) {
         followX = x;
         followY = y;
@@ -111,6 +124,9 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
         <svg className="focus-cursor-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none">
           <path d="M4 12 12 4M4 4h8v8" stroke="currentColor" strokeWidth="1.5" />
         </svg>
+        <div ref={previewRef} className="focus-cursor-preview">
+          <img ref={previewImgRef} alt="" decoding="async" />
+        </div>
       </div>
     </div>, document.body,
   );

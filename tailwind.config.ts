@@ -13,9 +13,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["'Inter'", "ui-sans-serif", "system-ui", "sans-serif"],
-        heading: ["'Inter'", "ui-sans-serif", "system-ui", "sans-serif"],
-        "mono-retro": ["'IBM Plex Mono'", "ui-monospace", "monospace"],
+        display: ["'Space Grotesk Variable'", "ui-sans-serif", "system-ui", "sans-serif"],
+        heading: ["'Space Grotesk Variable'", "ui-sans-serif", "system-ui", "sans-serif"],
+        "mono-retro": ["'JetBrains Mono Variable'", "ui-monospace", "monospace"],
       },
       colors: {
         obsidian: "rgb(var(--background) / <alpha-value>)",

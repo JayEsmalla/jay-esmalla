@@ -1,7 +1,7 @@
-import Reveal from "@/components/Reveal";
+import SectionHeader from "@/components/SectionHeader";
 import { useReveal, useMotionSettings, motionTokens } from "@/lib/motion";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, CheckCircle2, Facebook, Github, Linkedin, Mail, MapPin, Send, XCircle } from "lucide-react";
+import { ArrowUpRight, Check, CheckCircle2, Copy, Facebook, Github, Linkedin, Mail, MapPin, Send, XCircle } from "lucide-react";
 import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from "react";
 import { socialLinks } from "@/data/portfolio";
 
@@ -26,6 +26,7 @@ const ContactSection = () => {
   const [form, setForm]     = useState(initialForm);
   const [status, setStatus] = useState<SubmissionStatus>({ type: "idle", message: "" });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [copied, setCopied] = useState(false);
   const requestController   = useRef<AbortController | null>(null);
   const isSending           = status.type === "sending";
   const emailFallback       = `mailto:${socialLinks.email}?subject=${encodeURIComponent(form.subject.trim() || "Project enquiry")}&body=${encodeURIComponent(form.message)}`;
@@ -92,26 +93,24 @@ const ContactSection = () => {
   return (
     <section id="contact" className="section-shell scroll-mt-6">
       {/* ── Connected Section Header Band ── */}
-      <div className="section-header-band">
-        <Reveal className="section-heading-grid">
-          <div>
-            <p className="section-kicker">05 / CONTACT</p>
-            <h2 className="section-title">Have a project, collaboration, or idea worth building?</h2>
-          </div>
-          <div className="flex flex-col justify-end gap-4">
-            <div className="flex items-start gap-3">
-              <MapPin size={16} strokeWidth={1.5} className="icon-gold mt-0.5 shrink-0" />
-              <div>
-                <p className="text-[14px] text-chalk">Based in Tagum City</p>
-                <p className="meta-text mt-1 text-smoke">DAVAO DEL NORTE, PHILIPPINES</p>
-              </div>
+      <SectionHeader
+        number="05"
+        kicker="CONTACT"
+        title="Have a project, collaboration, or idea worth building?"
+      >
+        <div className="flex flex-col justify-end gap-4">
+          <div className="flex items-start gap-3">
+            <MapPin size={16} strokeWidth={1.5} className="icon-gold mt-0.5 shrink-0" />
+            <div>
+              <p className="text-[14px] text-chalk">Based in Tagum City</p>
+              <p className="meta-text mt-1 text-smoke">DAVAO DEL NORTE, PHILIPPINES</p>
             </div>
-            <p className="text-[15px] leading-[1.6] text-smoke">
-              Reach out directly or use the form below. I typically respond within 24 hours.
-            </p>
           </div>
-        </Reveal>
-      </div>
+          <p className="text-[15px] leading-[1.6] text-smoke">
+            Reach out directly or use the form below. I typically respond within 24 hours.
+          </p>
+        </div>
+      </SectionHeader>
 
       {/* ── Connected Split Contact Grid ── */}
       <div className="lg:grid lg:grid-cols-[310px_1fr]">
@@ -140,7 +139,26 @@ const ContactSection = () => {
           </div>
 
           <div className="mt-auto border-t border-graphite pt-5">
-            <p className="meta-text mb-2.5 text-smoke">OR EMAIL DIRECTLY</p>
+            <div className="mb-2.5 flex items-center justify-between gap-2">
+              <p className="meta-text text-smoke">OR EMAIL DIRECTLY</p>
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard?.writeText(socialLinks.email).catch(() => undefined);
+                  setCopied(true);
+                  window.setTimeout(() => setCopied(false), 1800);
+                }}
+                aria-label="Copy email address"
+                className={`inline-flex items-center gap-1 rounded-[2px] border px-2 py-0.5 font-mono-retro text-[10px] uppercase tracking-[0.04em] transition-colors ${
+                  copied
+                    ? "border-pulse-green text-pulse-green"
+                    : "border-iron text-smoke hover:border-chalk hover:text-chalk"
+                }`}
+              >
+                {copied ? <Check size={10} /> : <Copy size={10} />}
+                <span>{copied ? "COPIED ✓" : "COPY"}</span>
+              </button>
+            </div>
             <a
               href={`mailto:${socialLinks.email}`}
               className="block truncate font-mono-retro text-[12px] text-chalk underline decoration-iron underline-offset-4 hover:decoration-pulse-green hover:text-pulse-green"

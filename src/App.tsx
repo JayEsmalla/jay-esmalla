@@ -14,6 +14,7 @@ const Certifications = lazy(() => import("./pages/Certifications"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Projects = lazy(() => import("./pages/Projects"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 
 export const ScrollToHash = () => {
   const location = useLocation();
@@ -143,6 +144,7 @@ function PortfolioRoutes({ heroReady }: { heroReady: boolean }) {
           <Route path="/" element={<Index heroReady={heroReady} />} />
           <Route path="/about" element={<Navigate to="/#about" replace />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/certifications" element={<Certifications />} />
           <Route path="/testimonials" element={<Navigate to="/" replace />} />
           <Route path="/contact" element={<Contact />} />

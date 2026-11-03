@@ -17,6 +17,8 @@ export interface Project {
   liveUrl?: string;
   githubUrl?: string;
   role: string;
+  year?: string;
+  client?: string;
   problemSolved: string;
   outcome: string;
 }
@@ -45,6 +47,8 @@ export const projects: Project[] = [
     previewLabel: "WORKSHOP OPERATIONS & CASH FLOW",
     proofPoints: ["Four-stage job queue & split payments", "Transactional stock deductions & audited reversals", "Attendance, cash advances & payroll"],
     role: "Full-Stack Developer",
+    year: "2026",
+    client: "Local workshop · Tagum City",
     problemSolved: "Paper job records, missing material counts, untracked downpayments, and crew cash advances made it difficult to coordinate workshop work and understand actual earnings.",
     outcome: "Built a workshop control center with a four-stage job queue, split payments, transaction-based inventory deductions and reversals, customer and vehicle history, attendance-based payroll with overtime and cash advances, and income, expense, and net-profit reporting.",
   },
@@ -64,6 +68,8 @@ export const projects: Project[] = [
     previewLabel: "AUTHENTICATION & ORDER ENTRY",
     proofPoints: ["Guest browsing", "Package booking", "Order history"],
     role: "Lead Web Developer & System Architect",
+    year: "2025",
+    client: "Local catering kitchen",
     problemSolved: "Managing custom catering orders, menu packages, and client requests manually was prone to errors, communication delays, and order mix-ups for the local kitchen.",
     outcome: "Built a structured ordering and management workflow that centralizes menu packages, customer requests, and order handling in one system.",
   },
@@ -84,6 +90,8 @@ export const projects: Project[] = [
     proofPoints: ["Real-time feed", "Listing uploads", "Buyer-seller chat"],
     githubUrl: "https://github.com/JayEsmalla/thryfto-app",
     role: "Full-Stack Mobile Developer",
+    year: "2025",
+    client: "Independent marketplace build",
     problemSolved: "Existing peer-to-peer thrift sales on social media lacked structure, searchability, and secure communication channels, causing friction for both buyers and sellers.",
     outcome: "Developed a cross-platform marketplace with structured listings, discovery tools, Firebase-backed interactions, and features designed around local peer-to-peer thrift transactions.",
   },
@@ -103,6 +111,8 @@ export const projects: Project[] = [
     previewLabel: "PAYROLL & STAFF MANAGEMENT",
     proofPoints: ["Attendance verification", "Payroll reconciliation", "Staff records & leave"],
     role: "Full-Stack Developer",
+    year: "2026",
+    client: "Tagum Doctors Hospital",
     problemSolved: "Bring payroll, verified attendance, employee records, and leave administration together for fixed office schedules and rotating medical shifts at Tagum Doctors Hospital.",
     outcome: "Built PRISM (Payroll Reconciliation and Integrated Staff Management System) around one centrally managed application and one MySQL database on the hospital LAN. Normal operations do not require public internet access. The README identifies outstanding payroll formulas and operational rules that require hospital approval before production use.",
   },
@@ -125,6 +135,8 @@ export const projects: Project[] = [
     liveUrl: "https://simulation-comlab-v3.vercel.app/",
     githubUrl: "https://github.com/JayEsmalla/simulation_comlabV3",
     role: "Full-Stack Simulation Developer",
+    year: "2025",
+    client: "UM Tagum College · CS research",
     problemSolved: "The current computer-laboratory layout needed a repeatable way to evaluate how locker placement, crowd behavior, and different incident origins affect evacuation safety.",
     outcome: "Built a deterministic 41-agent simulation with pathfinding, panic and fire scenarios, congestion heatmaps, evacuation metrics, and side-by-side layout comparisons.",
   },
@@ -145,6 +157,8 @@ export const projects: Project[] = [
     previewLabel: "STUDY LIBRARY & FLASHCARDS",
     proofPoints: ["Study set library", "Flashcard practice", "Progress tracking"],
     role: "Solo Full-Stack Developer",
+    year: "2026",
+    client: "Independent study workspace",
     problemSolved: "Students need a clear way to organize study materials by subject and move from reading to regular recall practice.",
     outcome: "Created a study workspace that brings a searchable library, study sets, flashcard review, and progress into a responsive desktop and mobile interface.",
   },
@@ -165,6 +179,8 @@ export const projects: Project[] = [
     previewLabel: "DESTINATION DISCOVERY & TRIP PLANNING",
     proofPoints: ["Destination discovery", "Offline saved places", "Trip planning"],
     role: "Mobile App Developer",
+    year: "2026",
+    client: "Davao del Norte tourism",
     problemSolved: "Travelers exploring Davao del Norte need local destination information and a practical way to organize their stops, including when connectivity is limited.",
     outcome: "Built an offline-first tourism experience with destination browsing, saved places, and a trip planner for arranging travel dates, stops, and notes.",
   },
@@ -264,5 +280,11 @@ export const githubConfig = {
     iconColor: "6f6759",
     border: "212121",
   },
+};
+
+export const nowBuilding = {
+  title: "Aralytics v2",
+  detail: "Spaced-repetition flashcards & study analytics",
+  projectId: "aralytics",
 };
 

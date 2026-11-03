@@ -5,9 +5,11 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useLocalTime } from "@/lib/local-time";
 import { motionTokens, useMotionSettings } from "@/lib/motion";
+import ActivitySticker from "./ActivitySticker";
 import ThemeSwitch from "./ThemeSwitch";
 
 const NAV_ITEMS = [
@@ -18,6 +20,67 @@ const NAV_ITEMS = [
 ];
 
 const HOME_SECTIONS = ["home", "projects", "about", "github", "certifications", "contact"];
+
+const NavbarLocalTimeCard = memo(function NavbarLocalTimeCard() {
+  const localTime = useLocalTime();
+  return (
+    <div
+      data-testid="navbar-local-time"
+      data-activity={localTime.activity}
+      className="flex items-center gap-3 border-t border-graphite bg-obsidian/40 px-4 py-3"
+      aria-label={`Local time in Tagum City: ${localTime.time} PHT, currently ${localTime.label.toLowerCase()}`}
+    >
+      <ActivitySticker
+        activity={localTime.activity}
+        label={localTime.label}
+        size="md"
+        interactive
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-1.5">
+          <span className="font-mono-retro text-[13px] leading-none tabular-nums text-chalk">
+            {localTime.time} <span className="text-[10px] text-smoke">PHT</span>
+          </span>
+          <span className="inline-flex items-center gap-1 font-mono-retro text-[9px] uppercase tracking-[0.05em] text-pulse-green">
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${
+                localTime.awake
+                  ? "bg-pulse-green shadow-[0_0_6px_var(--color-pulse-green)]"
+                  : "bg-compass-gold"
+              }`}
+              aria-hidden="true"
+            />
+            {localTime.label}
+          </span>
+        </div>
+        <p className="mt-1.5 truncate font-mono-retro text-[10px] text-smoke">
+          {localTime.status}
+        </p>
+      </div>
+    </div>
+  );
+});
+
+const NavbarLocalTimePill = memo(function NavbarLocalTimePill() {
+  const localTime = useLocalTime();
+  return (
+    <div
+      className="hidden items-center gap-2 rounded-[4px] border border-graphite bg-carbon py-1 pl-1 pr-2.5 sm:inline-flex"
+      aria-label={`Local time ${localTime.time} PHT · ${localTime.label}`}
+    >
+      <ActivitySticker
+        activity={localTime.activity}
+        label={localTime.label}
+        size="sm"
+        interactive={false}
+      />
+      <span className="font-mono-retro text-[11px] tabular-nums text-chalk">
+        {localTime.time} <span className="text-smoke">PHT</span>
+      </span>
+      <span className="font-mono-retro text-[10px] text-pulse-green">{localTime.label}</span>
+    </div>
+  );
+});
 
 const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => void } = {}) => {
   const { reduced } = useMotionSettings();
@@ -140,7 +203,8 @@ const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => 
 
   const isActive = (sectionId: string, pageHref: string) => {
     if (isHome) return activeSection === sectionId;
-    return pageHref.startsWith("/#") ? false : location.pathname === pageHref;
+    if (pageHref.startsWith("/#")) return false;
+    return location.pathname === pageHref || (pageHref === "/projects" && location.pathname.startsWith("/projects/"));
   };
 
   const contactHref = isHome ? "/#contact" : "/contact";
@@ -182,7 +246,7 @@ const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => 
         <div className="flex flex-1 flex-col justify-center px-5 py-6">
           <div className="mb-4 flex items-center justify-between">
             <span className="meta-text text-smoke/60">INDEX</span>
-            <span className="font-mono-retro text-[10px] text-pulse-green">01–04</span>
+            <span className="font-mono-retro text-[10px] tabular-nums text-smoke/50">01–04</span>
           </div>
 
           <nav className="relative flex flex-col" aria-label="Primary navigation">
@@ -233,6 +297,9 @@ const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => 
           </nav>
         </div>
 
+        {/* Dedicated Local Time & Activity Sticker Card */}
+        <NavbarLocalTimeCard />
+
         {/* Bottom Actions Cell */}
         <div className="border-t border-graphite p-4">
           <Link
@@ -275,6 +342,7 @@ const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => 
         </Link>
 
         <div className="flex shrink-0 items-center gap-2">
+          <NavbarLocalTimePill />
           <ThemeSwitch />
           <button
             ref={toggleRef}
@@ -329,6 +397,9 @@ const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => 
                   </Link>
                 );
               })}
+              <div className="mt-3 overflow-hidden rounded-[4px] border border-graphite">
+                <NavbarLocalTimeCard />
+              </div>
               <div className="mt-4 grid grid-cols-2 gap-2.5">
                 <a
                   href="/Jay_Esmalla_Resume.pdf"

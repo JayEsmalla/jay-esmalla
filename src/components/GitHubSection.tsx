@@ -1,4 +1,4 @@
-import Reveal from "@/components/Reveal";
+import SectionHeader from "@/components/SectionHeader";
 import { useMotionSettings, useReveal } from "@/lib/motion";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
@@ -176,22 +176,20 @@ const GitHubSection = () => {
   return (
     <section id="github" className="section-shell scroll-mt-6">
       {/* ── Connected Section Header Band ── */}
-      <div className="section-header-band">
-        <Reveal className="section-heading-grid">
-          <div>
-            <p className="section-kicker">03 / GITHUB ACTIVITY</p>
-            <h2 className="section-title">A public trail of experiments, commits, and shipped code.</h2>
-          </div>
-          <div className="flex flex-col justify-end gap-5">
-            <p className="text-[15px] leading-[1.6] text-smoke">
-              Recent public activity across product work, technical experiments, and steady improvements to shipped repositories.
-            </p>
-            <a href={githubConfig.profileUrl} target="_blank" rel="noopener noreferrer" className="ghost-button w-fit">
-              VIEW GITHUB <ArrowUpRight size={13} />
-            </a>
-          </div>
-        </Reveal>
-      </div>
+      <SectionHeader
+        number="03"
+        kicker="GITHUB ACTIVITY"
+        title="A public trail of experiments, commits, and shipped code."
+      >
+        <div className="flex flex-col justify-end gap-5">
+          <p className="text-[15px] leading-[1.6] text-smoke">
+            Recent public activity across product work, technical experiments, and steady improvements to shipped repositories.
+          </p>
+          <a href={githubConfig.profileUrl} target="_blank" rel="noopener noreferrer" className="ghost-button w-fit">
+            VIEW GITHUB <ArrowUpRight size={13} />
+          </a>
+        </div>
+      </SectionHeader>
 
       {/* ── Connected Telemetry Panel ── */}
       <motion.div
@@ -200,7 +198,7 @@ const GitHubSection = () => {
       >
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-graphite pb-4">
           <div className="flex items-baseline gap-2.5">
-            <p className="text-[28px] font-normal tracking-[-0.04em] text-chalk leading-none">
+            <p className="text-[28px] font-normal leading-none tracking-[-0.04em] tabular-nums text-chalk">
               {loading || error ? "—" : <ContributionTotal total={data?.total ?? 0} />}
             </p>
             <div className="leading-none">

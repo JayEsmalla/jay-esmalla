@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { projects } from "@/data/portfolio";
 
 const SITE_ORIGIN = "https://jayesmalla.tech";
 
@@ -55,7 +56,15 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const normalizedPath = pathname.replace(/\/$/, "") || "/";
-    const metadata = PAGE_METADATA[normalizedPath] ?? NOT_FOUND_METADATA;
+    const projectMatch = normalizedPath.startsWith("/projects/")
+      ? projects.find((project) => `/projects/${project.id}` === normalizedPath)
+      : undefined;
+    const metadata = projectMatch
+      ? {
+          title: `${projectMatch.title} | Jay Esmalla`,
+          description: projectMatch.description,
+        }
+      : PAGE_METADATA[normalizedPath] ?? NOT_FOUND_METADATA;
     let resolvedTitle = metadata.title;
 
     if (normalizedPath === "/") {

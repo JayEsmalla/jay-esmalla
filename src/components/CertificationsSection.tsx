@@ -1,4 +1,4 @@
-import Reveal from "@/components/Reveal";
+import SectionHeader from "@/components/SectionHeader";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { certifications, type Certification } from "@/data/portfolio";
 import { useReveal } from "@/lib/motion";
@@ -15,17 +15,11 @@ const CertificationsSection = () => {
   return (
     <section id="certifications" className="section-shell scroll-mt-6">
       {/* ── Connected Section Header Band ── */}
-      <div className="section-header-band">
-        <Reveal className="section-heading-grid">
-          <div>
-            <p className="section-kicker">04 / CREDENTIALS</p>
-            <h2 className="section-title">Certifications &amp; participation.</h2>
-          </div>
-          <p className="self-end text-[15px] leading-[1.6] text-smoke">
-            Technical certification and participation in local innovation events. Select a credential to inspect it full size.
-          </p>
-        </Reveal>
-      </div>
+      <SectionHeader number="04" kicker="CREDENTIALS" title="Certifications & participation.">
+        <p className="text-[15px] leading-[1.6] text-smoke">
+          Technical certification and participation in local innovation events. Select a credential to inspect it full size.
+        </p>
+      </SectionHeader>
 
       {/* ── Connected 1px Hairline Credential Grid ── */}
       <div className="grid gap-px bg-graphite sm:grid-cols-2 lg:grid-cols-3">

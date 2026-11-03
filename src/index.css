@@ -50,6 +50,30 @@
 .focus-cursor[data-mode="project"] .focus-cursor-arrow { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 .focus-cursor[data-mode="project"] .focus-cursor-dot { opacity: 0; }
 .focus-cursor[data-pressed="true"] .focus-cursor-brackets { width: 20px; height: 20px; }
+.focus-cursor-preview {
+  position: absolute;
+  left: 26px;
+  top: -86px;
+  width: 248px;
+  height: 158px;
+  border-radius: 4px;
+  border: 1px solid var(--color-iron);
+  background: var(--color-carbon);
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.92) rotate(-1.5deg);
+  transition: opacity 180ms ease, transform 240ms cubic-bezier(.22, 1, .36, 1);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.38);
+}
+.focus-cursor[data-preview="true"] .focus-cursor-preview {
+  opacity: 1;
+  transform: scale(1) rotate(-1.5deg);
+}
+.focus-cursor-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   html.focus-cursor-active, html.focus-cursor-active * { cursor: none !important; }
 }
@@ -113,8 +137,9 @@
     --color-pulse-green: rgb(var(--signal));
     --radius: 0.5rem;
 
-    --font-aeonik: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-input: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    /* Self-hosted Space Grotesk + JetBrains Mono via @fontsource-variable. */
+    --font-aeonik: 'Space Grotesk Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-input: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --font-display: var(--font-aeonik);
     --font-heading: var(--font-aeonik);
     --font-mono: var(--font-input);
@@ -244,9 +269,10 @@
     @apply inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.06em] text-smoke;
   }
 
+  /* Neutral marker: green is reserved for live, active, and action states. */
   .section-kicker::before {
     content: "";
-    @apply inline-block h-1.5 w-1.5 bg-pulse-green;
+    @apply inline-block h-1.5 w-1.5 bg-smoke/70;
   }
 
   .section-title {
@@ -255,6 +281,20 @@
 
   .display-title {
     @apply text-[38px] font-normal leading-[0.98] tracking-[-0.04em] text-chalk sm:text-[48px] md:text-[58px];
+  }
+
+  /* Large outlined section index that gives each chapter a visual anchor. */
+  .outline-numeral {
+    font-family: var(--font-aeonik);
+    font-variant-numeric: tabular-nums;
+    @apply select-none text-[72px] font-normal leading-[0.8] tracking-[-0.06em] text-transparent sm:text-[96px] lg:text-[120px];
+    -webkit-text-stroke: 1px rgb(var(--border-strong));
+  }
+
+  /* Footer signature that echoes the intro screen. */
+  .footer-wordmark {
+    @apply block whitespace-nowrap font-normal leading-[0.82] tracking-[-0.065em] text-smoke;
+    font-size: clamp(56px, 12.5vw, 172px);
   }
 
   .meta-text {
@@ -516,6 +556,109 @@ html.theme-reveal::view-transition-new(theme-icon) { z-index: 2; }
   .intro-name { font-size: clamp(40px, 7vw, 64px); }
   .intro-role { margin-top: 12px; }
   .intro-bottomline { padding-top: 10px; }
+}
+
+/* Living chibi activity stickers */
+@keyframes sticker-breathe {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(1.8px) scaleY(0.97); }
+}
+@keyframes sticker-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(2px) rotate(-1.5deg); }
+}
+@keyframes sticker-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.08); }
+}
+@keyframes sticker-scan {
+  0%, 100% { transform: translateX(-1.5px); }
+  50% { transform: translateX(1.8px); }
+}
+@keyframes sticker-zzz-1 {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translate(8px, -16px) scale(1.05); opacity: 0; }
+}
+@keyframes sticker-zzz-2 {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translate(12px, -20px) scale(1.1); opacity: 0; }
+}
+@keyframes sticker-bubble {
+  0%, 100% { transform: scale(0.55); opacity: 0.75; }
+  50% { transform: scale(1.15); opacity: 0.95; }
+}
+@keyframes sticker-pen {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(4px, 1px) rotate(6deg); }
+  75% { transform: translate(-3px, 0px) rotate(-5deg); }
+}
+@keyframes sticker-curl {
+  0%, 100% { transform: rotate(12deg) translateY(3px); }
+  45%, 55% { transform: rotate(-28deg) translateY(-5px); }
+}
+@keyframes sticker-spark {
+  0%, 100% { transform: scale(0.4); opacity: 0.2; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+@keyframes sticker-tap-left {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2.5px); }
+}
+@keyframes sticker-tap-right {
+  0%, 100% { transform: translateY(-2.5px); }
+  50% { transform: translateY(0); }
+}
+@keyframes sticker-code-float {
+  0% { transform: translateY(2px); opacity: 0; }
+  35% { opacity: 1; }
+  100% { transform: translateY(-12px); opacity: 0; }
+}
+@keyframes sticker-poke-pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.15, 0.87) translateY(2px); }
+  60% { transform: scale(0.94, 1.09) translateY(-4px); }
+  100% { transform: scale(1); }
+}
+@keyframes sticker-badge-burst {
+  0% { transform: translateY(3px) scale(0.5); opacity: 0; }
+  30% { transform: translateY(-2px) scale(1.1); opacity: 1; }
+  100% { transform: translateY(-10px) scale(0.9); opacity: 0; }
+}
+
+.sticker-anim-breathe { animation: sticker-breathe 3.2s ease-in-out infinite; transform-origin: 50% 80%; }
+.sticker-anim-bob { animation: sticker-bob 1.8s ease-in-out infinite; transform-origin: 50% 75%; }
+.sticker-anim-blink { animation: sticker-blink 4.2s ease-in-out infinite; transform-origin: center; }
+.sticker-anim-scan { animation: sticker-scan 2.8s ease-in-out infinite; }
+.sticker-anim-zzz-1 { animation: sticker-zzz-1 2.6s ease-out infinite; }
+.sticker-anim-zzz-2 { animation: sticker-zzz-2 2.6s ease-out 1.2s infinite; }
+.sticker-anim-bubble { animation: sticker-bubble 3.2s ease-in-out infinite; transform-origin: left center; }
+.sticker-anim-pen { animation: sticker-pen 1.6s ease-in-out infinite; transform-origin: 36px 72px; }
+.sticker-anim-curl { animation: sticker-curl 1.5s cubic-bezier(.4, 0, .2, 1) infinite; transform-origin: 34px 66px; }
+.sticker-anim-spark { animation: sticker-spark 1.5s ease-in-out infinite; transform-origin: center; }
+.sticker-anim-tap-l { animation: sticker-tap-left 0.32s ease-in-out infinite; }
+.sticker-anim-tap-r { animation: sticker-tap-right 0.32s ease-in-out infinite; }
+.sticker-anim-code-1 { animation: sticker-code-float 2.2s ease-out infinite; }
+.sticker-anim-code-2 { animation: sticker-code-float 2.2s ease-out 1.1s infinite; }
+
+.sticker-stage svg { transition: transform 220ms cubic-bezier(.22, 1, .36, 1); }
+.sticker-stage:hover svg { transform: scale(1.06); }
+.sticker-svg-poked { animation: sticker-poke-pop 480ms cubic-bezier(.22, 1, .36, 1); }
+.sticker-poke-badge { opacity: 0; }
+.sticker-poke-badge.is-poked { animation: sticker-badge-burst 620ms ease-out forwards; }
+
+.sticker-die-cut {
+  filter:
+    drop-shadow(1.5px 0 0 #f3f3f3)
+    drop-shadow(-1.5px 0 0 #f3f3f3)
+    drop-shadow(0 1.5px 0 #f3f3f3)
+    drop-shadow(0 -1.5px 0 #f3f3f3)
+    drop-shadow(1.2px 1.2px 0 #f3f3f3)
+    drop-shadow(-1.2px -1.2px 0 #f3f3f3)
+    drop-shadow(1.2px -1.2px 0 #f3f3f3)
+    drop-shadow(-1.2px 1.2px 0 #f3f3f3)
+    drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
 }
 
 @media (prefers-reduced-motion: reduce) {
