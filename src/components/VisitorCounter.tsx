@@ -28,7 +28,7 @@ export default function VisitorCounter() {
   const description = counts
     ? "Updates every 15 seconds while this page is visible. Approximate active sessions in the last 90 seconds. Illustrated avatars represent up to three anonymous viewers; they are not visitors' real photos. Visits restart after 30 minutes away."
     : live ? "Live viewer statistics are temporarily unavailable."
-      : "Live viewer statistics appear on the published portfolio. Local previews do not record visits.";
+      : "Live viewer statistics appear on the live site. Local previews do not record visits.";
   return (
     <div className="min-h-[54px]">
       <motion.div

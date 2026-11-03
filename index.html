@@ -4,77 +4,329 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#101010" />
-  <script src="/theme-init.js"></script>
-  <style>html{background:#101010}html.light{background:#f5f4f0}</style>
-  <link rel="preload" as="image" href="/profile.webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="/white-ver.jpg" fetchpriority="high" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
-  <link rel="icon" type="image/png" href="/favicon.png" sizes="96x96" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#0D0D0F" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#F7F6F2" media="(prefers-color-scheme: light)" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="https://jayesmalla.tech/" />
+  <link rel="alternate" type="text/plain" href="https://jayesmalla.tech/llms.txt" title="LLM Context Summary" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=Inter:wght@400;700&display=swap" rel="stylesheet" />
-  <meta name="robots" content="index, follow" />
-  <title>Jay Factolarin Esmalla | Developer Portfolio</title>
+  <link rel="preload" as="image" href="/profile.webp" type="image/webp" fetchpriority="high" />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" />
+  <script src="/theme-init.js"></script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>Jay Esmalla | Full-Stack Developer</title>
   <meta name="description"
-    content="Portfolio of Jay Factolarin Esmalla — 4th-year Computer Science student majoring in AI at UMTC, Flutter mobile developer, and React/TypeScript engineer." />
-  <meta name="author" content="Jay Factolarin Esmalla" />
+    content="Jay Esmalla — 4th-year Computer Science student majoring in AI at UMTC, Flutter mobile developer, and React/TypeScript engineer in Tagum City, Philippines." />
+  <meta name="author" content="Jay Esmalla" />
 
-  <meta property="og:title" content="Jay Factolarin Esmalla | Developer Portfolio" />
+  <meta property="og:title" content="Jay Esmalla | Full-Stack Developer" />
   <meta property="og:site_name" content="Jay Esmalla" />
+  <meta property="og:locale" content="en_PH" />
+  <meta property="og:url" content="https://jayesmalla.tech/" />
   <meta property="og:description"
-    content="Flutter mobile development, React/TypeScript web engineering, projects, credentials, and contact information for Jay Factolarin Esmalla." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://jayesmalla.tech/profile.webp" />
-  <meta property="og:image:width" content="720" />
-  <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Jay Factolarin Esmalla — Flutter and React developer" />
+    content="Flutter mobile development, React/TypeScript web engineering, projects, credentials, and contact information for Jay Esmalla." />
+  <meta property="og:type" content="profile" />
+  <meta property="og:image" content="https://jayesmalla.tech/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Jay Esmalla — Flutter and React developer" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Jay Factolarin Esmalla | Developer Portfolio" />
+  <meta name="twitter:title" content="Jay Esmalla | Full-Stack Developer" />
   <meta name="twitter:description"
-    content="Flutter mobile development, React/TypeScript web engineering, projects, credentials, and contact information for Jay Factolarin Esmalla." />
-  <meta name="twitter:image" content="https://jayesmalla.tech/profile.webp" />
-  <meta name="twitter:image:alt" content="Jay Factolarin Esmalla — Flutter and React developer" />
+    content="Flutter mobile development, React/TypeScript web engineering, projects, credentials, and contact information for Jay Esmalla." />
+  <meta name="twitter:image" content="https://jayesmalla.tech/og-image.png" />
+  <meta name="twitter:image:alt" content="Jay Esmalla — Flutter and React developer" />
 
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "@id": "https://jayesmalla.tech/#website",
-      "name": "Jay Esmalla",
-      "alternateName": "Jay Factolarin Esmalla",
-      "url": "https://jayesmalla.tech/"
-    }
-  </script>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Jay Factolarin Esmalla",
-      "jobTitle": "Flutter and React Developer",
-      "email": "mailto:jaesmalla1@gmail.com",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Tagum City",
-        "addressCountry": "PH"
-      },
-      "alumniOf": {
-        "@type": "CollegeOrUniversity",
-        "name": "University of Mindanao Tagum College"
-      },
-      "sameAs": [
-        "https://github.com/JayEsmalla",
-        "https://www.linkedin.com/in/jay-esmalla-1703bb381/"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://jayesmalla.tech/#website",
+          "url": "https://jayesmalla.tech/",
+          "name": "Jay Esmalla",
+          "inLanguage": "en-PH",
+          "publisher": {
+            "@id": "https://jayesmalla.tech/#person"
+          }
+        },
+        {
+          "@type": "ProfilePage",
+          "@id": "https://jayesmalla.tech/#profilepage",
+          "url": "https://jayesmalla.tech/",
+          "name": "Jay Esmalla — Full-Stack Mobile & Web Developer",
+          "isPartOf": {
+            "@id": "https://jayesmalla.tech/#website"
+          },
+          "about": {
+            "@id": "https://jayesmalla.tech/#person"
+          },
+          "mainEntity": {
+            "@id": "https://jayesmalla.tech/#person"
+          },
+          "dateModified": "2026-11-03"
+        },
+        {
+          "@type": "Person",
+          "@id": "https://jayesmalla.tech/#person",
+          "name": "Jay Esmalla",
+          "givenName": "Jay",
+          "familyName": "Esmalla",
+          "jobTitle": "Full-Stack Mobile & Web Developer",
+          "description": "Jay Esmalla is a full-stack mobile and web developer and 4th-year BS Computer Science student majoring in Artificial Intelligence at the University of Mindanao Tagum College (UMTC) in Tagum City, Philippines, specializing in Flutter, React, React Native, and TypeScript.",
+          "url": "https://jayesmalla.tech/",
+          "image": "https://jayesmalla.tech/profile.webp",
+          "email": "mailto:j.esmalla.142235.tc@umindanao.edu.ph",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Tagum City",
+            "addressRegion": "Davao del Norte",
+            "addressCountry": "PH"
+          },
+          "alumniOf": {
+            "@type": "CollegeOrUniversity",
+            "name": "University of Mindanao Tagum College",
+            "alternateName": "UMTC"
+          },
+          "knowsAbout": [
+            "Flutter",
+            "Dart",
+            "React",
+            "React Native",
+            "Expo",
+            "TypeScript",
+            "JavaScript",
+            "Next.js",
+            "Vue.js",
+            "Tailwind CSS",
+            "Node.js",
+            "Python",
+            "PHP",
+            "MySQL",
+            "PostgreSQL",
+            "Firebase",
+            "Supabase",
+            "Docker",
+            "Artificial Intelligence",
+            "Mobile Application Development",
+            "Full-Stack Web Development"
+          ],
+          "hasCredential": [
+            {
+              "@type": "EducationalOccupationalCredential",
+              "name": "IT Specialist — Databases",
+              "credentialCategory": "Certification",
+              "recognizedBy": {
+                "@type": "Organization",
+                "name": "Certiport · CertNexus · Pearson VUE"
+              },
+              "dateCreated": "2026-07-03"
+            },
+            {
+              "@type": "EducationalOccupationalCredential",
+              "name": "Innovathon 2026",
+              "credentialCategory": "Participation",
+              "recognizedBy": {
+                "@type": "Organization",
+                "name": "City Government of Tagum"
+              },
+              "dateCreated": "2026-09-24"
+            },
+            {
+              "@type": "EducationalOccupationalCredential",
+              "name": "Start in DavNor Startup Development Challenge — Top 12 Finalist (GridPulse)",
+              "credentialCategory": "Team participation",
+              "recognizedBy": {
+                "@type": "Organization",
+                "name": "Province of Davao del Norte"
+              },
+              "dateCreated": "2026-10-09"
+            }
+          ],
+          "sameAs": [
+            "https://github.com/JayEsmalla",
+            "https://www.linkedin.com/in/jay-esmalla-1703bb381/",
+            "https://www.facebook.com/jaecoleeee/"
+          ]
+        },
+        {
+          "@type": "ItemList",
+          "@id": "https://jayesmalla.tech/#projects-list",
+          "name": "Software Projects by Jay Esmalla",
+          "numberOfItems": 7,
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@type": "SoftwareApplication",
+                "name": "1561 VULSHOP",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "Web",
+                "description": "Workshop operations, inventory, and payroll system for 1561 Tire & Vulcanizing Services featuring a four-stage job queue, split cash/GCash payments, transactional stock deductions, and automated daily 60/40 commission payroll.",
+                "author": { "@id": "https://jayesmalla.tech/#person" }
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@type": "SoftwareApplication",
+                "name": "Aralytics",
+                "applicationCategory": "EducationalApplication",
+                "operatingSystem": "Web",
+                "description": "Study workspace that organizes notes, flashcards, and practice sessions into a clean review flow built with React, TypeScript, and Tailwind CSS.",
+                "author": { "@id": "https://jayesmalla.tech/#person" }
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "item": {
+                "@type": "SoftwareApplication",
+                "name": "LakBai",
+                "applicationCategory": "TravelApplication",
+                "operatingSystem": "Android, iOS",
+                "description": "Offline-first mobile travel companion for Davao del Norte built with React Native, Expo, and TypeScript.",
+                "author": { "@id": "https://jayesmalla.tech/#person" }
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "item": {
+                "@type": "SoftwareApplication",
+                "name": "PRISM",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "Web",
+                "description": "Hospital payroll and staff management system developed for Tagum Doctors Hospital using PHP, MySQL, and JavaScript.",
+                "author": { "@id": "https://jayesmalla.tech/#person" }
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "item": {
+                "@type": "SoftwareSourceCode",
+                "name": "Thryfto",
+                "codeRepository": "https://github.com/JayEsmalla/thryfto-app",
+                "programmingLanguage": ["Flutter", "Dart", "Python"],
+                "description": "Peer-to-peer mobile thrift marketplace built with Flutter, Dart, Firebase, and Python.",
+                "author": { "@id": "https://jayesmalla.tech/#person" }
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "item": {
+                "@type": "SoftwareApplication",
+                "name": "LolasKusina",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "Web",
+                "description": "Catering and food-tray ordering web application built with React, Node.js, and MySQL.",
+                "author": { "@id": "https://jayesmalla.tech/#person" }
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
+              "item": {
+                "@type": "SoftwareSourceCode",
+                "name": "ComLab V3 Egress Simulation",
+                "codeRepository": "https://github.com/JayEsmalla/simulation_comlabV3",
+                "url": "https://simulation-comlab-v3.vercel.app/",
+                "programmingLanguage": ["JavaScript", "HTML5", "CSS"],
+                "description": "Agent-based emergency egress simulation modeling crowd bottlenecks and exit paths in a university computer laboratory.",
+                "author": { "@id": "https://jayesmalla.tech/#person" }
+              }
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://jayesmalla.tech/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Who is Jay Esmalla?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Jay Esmalla is a full-stack mobile and web developer based in Tagum City, Davao del Norte, Philippines. He is a 4th-year BS Computer Science student specializing in Artificial Intelligence at the University of Mindanao Tagum College (UMTC)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What technologies does Jay Esmalla specialize in?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Jay Esmalla specializes in mobile application development with Flutter, Dart, React Native, and Expo, full-stack web engineering with React, TypeScript, Next.js, Vue.js, and Tailwind CSS, and backend/data systems using Node.js, Python, PHP, MySQL, PostgreSQL, Firebase, Supabase, and Docker."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What projects has Jay Esmalla built?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Jay Esmalla has built 1561 VULSHOP (workshop operations, inventory, and payroll system), Aralytics (study set and flashcard workspace), LakBai (offline-first Davao del Norte tourism app), PRISM (hospital payroll and staff management system for Tagum Doctors Hospital), Thryfto (Flutter peer-to-peer thrift marketplace), LolasKusina (catering ordering platform), and the ComLab V3 Egress Simulation."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What certifications and recognitions does Jay Esmalla hold?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Jay Esmalla holds the IT Specialist — Databases certification (Certiport · CertNexus · Pearson VUE, valid 2026–2031), participated in Innovathon 2026 (City Government of Tagum), and was a Top 12 Finalist with the GridPulse team in the Start in DavNor Startup Development Challenge (Province of Davao del Norte)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is Jay Esmalla available for software development and freelance work?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Jay Esmalla is open to software engineering opportunities, internships, and freelance mobile or web development projects. He can be contacted via https://jayesmalla.tech/contact or by email at j.esmalla.142235.tc@umindanao.edu.ph."
+              }
+            }
+          ]
+        }
       ]
     }
   </script>
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <main class="sr-only">
+      <h1>Jay Esmalla — Full-Stack Mobile and Web Developer</h1>
+      <p>
+        Jay Esmalla is a full-stack mobile and web developer based in Tagum City, Davao del Norte, Philippines, and a 4th-year BS Computer Science student specializing in Artificial Intelligence at the University of Mindanao Tagum College (UMTC). He builds cross-platform mobile and web applications with Flutter, Dart, React, React Native, Expo, TypeScript, Node.js, Python, PHP, MySQL, PostgreSQL, Firebase, and Supabase.
+      </p>
+      <h2>Selected Software Projects</h2>
+      <ul>
+        <li><strong>1561 VULSHOP</strong> — Workshop operations, inventory, and 60/40 commission payroll system built with TanStack Start, React 19, TypeScript, Drizzle ORM, MySQL 8, and Better Auth.</li>
+        <li><strong>Aralytics</strong> — Study workspace for organizing notes, flashcards, and practice sessions built with React, TypeScript, and Tailwind CSS.</li>
+        <li><strong>LakBai</strong> — Offline-first mobile travel companion for Davao del Norte built with React Native, Expo, and TypeScript.</li>
+        <li><strong>PRISM</strong> — Hospital payroll and staff management system for Tagum Doctors Hospital built with PHP, MySQL, and JavaScript.</li>
+        <li><strong>Thryfto</strong> — Peer-to-peer mobile thrift marketplace built with Flutter, Dart, Firebase, and Python.</li>
+        <li><strong>LolasKusina</strong> — Catering and food-tray ordering web application built with React, Node.js, and MySQL.</li>
+        <li><strong>ComLab V3 Egress Simulation</strong> — Agent-based emergency egress simulation built with JavaScript, HTML5 Canvas, and CSS.</li>
+      </ul>
+      <h2>Certifications &amp; Recognition</h2>
+      <ul>
+        <li>IT Specialist — Databases (Certiport · CertNexus · Pearson VUE, 2026–2031)</li>
+        <li>Start in DavNor Startup Development Challenge — Top 12 Finalist, GridPulse Team (Province of Davao del Norte, 2026)</li>
+        <li>Innovathon 2026 — Participant (City Government of Tagum, 2026)</li>
+      </ul>
+      <h2>Contact</h2>
+      <p>Location: Tagum City, Davao del Norte, Philippines. Email: j.esmalla.142235.tc@umindanao.edu.ph. GitHub: https://github.com/JayEsmalla. LinkedIn: https://www.linkedin.com/in/jay-esmalla-1703bb381/.</p>
+    </main>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

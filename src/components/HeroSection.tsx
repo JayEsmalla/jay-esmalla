@@ -28,7 +28,7 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
         className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-graphite bg-obsidian/40 px-5 py-2.5 sm:px-8 lg:px-10"
       >
         <div className="flex items-center gap-3">
-          <span className="meta-text text-smoke">00 // PORTFOLIO OVERVIEW</span>
+          <span className="meta-text text-smoke">00 // OVERVIEW</span>
           <span className="hidden h-3 w-px bg-graphite sm:inline-block" aria-hidden="true" />
           <span className="meta-text hidden text-smoke/60 sm:inline">TAGUM CITY, PH</span>
         </div>

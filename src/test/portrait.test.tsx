@@ -31,7 +31,7 @@ function Fixture() { return <ThemeProvider><ThemeSwitch /><Portrait /></ThemePro
 
 function setup() {
   const view = render(<Fixture />);
-  const frame = screen.getByRole("figure", { name: "Portrait of Jay Factolarin Esmalla" });
+  const frame = screen.getByRole("figure", { name: "Portrait of Jay Esmalla" });
   const dark = frame.querySelector<HTMLImageElement>('[data-theme-portrait="dark"]')!;
   const light = frame.querySelector<HTMLImageElement>('[data-theme-portrait="light"]')!;
   return { ...view, frame, dark, light };

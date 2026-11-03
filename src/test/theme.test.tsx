@@ -252,7 +252,7 @@ describe("theme reveal from the toggle", () => {
   it("captures the matching portrait and palette together, keeping both image nodes mounted", async () => {
     const { start } = mockReveal();
     render(<ThemeProvider><ThemeSwitch /><Portrait /></ThemeProvider>);
-    const figure = screen.getByRole("figure", { name: "Portrait of Jay Factolarin Esmalla" });
+    const figure = screen.getByRole("figure", { name: "Portrait of Jay Esmalla" });
     const images = Array.from(figure.querySelectorAll("img"));
     await act(async () => { images.forEach((image) => fireEvent.load(image)); });
     start.mockImplementation((update: () => void) => {

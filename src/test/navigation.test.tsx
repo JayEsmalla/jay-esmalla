@@ -222,25 +222,38 @@ describe("portfolio navigation", () => {
     render(
       <MemoryRouter initialEntries={["/projects"]} future={routerFlags}>
         <PageLayout>
+          <Link to="/projects?filter=mobile">Mobile filter</Link>
           <Link to="/contact">Contact route</Link>
           <Link to="/missing">Missing route</Link>
+          <Link to="/#about">About section</Link>
           <Link to="/">Home route</Link>
         </PageLayout>
       </MemoryRouter>,
     );
-    expect(document.title).toBe("Projects | Jay Factolarin Esmalla");
+    expect(document.title).toBe("Projects | Jay Esmalla");
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute("href", "https://jayesmalla.tech/projects");
+    expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute("content", "https://jayesmalla.tech/projects");
+    fireEvent.click(screen.getByRole("link", { name: "Mobile filter" }));
+    expect(document.title).toBe("Mobile Projects | Jay Esmalla");
     fireEvent.click(screen.getByRole("link", { name: "Contact route" }));
-    expect(document.title).toBe("Contact | Jay Factolarin Esmalla");
+    expect(document.title).toBe("Contact | Jay Esmalla");
     expect(document.querySelector('meta[name="description"]')).toHaveAttribute("content", expect.stringContaining("Contact Jay"));
     expect(document.querySelector('meta[property="og:title"]')).toHaveAttribute("content", document.title);
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute("href", "https://jayesmalla.tech/contact");
+    expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute("content", "https://jayesmalla.tech/contact");
     expect(document.querySelector('meta[name="twitter:description"]')?.getAttribute("content")).toBe(
       document.querySelector('meta[name="description"]')?.getAttribute("content"),
     );
     fireEvent.click(screen.getByRole("link", { name: "Missing route" }));
-    expect(document.title).toBe("Page Not Found | Jay Factolarin Esmalla");
+    expect(document.title).toBe("Page Not Found | Jay Esmalla");
+    fireEvent.click(screen.getByRole("link", { name: "About section" }));
+    expect(document.title).toBe("About | Jay Esmalla");
     fireEvent.click(screen.getByRole("link", { name: "Home route" }));
-    expect(document.title).toBe("Jay Factolarin Esmalla | Developer Portfolio");
+    expect(document.title).toBe("Jay Esmalla | Full-Stack Developer");
     expect(document.querySelector('meta[property="og:title"]')).toHaveAttribute("content", document.title);
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute("href", "https://jayesmalla.tech/");
+    expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute("content", "https://jayesmalla.tech/");
     expect(document.querySelectorAll('meta[name="description"]')).toHaveLength(1);
+    expect(document.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
   });
 });

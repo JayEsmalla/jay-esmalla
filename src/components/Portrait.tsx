@@ -20,7 +20,7 @@ export default function Portrait() {
   };
 
   return <figure
-    aria-label="Portrait of Jay Factolarin Esmalla"
+    aria-label="Portrait of Jay Esmalla"
     data-portrait-theme={theme}
     className="portrait-frame corner-ticks relative mx-auto aspect-[3/4] w-full max-w-[210px] overflow-hidden rounded-[4px] border border-graphite bg-portrait-surface sm:max-w-[250px] lg:mx-0 lg:max-w-none"
   >

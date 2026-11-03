@@ -138,7 +138,7 @@ describe("ContactSection", () => {
     expect(fetchMock.mock.calls[0][0]).toBe("https://api.web3forms.com/submit");
     expect(request.method).toBe("POST");
     expect(body.get("access_key")).toBe("e89329f9-ed99-4cb5-82e5-27be3bc74979");
-    expect(body.get("subject")).toBe("Portfolio contact from Juan Dela Cruz");
+    expect(body.get("subject")).toBe("Website contact from Juan Dela Cruz");
     expect(await screen.findByRole("status")).toHaveTextContent("Message sent. I'll get back to you soon.");
     expect(screen.getByLabelText(/^Name/)).toHaveValue("");
   });

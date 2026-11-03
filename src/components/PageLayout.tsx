@@ -1,43 +1,82 @@
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
+const SITE_ORIGIN = "https://jayesmalla.tech";
+
+const HOME_SECTION_TITLES: Record<string, string> = {
+  home: "Jay Esmalla | Full-Stack Developer",
+  projects: "Projects | Jay Esmalla",
+  about: "About | Jay Esmalla",
+  github: "GitHub | Jay Esmalla",
+  certifications: "Certifications | Jay Esmalla",
+  contact: "Contact | Jay Esmalla",
+};
+
 const PAGE_METADATA: Record<string, { title: string; description: string }> = {
   "/": {
-    title: "Jay Factolarin Esmalla | Developer Portfolio",
-    description: "Portfolio of Jay Factolarin Esmalla — 4th-year Computer Science student majoring in AI at UMTC, Flutter mobile developer, and React/TypeScript engineer.",
+    title: "Jay Esmalla | Full-Stack Developer",
+    description: "Jay Esmalla — 4th-year Computer Science student majoring in AI at UMTC, Flutter mobile developer, and React/TypeScript engineer in Tagum City, Philippines.",
   },
   "/projects": {
-    title: "Projects | Jay Factolarin Esmalla",
-    description: "Explore Jay Factolarin Esmalla's mobile and web projects, including Aralytics, LakBai, Thryfto, and practical apps built with Flutter, React, and TypeScript.",
+    title: "Projects | Jay Esmalla",
+    description: "Explore Jay Esmalla's mobile and web projects, including 1561 VULSHOP, Aralytics, LakBai, PRISM, Thryfto, LolasKusina, and ComLab V3 Egress Simulation built with Flutter, React, and TypeScript.",
   },
   "/certifications": {
-    title: "Certifications | Jay Factolarin Esmalla",
-    description: "Explore Jay Factolarin Esmalla's certifications, technical training, and continued learning in software development and computer science.",
+    title: "Certifications | Jay Esmalla",
+    description: "Explore Jay Esmalla's certifications, IT Specialist Databases credential, and technical innovation recognition in software development and computer science.",
   },
   "/contact": {
-    title: "Contact | Jay Factolarin Esmalla",
-    description: "Contact Jay Factolarin Esmalla in Tagum City, Philippines to discuss mobile and web projects, freelance work, or collaboration.",
+    title: "Contact | Jay Esmalla",
+    description: "Contact Jay Esmalla in Tagum City, Philippines to discuss mobile and web projects, freelance work, or collaboration.",
   },
 };
 
 const NOT_FOUND_METADATA = {
-  title: "Page Not Found | Jay Factolarin Esmalla",
-  description: "This portfolio page could not be found. Return to Jay Factolarin Esmalla's portfolio to explore projects, credentials, and contact information.",
+  title: "Page Not Found | Jay Esmalla",
+  description: "This page could not be found. Return to Jay Esmalla's site to explore projects, credentials, and contact information.",
 };
 
 const PageLayout = ({ children }: { children: ReactNode }) => {
-  const { pathname } = useLocation();
+  const { pathname, search, hash } = useLocation();
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
-    const metadata = PAGE_METADATA[pathname.replace(/\/$/, "") || "/"] ?? NOT_FOUND_METADATA;
-    document.title = metadata.title;
+    const normalizedPath = pathname.replace(/\/$/, "") || "/";
+    if (normalizedPath !== "/") return;
+    const hashSection = hash.replace(/^#/, "");
+    if (hashSection && HOME_SECTION_TITLES[hashSection]) {
+      setActiveSection(hashSection);
+    } else if (!hash) {
+      setActiveSection("home");
+    }
+  }, [pathname, hash]);
+
+  useEffect(() => {
+    const normalizedPath = pathname.replace(/\/$/, "") || "/";
+    const metadata = PAGE_METADATA[normalizedPath] ?? NOT_FOUND_METADATA;
+    let resolvedTitle = metadata.title;
+
+    if (normalizedPath === "/") {
+      const hashSection = hash.replace(/^#/, "");
+      const sectionKey = hashSection && HOME_SECTION_TITLES[hashSection] ? hashSection : activeSection;
+      resolvedTitle = HOME_SECTION_TITLES[sectionKey] ?? metadata.title;
+    } else if (normalizedPath === "/projects" && search) {
+      const params = new URLSearchParams(search);
+      const filter = params.get("filter");
+      if (filter === "mobile") resolvedTitle = "Mobile Projects | Jay Esmalla";
+      else if (filter === "web") resolvedTitle = "Web Projects | Jay Esmalla";
+    }
+
+    const canonicalUrl = `${SITE_ORIGIN}${normalizedPath === "/" ? "/" : normalizedPath}`;
+    document.title = resolvedTitle;
     const tags = [
       ["name", "description", metadata.description],
-      ["property", "og:title", metadata.title],
+      ["property", "og:title", resolvedTitle],
       ["property", "og:description", metadata.description],
-      ["name", "twitter:title", metadata.title],
+      ["property", "og:url", canonicalUrl],
+      ["name", "twitter:title", resolvedTitle],
       ["name", "twitter:description", metadata.description],
     ];
     tags.forEach(([attribute, key, content]) => {
@@ -49,7 +88,15 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
       }
       tag.content = content;
     });
-  }, [pathname]);
+
+    let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.href = canonicalUrl;
+  }, [pathname, search, hash, activeSection]);
 
   return (
     <div className="min-h-screen bg-obsidian text-foreground">
@@ -66,7 +113,7 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
         Skip to content
       </a>
       <div className="mx-auto flex min-h-screen max-w-[1380px] flex-col border-x border-graphite bg-carbon lg:grid lg:grid-cols-[216px_minmax(0,1fr)]">
-        <Navbar />
+        <Navbar onSectionChange={setActiveSection} />
         <div className="flex min-w-0 flex-1 flex-col">
           <main id="main-content" tabIndex={-1} className="flex-1 scroll-mt-6">{children}</main>
           <Footer />

@@ -28,7 +28,7 @@ const ContactSection = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const requestController   = useRef<AbortController | null>(null);
   const isSending           = status.type === "sending";
-  const emailFallback       = `mailto:${socialLinks.email}?subject=${encodeURIComponent(form.subject.trim() || "Portfolio enquiry")}&body=${encodeURIComponent(form.message)}`;
+  const emailFallback       = `mailto:${socialLinks.email}?subject=${encodeURIComponent(form.subject.trim() || "Project enquiry")}&body=${encodeURIComponent(form.message)}`;
   const charsLeft           = MESSAGE_MAX - form.message.length;
 
   useEffect(() => () => { requestController.current?.abort(); requestController.current = null; }, []);
@@ -59,8 +59,8 @@ const ContactSection = () => {
     formData.set("email",     form.email.trim());
     formData.set("message",   form.message.trim());
     formData.set("access_key", WEB3FORMS_ACCESS_KEY);
-    formData.set("from_name", "Jay Esmalla Portfolio");
-    formData.set("subject",   form.subject.trim() || `Portfolio contact from ${form.name.trim()}`);
+    formData.set("from_name", "Jay Esmalla");
+    formData.set("subject",   form.subject.trim() || `Website contact from ${form.name.trim()}`);
 
     setStatus({ type: "sending", message: "" });
     const controller = new AbortController();

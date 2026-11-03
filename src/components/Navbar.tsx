@@ -19,7 +19,7 @@ const NAV_ITEMS = [
 
 const HOME_SECTIONS = ["home", "projects", "about", "github", "certifications", "contact"];
 
-const Navbar = () => {
+const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => void } = {}) => {
   const { reduced } = useMotionSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -27,6 +27,8 @@ const Navbar = () => {
   const [activeSection, setActiveSection] = useState("home");
   const toggleRef = useRef<HTMLButtonElement>(null);
   const mobileNavRef = useRef<HTMLElement>(null);
+  const onSectionChangeRef = useRef(onSectionChange);
+  onSectionChangeRef.current = onSectionChange;
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -91,7 +93,10 @@ const Navbar = () => {
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-        if (visible?.target.id) setActiveSection(visible.target.id);
+        if (visible?.target.id) {
+          setActiveSection(visible.target.id);
+          onSectionChangeRef.current?.(visible.target.id);
+        }
       },
       {
         rootMargin: "-18% 0px -58% 0px",

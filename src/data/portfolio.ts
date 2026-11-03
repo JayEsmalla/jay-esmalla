@@ -222,7 +222,7 @@ export const certifications: Certification[] = [
     image: "/credentials/database-800.webp",
     imageSrcSet: "/credentials/database-480.webp 480w, /credentials/database-800.webp 800w, /credentials/database-1200.webp 1200w",
     fullImage: "/credentials/database.jpg",
-    imageAlt: "IT Specialist Databases certificate awarded to Jay Factolarin Esmalla on July 3, 2026, valid for five years",
+    imageAlt: "IT Specialist Databases certificate awarded to Jay Esmalla on July 3, 2026, valid for five years",
   },
   {
     id: "innovathon-2026",

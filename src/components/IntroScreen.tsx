@@ -46,10 +46,10 @@ const IntroScreen = ({ onReveal, onComplete }: IntroScreenProps) => {
 
   return (
     <div ref={introRef} tabIndex={-1} className="intro-screen outline-none" role="dialog" aria-modal="true" aria-labelledby="intro-title" aria-describedby="intro-description">
-      <h2 id="intro-title" className="sr-only">Welcome to Jay Esmalla’s portfolio</h2>
-      <p id="intro-description" className="sr-only">Mobile and web developer in Tagum City. The introduction continues automatically. Press Escape to enter the portfolio immediately.</p>
+      <h2 id="intro-title" className="sr-only">Welcome — Jay Esmalla</h2>
+      <p id="intro-description" className="sr-only">Mobile and web developer in Tagum City. The introduction continues automatically. Press Escape to continue immediately.</p>
       <div className="intro-topline">
-        <p className="intro-meta">Independent developer<span className="intro-topline-detail"> / Portfolio</span></p>
+        <p className="intro-meta">Independent developer<span className="intro-topline-detail"> / Full-Stack</span></p>
       </div>
       <div className="intro-center" aria-hidden="true">
         <div className="intro-signature">

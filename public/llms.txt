@@ -1,0 +1,46 @@
+# Jay Esmalla
+
+> Full-Stack Mobile & Web Developer based in Tagum City, Davao del Norte, Philippines. 4th-year BS Computer Science student specializing in Artificial Intelligence at the University of Mindanao Tagum College (UMTC).
+
+- **Website:** https://jayesmalla.tech/
+- **Projects Collection:** https://jayesmalla.tech/projects
+- **Certifications:** https://jayesmalla.tech/certifications
+- **Contact:** https://jayesmalla.tech/contact
+- **Resume / CV:** https://jayesmalla.tech/Jay_Esmalla_Resume.pdf
+- **GitHub:** https://github.com/JayEsmalla
+- **LinkedIn:** https://www.linkedin.com/in/jay-esmalla-1703bb381/
+- **Email:** j.esmalla.142235.tc@umindanao.edu.ph
+
+## Overview
+
+Jay Esmalla builds practical mobile and web applications with clear interfaces and reliable backend architectures:
+- **Mobile Development:** Flutter, Dart, React Native, Expo
+- **Frontend Engineering:** React, TypeScript, JavaScript, Next.js, Vue.js, Tailwind CSS, HTML5, CSS
+- **Backend & Data:** Node.js, Python, PHP, MySQL, PostgreSQL, Firebase, Supabase, Drizzle ORM
+- **Tools & Infrastructure:** Git, GitHub, Figma, Docker
+
+## Software Projects (7)
+
+1. **1561 VULSHOP** (Web — TanStack Start, React 19, TypeScript, Tailwind CSS v4, Drizzle ORM, MySQL 8, Better Auth, Docker)
+   - Full-stack workshop operations, inventory, and payroll system for 1561 Tire & Vulcanizing Services. Features a 4-stage job queue, split cash/GCash payments, transactional stock deductions, and automated daily 60/40 commission payroll.
+2. **Aralytics** (Web — React, TypeScript, Tailwind CSS)
+   - Study workspace that organizes notes, flashcards, and practice sessions into a clean review flow.
+3. **LakBai** (Mobile — React Native, Expo, TypeScript)
+   - Offline-first mobile travel companion for exploring destinations and local spots across Davao del Norte.
+4. **PRISM** (Web — PHP, MySQL, JavaScript)
+   - Hospital payroll and staff management system developed for Tagum Doctors Hospital, automating shift attendance, overtime, statutory deductions, and payslip generation.
+5. **Thryfto** (Mobile — Flutter, Dart, Firebase, Python)
+   - Peer-to-peer mobile thrift marketplace with real-time listings, seller profiles, and Firebase backend services.
+   - Source: https://github.com/JayEsmalla/thryfto-app
+6. **LolasKusina** (Web — React, Node.js, MySQL)
+   - Catering and food-tray ordering web application for browsing menus, scheduling deliveries, and managing kitchen orders.
+7. **ComLab V3 Egress Simulation** (Web — JavaScript, HTML5 Canvas, CSS)
+   - Agent-based emergency egress simulation modeling crowd bottlenecks and exit paths in a university computer laboratory.
+   - Live: https://simulation-comlab-v3.vercel.app/
+   - Source: https://github.com/JayEsmalla/simulation_comlabV3
+
+## Certifications & Recognition
+
+- **IT Specialist — Databases** (Certiport · CertNexus · Pearson VUE) — Issued July 3, 2026 (Valid through July 3, 2031)
+- **Start in DavNor Startup Development Challenge** (Province of Davao del Norte) — Top 12 Finalist, GridPulse Team (October 9, 2026)
+- **Innovathon 2026** (City Government of Tagum) — Certificate of Participation (September 24, 2026)

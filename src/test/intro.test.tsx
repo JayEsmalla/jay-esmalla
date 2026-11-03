@@ -48,6 +48,18 @@ describe("intro entry policy", () => {
     vi.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
     expect(shouldPlayIntro()).toBe(false);
   });
+
+  it("bypasses the intro for search and AI crawler user agents", () => {
+    for (const ua of [
+      "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+      "Mozilla/5.0 (compatible; Google-Extended/1.0)",
+      "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",
+      "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)",
+    ]) {
+      vi.spyOn(window.navigator, "userAgent", "get").mockReturnValue(ua);
+      expect(shouldPlayIntro()).toBe(false);
+    }
+  });
 });
 
 describe("intro lifecycle", () => {

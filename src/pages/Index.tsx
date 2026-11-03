@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import HeroSection from "@/components/HeroSection";
 import ProjectsSection from "@/components/ProjectsSection";
 
@@ -10,16 +10,6 @@ const GitHubSection = lazy(() => import("@/components/GitHubSection"));
 const SectionFallback = () => <div data-section-loading className="min-h-[260px] border-b border-graphite bg-obsidian" aria-hidden="true" />;
 
 const Index = ({ heroReady = true }: { heroReady?: boolean }) => {
-  useEffect(() => {
-    document.title = "Jay Factolarin Esmalla | Developer Portfolio";
-    document
-      .querySelector('meta[name="description"]')
-      ?.setAttribute(
-        "content",
-        "Portfolio of Jay Factolarin Esmalla — 4th-year Computer Science student majoring in AI at UMTC, Flutter mobile developer, and React/TypeScript engineer."
-      );
-  }, []);
-
   return (
     <>
       <HeroSection ready={heroReady} />
