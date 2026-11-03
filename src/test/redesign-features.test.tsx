@@ -184,7 +184,7 @@ describe("latest GitHub commit helper", () => {
 });
 
 describe("AboutSection and Footer", () => {
-  it("presents the editorial statement, 4-column toolkit, wordmark, and copy-email feedback", () => {
+  it("presents the editorial statement, 4-column toolkit, and clean single-row footer without redundant email", () => {
     render(
       <MemoryRouter future={routerFlags}>
         <AboutSection />
@@ -197,10 +197,8 @@ describe("AboutSection and Footer", () => {
     expect(screen.getByRole("heading", { name: "Frontend" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Backend & Data" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Tools" })).toBeInTheDocument();
-
-    const copyBtn = screen.getByRole("button", { name: "Copy email address" });
-    fireEvent.click(copyBtn);
-    expect(copyBtn).toHaveTextContent("COPIED ✓");
+    expect(screen.getByText(/JAY ESMALLA · TAGUM CITY, PH/i)).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /jaesmalla1@gmail\.com/i })).not.toBeInTheDocument();
   });
 });
 

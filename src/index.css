@@ -293,8 +293,8 @@
 
   /* Footer signature that echoes the intro screen. */
   .footer-wordmark {
-    @apply block whitespace-nowrap font-normal leading-[0.82] tracking-[-0.065em] text-smoke;
-    font-size: clamp(56px, 12.5vw, 172px);
+    @apply block whitespace-nowrap font-normal leading-[1.08] tracking-[-0.06em] text-smoke;
+    font-size: clamp(48px, 11vw, 148px);
   }
 
   .meta-text {

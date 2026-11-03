@@ -27,7 +27,7 @@ const NavbarLocalTimeCard = memo(function NavbarLocalTimeCard() {
     <div
       data-testid="navbar-local-time"
       data-activity={localTime.activity}
-      className="flex items-center gap-3 border-t border-graphite bg-obsidian/40 px-4 py-3"
+      className="flex w-full min-w-0 items-center gap-2.5 border-t border-graphite bg-obsidian/40 px-3.5 py-3"
       aria-label={`Local time in Tagum City: ${localTime.time} PHT, currently ${localTime.label.toLowerCase()}`}
     >
       <ActivitySticker
@@ -37,11 +37,11 @@ const NavbarLocalTimeCard = memo(function NavbarLocalTimeCard() {
         interactive
       />
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-1.5">
-          <span className="font-mono-retro text-[13px] leading-none tabular-nums text-chalk">
-            {localTime.time} <span className="text-[10px] text-smoke">PHT</span>
+        <div className="flex items-center justify-between gap-1">
+          <span className="font-mono-retro text-[12px] leading-none tabular-nums text-chalk">
+            {localTime.time} <span className="text-[9px] text-smoke">PHT</span>
           </span>
-          <span className="inline-flex items-center gap-1 font-mono-retro text-[9px] uppercase tracking-[0.05em] text-pulse-green">
+          <span className="inline-flex shrink-0 items-center gap-1 font-mono-retro text-[9px] uppercase tracking-[0.03em] text-pulse-green">
             <span
               className={`h-1.5 w-1.5 rounded-full ${
                 localTime.awake
@@ -53,7 +53,7 @@ const NavbarLocalTimeCard = memo(function NavbarLocalTimeCard() {
             {localTime.label}
           </span>
         </div>
-        <p className="mt-1.5 truncate font-mono-retro text-[10px] text-smoke">
+        <p className="mt-1.5 truncate font-mono-retro text-[9.5px] leading-tight text-smoke">
           {localTime.status}
         </p>
       </div>
@@ -219,7 +219,7 @@ const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => 
       }`}
     >
       {/* ── Desktop Connected Editorial Spine ── */}
-      <div className="hidden lg:flex lg:h-full lg:flex-col lg:justify-between">
+      <div className="hidden lg:flex lg:h-full lg:w-full lg:min-w-0 lg:flex-col lg:justify-between">
         {/* Top Identity Cell (aligned with Hero h-14 status bar) */}
         <div className="flex h-14 shrink-0 items-center border-b border-graphite px-5">
           <Link

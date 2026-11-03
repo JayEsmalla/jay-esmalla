@@ -30,17 +30,20 @@ const AboutSection = () => {
   const reveal = useReveal();
   return (
     <section id="about" className="section-shell scroll-mt-6 overflow-hidden">
-      {/* ── Connected Section Header Band with Chapter Numeral ── */}
+      {/* ── Connected Section Header Band ── */}
       <SectionHeader number="02" kicker="ABOUT" title="How I approach a build.">
-        <p className="text-[16px] leading-[1.65] text-smoke">
-          I start with the workflow, choose tools that fit, and connect clear interfaces to reliable backend systems.
+        <p className="text-[15px] leading-[1.65] text-smoke">
+          Full-stack and mobile developer based in Tagum City, building operations software, POS systems, and learning tools.
         </p>
       </SectionHeader>
 
-      {/* ── Editorial Statement + Education Strip ── */}
-      <motion.div {...reveal(1)} className="border-b border-graphite bg-carbon">
-        <div className="px-5 py-10 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
-          <p className="max-w-[920px] text-balance text-[23px] leading-[1.26] tracking-[-0.03em] text-smoke sm:text-[30px] lg:text-[36px]">
+      {/* ── Editorial Statement + Education Split Grid ── */}
+      <motion.div
+        {...reveal(1)}
+        className="grid border-b border-graphite bg-carbon lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.75fr)]"
+      >
+        <div className="flex items-center px-5 py-9 sm:px-8 sm:py-11 lg:px-10 lg:py-12">
+          <p className="max-w-[740px] text-balance text-[22px] leading-[1.32] tracking-[-0.028em] text-smoke sm:text-[26px] lg:text-[30px]">
             I start with the workflow:{" "}
             <span className="text-chalk">
               the paper job orders, the missed downpayments, the payroll done by hand
@@ -50,24 +53,27 @@ const AboutSection = () => {
           </p>
         </div>
 
-        <div className="flex items-start gap-4 border-t border-graphite bg-obsidian/30 px-5 py-6 sm:px-8 lg:px-10">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[4px] border border-graphite bg-carbon">
-            <GraduationCap size={20} strokeWidth={1.5} className="icon-gold" aria-hidden="true" />
-          </span>
-          <div className="grid flex-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8">
+        <div className="flex flex-col justify-between gap-6 border-t border-graphite bg-obsidian/30 px-5 py-7 sm:px-8 lg:border-l lg:border-t-0 lg:px-9 lg:py-10">
+          <div className="flex items-start gap-3.5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[4px] border border-graphite bg-carbon">
+              <GraduationCap size={19} strokeWidth={1.5} className="icon-gold" aria-hidden="true" />
+            </span>
             <div>
               <h3 className="section-kicker">EDUCATION</h3>
-              <p className="mt-2 text-[17px] leading-relaxed tracking-[-0.015em] text-chalk">
+              <p className="mt-2 text-[17px] leading-snug tracking-[-0.015em] text-chalk">
                 4th Year · BS Computer Science
               </p>
               <p className="mt-1 text-[14px] leading-relaxed text-smoke">
                 University of Mindanao — Tagum College
               </p>
             </div>
-            <div className="border-t border-graphite pt-3 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
-              <p className="meta-text text-smoke">SPECIALIZATION</p>
-              <p className="mt-1.5 font-mono-retro text-[13px] text-chalk">Artificial Intelligence</p>
-            </div>
+          </div>
+
+          <div className="border-t border-graphite pt-4">
+            <p className="meta-text text-smoke">SPECIALIZATION</p>
+            <p className="mt-1.5 font-mono-retro text-[13px] text-chalk">
+              Artificial Intelligence
+            </p>
           </div>
         </div>
       </motion.div>

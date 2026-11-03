@@ -50,11 +50,11 @@ const ActivitySticker = memo(function ActivitySticker({
   const isSmall = size === "sm";
   const containerClass = isSmall
     ? "relative grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-[2px] border border-iron/70 bg-[#141414]"
-    : "sticker-stage group/sticker relative grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-[4px] border border-iron/80 bg-[#141414] transition-colors hover:border-pulse-green/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-pulse-green";
+    : "sticker-stage group/sticker relative grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-[4px] border border-iron/80 bg-[#141414] transition-colors hover:border-pulse-green/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-pulse-green";
 
   const svgClass = isSmall
     ? "h-6 w-6 overflow-visible"
-    : "h-11 w-11 overflow-visible";
+    : "h-10 w-10 overflow-visible";
 
   const content = (
     <>

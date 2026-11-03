@@ -38,7 +38,7 @@ export function formatManilaTime(date: Date = new Date()): LocalTimeSnapshot {
       awake: false,
       activity: "sleeping",
       label: "SLEEPING",
-      status: "Asleep · replies by morning",
+      status: "Asleep · back at 7am",
       sticker: "/stickers/sleeping.webp",
     };
   }
@@ -73,7 +73,7 @@ export function formatManilaTime(date: Date = new Date()): LocalTimeSnapshot {
     awake: true,
     activity: "coding",
     label: "CODING",
-    status: "Coding · replies same day",
+    status: "Coding · replies fast",
     sticker: "/stickers/coding.webp",
   };
 }
