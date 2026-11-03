@@ -214,7 +214,7 @@ const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => 
   return (
     <header
       data-floating-nav
-      className={`sticky top-0 z-50 border-b backdrop-blur-md transition-[background-color,border-color] duration-300 lg:flex lg:h-screen lg:flex-col lg:justify-between lg:border-b-0 lg:border-r lg:border-graphite ${
+      className={`sticky top-0 z-50 border-b transition-[background-color,border-color] duration-300 max-lg:backdrop-blur-md lg:flex lg:h-screen lg:flex-col lg:justify-between lg:border-b-0 lg:border-r lg:border-graphite ${
         scrolled ? "border-iron bg-carbon/95" : "border-graphite bg-obsidian/90"
       }`}
     >

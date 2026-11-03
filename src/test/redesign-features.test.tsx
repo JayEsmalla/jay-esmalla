@@ -184,7 +184,7 @@ describe("latest GitHub commit helper", () => {
 });
 
 describe("AboutSection and Footer", () => {
-  it("presents the editorial statement, 4-column toolkit, and clean single-row footer without redundant email", () => {
+  it("presents the 3-column Focus Matrix, Icon Stack Matrix, and clean single-row footer without redundant email", () => {
     render(
       <MemoryRouter future={routerFlags}>
         <AboutSection />
@@ -192,7 +192,9 @@ describe("AboutSection and Footer", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText(/the paper job orders, the missed downpayments/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Product Engineering" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "AI & Intelligent Systems" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Systems with Clear UX" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Mobile" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Frontend" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Backend & Data" })).toBeInTheDocument();

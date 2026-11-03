@@ -76,6 +76,7 @@ const ActivitySticker = memo(function ActivitySticker({
         data-sticker-mode={activity}
         className={`${svgClass} ${poked ? "sticker-svg-poked" : ""}`}
       >
+        <circle cx="50" cy="52" r="39" fill="#181818" stroke="#f3f3f3" strokeWidth="2.5" />
         {activity === "sleeping" && <SleepingChibi />}
         {activity === "studying" && <StudyingChibi />}
         {activity === "workout" && <WorkoutChibi />}

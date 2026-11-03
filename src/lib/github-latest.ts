@@ -86,11 +86,12 @@ export async function fetchLatestCommit(signal?: AbortSignal): Promise<LatestCom
     return cached.value;
   }
 
-  // Try serverless endpoint first when deployed on Vercel; fall back to public GitHub Events API.
-  const endpoints = [
-    "/api/github-latest",
-    `https://api.github.com/users/${githubConfig.username}/events/public?per_page=20`,
-  ];
+  // In local Vite dev (`:8080`), `vercel dev` (:3000) is usually not running, so call GitHub's CORS-enabled public Events API directly.
+  const isLocalViteDev = Boolean(import.meta.env.DEV && !import.meta.env.VITEST);
+  const publicEventsUrl = `https://api.github.com/users/${githubConfig.username}/events/public?per_page=20`;
+  const endpoints = isLocalViteDev
+    ? [publicEventsUrl]
+    : ["/api/github-latest", publicEventsUrl];
 
   for (const endpoint of endpoints) {
     try {

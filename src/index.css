@@ -9,6 +9,7 @@
   z-index: 10000;
   pointer-events: none;
   user-select: none;
+  contain: layout style paint;
   opacity: 0;
   color: var(--color-chalk);
 }
@@ -75,7 +76,12 @@
   object-fit: contain;
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  html.focus-cursor-active, html.focus-cursor-active * { cursor: none !important; }
+  html.focus-cursor-active,
+  html.focus-cursor-active body,
+  html.focus-cursor-active a,
+  html.focus-cursor-active button,
+  html.focus-cursor-active [role="button"],
+  html.focus-cursor-active summary { cursor: none !important; }
 }
 @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
   .focus-cursor { display: none; }
@@ -642,6 +648,7 @@ html.theme-reveal::view-transition-new(theme-icon) { z-index: 2; }
 .sticker-anim-code-1 { animation: sticker-code-float 2.2s ease-out infinite; }
 .sticker-anim-code-2 { animation: sticker-code-float 2.2s ease-out 1.1s infinite; }
 
+.sticker-stage { contain: layout paint; }
 .sticker-stage svg { transition: transform 220ms cubic-bezier(.22, 1, .36, 1); }
 .sticker-stage:hover svg { transform: scale(1.06); }
 .sticker-svg-poked { animation: sticker-poke-pop 480ms cubic-bezier(.22, 1, .36, 1); }
@@ -649,16 +656,7 @@ html.theme-reveal::view-transition-new(theme-icon) { z-index: 2; }
 .sticker-poke-badge.is-poked { animation: sticker-badge-burst 620ms ease-out forwards; }
 
 .sticker-die-cut {
-  filter:
-    drop-shadow(1.5px 0 0 #f3f3f3)
-    drop-shadow(-1.5px 0 0 #f3f3f3)
-    drop-shadow(0 1.5px 0 #f3f3f3)
-    drop-shadow(0 -1.5px 0 #f3f3f3)
-    drop-shadow(1.2px 1.2px 0 #f3f3f3)
-    drop-shadow(-1.2px -1.2px 0 #f3f3f3)
-    drop-shadow(1.2px -1.2px 0 #f3f3f3)
-    drop-shadow(-1.2px 1.2px 0 #f3f3f3)
-    drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
+  paint-order: stroke fill;
 }
 
 @media (prefers-reduced-motion: reduce) {

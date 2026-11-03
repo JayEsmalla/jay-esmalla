@@ -29,14 +29,25 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
     let visible = false;
 
     const hide = () => {
+      if (animation) {
+        cancelAnimationFrame(animation);
+        animation = 0;
+      }
+      if (!visible && cursor.dataset.visible === "false") return;
       visible = false;
       cursor.dataset.visible = "false";
       cursor.dataset.pressed = "false";
       cursor.dataset.preview = "false";
       document.documentElement.classList.remove("focus-cursor-active");
-      cancelAnimationFrame(animation);
-      animation = 0;
     };
+
+    const handleScroll = () => {
+      if (!visible) return;
+      if (cursor.dataset.pressed !== "false") cursor.dataset.pressed = "false";
+      if (cursor.dataset.preview !== "false") cursor.dataset.preview = "false";
+      if (cursor.dataset.mode !== "default") cursor.dataset.mode = "default";
+    };
+
     const follow = (time: number) => {
       const blend = 1 - Math.exp(-Math.min(time - lastTime, 64) / 45);
       lastTime = time;
@@ -46,6 +57,7 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
       animation = Math.abs(x - followX) + Math.abs(y - followY) > 0.1
         ? requestAnimationFrame(follow) : 0;
     };
+
     const move = (event: PointerEvent) => {
       if (!mouse.matches || reduced.matches || event.pointerType !== "mouse") return hide();
       const target = event.target instanceof Element ? event.target : null;
@@ -58,15 +70,21 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
       x = event.clientX;
       y = event.clientY;
       dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      cursor.dataset.mode = action?.getAttribute("data-cursor") ?? (action ? "action" : "default");
+      const nextMode = action?.getAttribute("data-cursor") ?? (action ? "action" : "default");
+      if (cursor.dataset.mode !== nextMode) {
+        cursor.dataset.mode = nextMode;
+      }
       const previewSrc = action?.getAttribute("data-cursor-preview");
       if (previewSrc && previewRef.current && previewImgRef.current) {
-        cursor.dataset.preview = "true";
+        if (cursor.dataset.preview !== "true") cursor.dataset.preview = "true";
         if (previewImgRef.current.getAttribute("src") !== previewSrc) {
           previewImgRef.current.src = previewSrc;
         }
-        previewRef.current.style.backgroundColor = action?.getAttribute("data-cursor-bg") || "rgb(var(--preview-surface))";
-      } else {
+        const nextBg = action?.getAttribute("data-cursor-bg") || "rgb(var(--preview-surface))";
+        if (previewRef.current.style.backgroundColor !== nextBg) {
+          previewRef.current.style.backgroundColor = nextBg;
+        }
+      } else if (cursor.dataset.preview !== "false") {
         cursor.dataset.preview = "false";
       }
       if (!visible) {
@@ -83,18 +101,17 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
       }
     };
     const press = () => { if (visible) cursor.dataset.pressed = "true"; };
-    const release = () => { cursor.dataset.pressed = "false"; };
+    const release = () => { if (cursor.dataset.pressed !== "false") cursor.dataset.pressed = "false"; };
     const leave = (event: PointerEvent) => { if (!event.relatedTarget) hide(); };
     const key = (event: KeyboardEvent) => { if (event.key === "Tab" || event.key === "Escape") hide(); };
 
     document.addEventListener("pointermove", move, { passive: true });
-    document.addEventListener("pointerover", move, { passive: true });
-    document.addEventListener("pointerdown", press);
-    document.addEventListener("pointerup", release);
-    document.addEventListener("pointercancel", hide);
-    document.addEventListener("pointerout", leave);
+    document.addEventListener("pointerdown", press, { passive: true });
+    document.addEventListener("pointerup", release, { passive: true });
+    document.addEventListener("pointercancel", hide, { passive: true });
+    document.addEventListener("pointerout", leave, { passive: true });
     document.addEventListener("keydown", key, true);
-    document.addEventListener("scroll", hide, true);
+    document.addEventListener("scroll", handleScroll, { capture: true, passive: true });
     document.addEventListener("visibilitychange", hide);
     window.addEventListener("blur", hide);
     mouse.addEventListener("change", hide);
@@ -102,13 +119,12 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
     return () => {
       hide();
       document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerover", move);
       document.removeEventListener("pointerdown", press);
       document.removeEventListener("pointerup", release);
       document.removeEventListener("pointercancel", hide);
       document.removeEventListener("pointerout", leave);
       document.removeEventListener("keydown", key, true);
-      document.removeEventListener("scroll", hide, true);
+      document.removeEventListener("scroll", handleScroll, true);
       document.removeEventListener("visibilitychange", hide);
       window.removeEventListener("blur", hide);
       mouse.removeEventListener("change", hide);
