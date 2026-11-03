@@ -220,60 +220,110 @@
 
 @layer components {
   .page-container {
-    @apply mx-auto w-full px-5 md:px-8;
-    max-width: 1200px;
+    @apply w-full;
+  }
+
+  .section-pad {
+    @apply px-5 sm:px-8 lg:px-10;
+  }
+
+  .section-header-band {
+    @apply border-b border-graphite bg-obsidian/40 px-5 py-8 sm:px-8 lg:px-10 lg:py-10;
   }
 
   .section-shell {
-    @apply border-b border-graphite py-12 md:py-16;
+    @apply relative border-b border-graphite;
   }
 
   .section-heading-grid {
-    @apply grid gap-7 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.75fr)] lg:gap-12;
+    @apply grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(300px,0.75fr)] lg:gap-12;
   }
 
   .section-kicker {
     font-family: var(--font-input);
-    @apply text-[12px] uppercase tracking-[-0.01em] text-smoke;
+    @apply inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.06em] text-smoke;
+  }
+
+  .section-kicker::before {
+    content: "";
+    @apply inline-block h-1.5 w-1.5 bg-pulse-green;
   }
 
   .section-title {
-    @apply mt-3 max-w-[760px] text-[28px] leading-[1.15] tracking-[-0.025em] text-chalk md:text-[36px];
+    @apply mt-3 max-w-[780px] text-[30px] leading-[1.08] tracking-[-0.035em] text-chalk sm:text-[36px] md:text-[42px];
   }
 
   .display-title {
-    @apply text-[36px] font-normal leading-[1.02] tracking-[-0.035em] text-chalk md:text-[48px];
+    @apply text-[38px] font-normal leading-[0.98] tracking-[-0.04em] text-chalk sm:text-[48px] md:text-[58px];
   }
 
   .meta-text {
     font-family: var(--font-input);
-    @apply text-[12px] font-normal uppercase tracking-[-0.015em];
+    @apply text-[11px] font-normal uppercase tracking-[0.02em];
   }
 
   .primary-pill {
-    @apply inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-6 py-3 text-[13px] font-normal text-primary-foreground transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-60;
+    font-family: var(--font-input);
+    @apply inline-flex min-h-11 items-center gap-2.5 rounded-[4px] border border-primary bg-primary px-5 py-2.5 text-[12px] font-normal uppercase tracking-[0.04em] text-primary-foreground transition-all hover:border-pulse-green hover:bg-pulse-green hover:text-obsidian disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .ghost-button {
-    @apply inline-flex min-h-11 items-center gap-2 rounded-[8px] border border-iron bg-transparent px-5 py-[11px] text-[13px] font-normal text-chalk transition-colors hover:border-chalk hover:bg-chalk hover:text-obsidian;
+    font-family: var(--font-input);
+    @apply inline-flex min-h-11 items-center gap-2.5 rounded-[4px] border border-iron bg-transparent px-5 py-2.5 text-[12px] font-normal uppercase tracking-[0.04em] text-chalk transition-colors hover:border-chalk hover:bg-chalk hover:text-obsidian;
   }
 
   .status-badge {
-    @apply inline-flex items-center gap-2 rounded-[4px] border border-graphite bg-status-surface px-3.5 py-2 text-[11px] font-normal uppercase tracking-[0.04em] text-smoke;
+    font-family: var(--font-input);
+    @apply inline-flex items-center gap-2 rounded-[2px] border border-graphite bg-status-surface px-3 py-1.5 text-[11px] font-normal uppercase tracking-[0.05em] text-smoke;
   }
 
   .status-dot {
     @apply inline-block h-1.5 w-1.5 rounded-full;
     background: var(--color-pulse-green);
+    box-shadow: 0 0 8px var(--color-pulse-green);
   }
 
   .hairline-card {
-    @apply rounded-[8px] border border-graphite bg-transparent;
+    @apply rounded-[4px] border border-graphite bg-transparent;
+  }
+
+  .editorial-panel {
+    @apply relative border border-graphite bg-carbon;
+  }
+
+  .corner-ticks {
+    position: relative;
+  }
+
+  .corner-ticks::before,
+  .corner-ticks::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-color: var(--color-pulse-green);
+    opacity: 0.75;
+    z-index: 2;
+  }
+
+  .corner-ticks::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1px solid var(--color-pulse-green);
+    border-left: 1px solid var(--color-pulse-green);
+  }
+
+  .corner-ticks::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1px solid var(--color-pulse-green);
+    border-right: 1px solid var(--color-pulse-green);
   }
 
   .tech-tag {
     font-family: var(--font-input);
-    @apply inline-flex items-center gap-1.5 rounded-[4px] border border-graphite bg-signal-white/[0.02] px-2.5 py-1.5 text-[12px] text-ash;
+    @apply inline-flex items-center gap-1.5 rounded-[2px] border border-graphite bg-signal-white/[0.02] px-2.5 py-1.5 text-[11px] text-ash transition-colors hover:border-iron hover:text-chalk;
   }
 
   .icon-gold {
@@ -281,7 +331,7 @@
   }
 
   .field-control {
-    @apply w-full min-h-11 rounded-[8px] border border-iron bg-carbon px-4 py-3 text-[16px] text-chalk outline-none transition-colors placeholder:text-smoke focus:border-ash focus-visible:ring-1 focus-visible:ring-pulse-green;
+    @apply w-full min-h-11 rounded-[4px] border border-iron bg-carbon px-4 py-3 text-[16px] text-chalk outline-none transition-colors placeholder:text-smoke focus:border-chalk focus-visible:ring-1 focus-visible:ring-pulse-green;
   }
 
   .project-grid {
@@ -289,6 +339,13 @@
       linear-gradient(to right, rgb(var(--border) / 0.72) 1px, transparent 1px),
       linear-gradient(to bottom, rgb(var(--border) / 0.72) 1px, transparent 1px);
     background-size: 44px 44px;
+  }
+
+  .editorial-grid-bg {
+    background-image:
+      linear-gradient(to right, rgb(var(--border) / 0.42) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--border) / 0.42) 1px, transparent 1px);
+    background-size: 64px 64px;
   }
 
   /* Keep meaningful small text readable without changing its dark appearance. */

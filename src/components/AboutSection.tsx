@@ -1,4 +1,5 @@
 import Reveal from "@/components/Reveal";
+import { projects } from "@/data/portfolio";
 import { useReveal } from "@/lib/motion";
 import { motion } from "framer-motion";
 import {
@@ -75,55 +76,69 @@ const FOCUS_AREAS = [
 
 const STACK = [
   {
+    index: "01",
     label: "Mobile",
     items: ["Flutter", "Dart", "React Native", "Expo"],
   },
   {
+    index: "02",
     label: "Frontend",
     items: ["React", "Vue.js", "TypeScript", "Tailwind CSS", "HTML5", "CSS", "JavaScript", "Next.js"],
   },
   {
+    index: "03",
     label: "Backend & Data",
     items: ["Node.js", "Python", "PHP", "MySQL", "PostgreSQL", "Firebase", "Supabase"],
   },
   {
+    index: "04",
     label: "Tools",
     items: ["Git", "GitHub", "Figma", "Docker"],
   },
 ];
 
+const countProjectsUsingTech = (techName: string) => {
+  const normalized = techName.toLowerCase();
+  return projects.filter((project) =>
+    project.technologies.some((item) => {
+      const candidate = item.toLowerCase();
+      return candidate === normalized || candidate.startsWith(`${normalized} `);
+    })
+  ).length;
+};
+
 const AboutSection = () => {
   const reveal = useReveal();
   return (
-  <section id="about" className="section-shell scroll-mt-[72px] overflow-hidden">
-    <div className="page-container">
-      <Reveal className="section-heading-grid">
-        <div>
-          <p className="section-kicker">02 / ABOUT</p>
-          <h2 className="section-title text-balance">How I approach a build.</h2>
-        </div>
-        <p className="self-end text-[16px] leading-[1.65] text-smoke">
-          I start with the workflow, choose tools that fit, and connect clear interfaces to reliable backend systems.
-        </p>
-      </Reveal>
+    <section id="about" className="section-shell scroll-mt-6 overflow-hidden">
+      {/* ── Connected Section Header Band ── */}
+      <div className="section-header-band">
+        <Reveal className="section-heading-grid">
+          <div>
+            <p className="section-kicker">02 / ABOUT</p>
+            <h2 className="section-title text-balance">How I approach a build.</h2>
+          </div>
+          <p className="self-end text-[16px] leading-[1.65] text-smoke">
+            I start with the workflow, choose tools that fit, and connect clear interfaces to reliable backend systems.
+          </p>
+        </Reveal>
+      </div>
 
-      <motion.div
-        {...reveal(1)}
-        className="mt-8 overflow-hidden rounded-[8px] border border-graphite bg-carbon md:mt-10"
-      >
-        <div className="flex items-start gap-4 border-b border-graphite p-5 sm:p-7">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-pulse-green/30 bg-pulse-green/5">
+      {/* ── Connected Education & Focus Matrix ── */}
+      <motion.div {...reveal(1)} className="border-b border-graphite bg-carbon">
+        <div className="flex items-start gap-4 border-b border-graphite px-5 py-6 sm:px-8 lg:px-10">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[4px] border border-pulse-green/30 bg-pulse-green/5">
             <GraduationCap size={20} strokeWidth={1.5} className="text-pulse-green" aria-hidden="true" />
           </span>
           <div className="grid flex-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8">
             <div>
               <h3 className="section-kicker">EDUCATION</h3>
-              <p className="mt-2 text-[16px] leading-relaxed text-chalk">4th Year · BS Computer Science</p>
+              <p className="mt-2 text-[17px] leading-relaxed tracking-[-0.015em] text-chalk">4th Year · BS Computer Science</p>
               <p className="mt-1 text-[14px] leading-relaxed text-smoke">University of Mindanao — Tagum College</p>
             </div>
-            <div>
+            <div className="border-t border-graphite pt-3 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
               <p className="meta-text text-smoke">SPECIALIZATION</p>
-              <p className="mt-2 text-[14px] text-chalk">Artificial Intelligence</p>
+              <p className="mt-1.5 font-mono-retro text-[13px] text-pulse-green">Artificial Intelligence</p>
             </div>
           </div>
         </div>
@@ -135,69 +150,81 @@ const AboutSection = () => {
             return (
               <article
                 key={area.title}
-                className={`relative overflow-hidden p-5 sm:p-7 ${index > 0 ? "border-t border-graphite md:border-l md:border-t-0" : ""}`}
+                className={`relative overflow-hidden p-5 sm:p-8 ${index > 0 ? "border-t border-graphite md:border-l md:border-t-0" : ""}`}
               >
-                <span
-                  className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 select-none text-[72px] font-normal leading-none tracking-[-0.06em] text-graphite"
-                  aria-hidden="true"
-                >
-                  {area.index}
-                </span>
-                <div className="relative flex items-center">
-                  <Icon size={21} strokeWidth={1.5} className="icon-gold" aria-hidden="true" />
+                <div className="flex items-center justify-between border-b border-graphite pb-3">
+                  <Icon size={19} strokeWidth={1.5} className="icon-gold" aria-hidden="true" />
+                  <span className="font-mono-retro text-[11px] text-pulse-green" aria-hidden="true">
+                    {area.index}
+                  </span>
                 </div>
-                <h4 className="relative mt-4 text-[18px] font-normal tracking-[-0.01em] text-chalk">{area.title}</h4>
-                <p className="relative mt-3 text-[14px] leading-[1.65] text-smoke">{area.description}</p>
+                <h4 className="mt-4 text-[18px] font-normal tracking-[-0.02em] text-chalk">{area.title}</h4>
+                <p className="mt-2.5 text-[14px] leading-[1.65] text-smoke">{area.description}</p>
               </article>
             );
           })}
         </div>
       </motion.div>
 
-      <div className="mt-8 md:mt-10">
-        <div className="grid gap-6 border-y border-graphite py-6 lg:grid-cols-[0.6fr_1.4fr] lg:gap-10 lg:py-8">
+      {/* ── Connected Build Toolkit Grid ── */}
+      <div className="grid bg-carbon lg:grid-cols-[0.55fr_1.45fr]">
+        <div className="flex flex-col justify-between border-b border-graphite p-5 sm:p-8 lg:border-b-0 lg:border-r lg:p-10">
           <div>
             <p className="section-kicker">BUILD TOOLKIT</p>
-            <h3 className="mt-3 text-[26px] font-normal leading-[1.12] tracking-[-0.02em] text-chalk">
+            <h3 className="mt-3 text-[26px] font-normal leading-[1.1] tracking-[-0.03em] text-chalk">
               Tools I work with.
             </h3>
-            <p className="mt-4 max-w-md text-[14px] leading-[1.65] text-smoke">
-              Technologies from my mobile and web work, grouped by purpose.
+            <p className="mt-3 max-w-md text-[14px] leading-[1.65] text-smoke">
+              Technologies from my mobile and web work, grouped by layer. Numbers indicate featured portfolio builds using that tool.
             </p>
           </div>
+          <p className="meta-text mt-6 hidden text-smoke/50 lg:block">SPECIFICATION // STACK MATRIX</p>
+        </div>
 
-          <div className="grid sm:grid-cols-2">
-            {STACK.map((group, index) => {
-              const LeadIcon = ICON_MAP[group.items[0].toLowerCase()] ?? Code2;
-              return (
-                <article
-                  key={group.label}
-                  className={`py-5 sm:px-5 ${index % 2 === 1 ? "sm:border-l sm:border-graphite" : ""} ${
-                    index >= 2 ? "border-t border-graphite" : index === 1 ? "border-t border-graphite sm:border-t-0" : ""
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <LeadIcon size={18} strokeWidth={1.5} className="icon-gold" aria-hidden="true" />
-                    <h4 className="text-[14px] font-normal text-chalk">{group.label}</h4>
+        <div className="grid sm:grid-cols-2">
+          {STACK.map((group, index) => {
+            const LeadIcon = ICON_MAP[group.items[0].toLowerCase()] ?? Code2;
+            return (
+              <article
+                key={group.label}
+                className={`p-5 sm:p-6 lg:p-7 ${index % 2 === 1 ? "sm:border-l sm:border-graphite" : ""} ${
+                  index >= 2 ? "border-t border-graphite" : index === 1 ? "border-t border-graphite sm:border-t-0" : ""
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <LeadIcon size={16} strokeWidth={1.5} className="icon-gold" aria-hidden="true" />
+                    <h4 className="font-mono-retro text-[12px] uppercase tracking-[0.04em] text-chalk">{group.label}</h4>
                   </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {group.items.map((name) => {
-                      const Icon = ICON_MAP[name.toLowerCase()] ?? Code2;
-                      return (
-                        <span key={name} className="tech-tag">
-                          <Icon size={12} strokeWidth={1.5} aria-hidden="true" /> {name}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                  <span className="font-mono-retro text-[10px] text-smoke/40" aria-hidden="true">{group.index}</span>
+                </div>
+                <div className="mt-3.5 flex flex-wrap gap-1.5">
+                  {group.items.map((name) => {
+                    const Icon = ICON_MAP[name.toLowerCase()] ?? Code2;
+                    const usedCount = countProjectsUsingTech(name);
+                    return (
+                      <span key={name} className="tech-tag">
+                        <Icon size={12} strokeWidth={1.5} aria-hidden="true" />
+                        <span>{name}</span>
+                        {usedCount > 0 && (
+                          <span
+                            aria-hidden="true"
+                            className="ml-0.5 rounded-[2px] bg-pulse-green/10 px-1 py-0.2 text-[10px] text-pulse-green"
+                            title={`Used in ${usedCount} portfolio project${usedCount > 1 ? "s" : ""}`}
+                          >
+                            {usedCount}
+                          </span>
+                        )}
+                      </span>
+                    );
+                  })}
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
-    </div>
-  </section>
+    </section>
   );
 };
 

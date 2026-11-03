@@ -1,14 +1,20 @@
 import { AnimatePresence, motion, useMotionValue } from "framer-motion";
-import { ArrowUpRight, FileText, Menu, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  FileText,
+  Menu,
+  X,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motionTokens, useMotionSettings } from "@/lib/motion";
 import ThemeSwitch from "./ThemeSwitch";
 
 const NAV_ITEMS = [
-  { label: "WORK", sectionId: "projects", pageHref: "/projects" },
-  { label: "ABOUT", sectionId: "about", pageHref: "/#about" },
-  { label: "CREDENTIALS", sectionId: "certifications", pageHref: "/certifications" },
+  { label: "WORK", index: "01", sectionId: "projects", pageHref: "/projects" },
+  { label: "ABOUT", index: "02", sectionId: "about", pageHref: "/#about" },
+  { label: "GITHUB", index: "03", sectionId: "github", pageHref: "/#github" },
+  { label: "CREDENTIALS", index: "04", sectionId: "certifications", pageHref: "/certifications" },
 ];
 
 const HOME_SECTIONS = ["home", "projects", "about", "github", "certifications", "contact"];
@@ -134,86 +140,152 @@ const Navbar = () => {
 
   const contactHref = isHome ? "/#contact" : "/contact";
   const contactActive = isHome ? activeSection === "contact" : location.pathname === "/contact";
+  const homeActive = isHome && activeSection === "home";
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b backdrop-blur-md transition-[background-color,border-color] duration-300 ${
+      data-floating-nav
+      className={`sticky top-0 z-50 border-b backdrop-blur-md transition-[background-color,border-color] duration-300 lg:flex lg:h-screen lg:flex-col lg:justify-between lg:border-b-0 lg:border-r lg:border-graphite ${
         scrolled ? "border-iron bg-carbon/95" : "border-graphite bg-obsidian/90"
       }`}
     >
-      <div
-        className={`page-container flex h-[72px] items-center justify-between gap-6 lg:transition-[height] lg:duration-300 ${
-          scrolled ? "lg:h-[62px]" : "lg:h-[72px]"
-        }`}
-      >
-        <Link
-          to="/"
-          onClick={() => setMobileOpen(false)}
-          className="group flex items-center gap-3 text-[18px] font-normal tracking-[-0.02em] text-chalk"
-          aria-label="Jay Factolarin Esmalla home"
-        >
-          <span className="grid h-7 w-7 place-items-center rounded-full border border-graphite bg-graphite text-[10px] text-chalk transition-all group-hover:border-pulse-green group-hover:ring-1 group-hover:ring-pulse-green/40">
-            JE
-          </span>
-          <span className="sm:hidden">Jay F. Esmalla</span>
-          <span className="hidden sm:inline">Jay Factolarin Esmalla</span>
-        </Link>
-
-        <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary navigation">
-          {NAV_ITEMS.map((item) => {
-            const active = isActive(item.sectionId, item.pageHref);
-            return (
-              <Link
-                key={item.label}
-                to={hrefFor(item.sectionId, item.pageHref)}
-                aria-current={active ? isHome ? "location" : "page" : undefined}
-                className={`relative py-2 text-[13px] font-normal tracking-[0.02em] transition-colors ${
-                  active ? "text-chalk" : "text-smoke hover:text-chalk"
-                }`}
-              >
-                {item.label}
-                {active && (
-                  <motion.span
-                    layoutId="desktop-nav-active"
-                    className="absolute inset-x-0 -bottom-[2px] h-px bg-pulse-green"
-                    transition={{ duration: reduced ? 0 : motionTokens.feedback, ease: motionTokens.ease }}
-                  />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="hidden items-center gap-3 lg:flex">
-          <ThemeSwitch />
-          <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button">
-            VIEW CV <FileText size={13} />
-          </a>
+      {/* ── Desktop Connected Editorial Spine ── */}
+      <div className="hidden lg:flex lg:h-full lg:flex-col lg:justify-between">
+        {/* Top Identity Cell (aligned with Hero h-14 status bar) */}
+        <div className="flex h-14 shrink-0 items-center border-b border-graphite px-5">
           <Link
-            to={contactHref}
-            aria-current={contactActive ? isHome ? "location" : "page" : undefined}
-            className={contactActive ? "ghost-button" : "primary-pill"}
+            to={isHome ? "/#home" : "/"}
+            onClick={() => setMobileOpen(false)}
+            className="group flex items-center gap-3 text-[15px] font-normal tracking-[-0.02em] text-chalk"
+            aria-label="Jay Esmalla home"
           >
-            LET&apos;S CHAT <ArrowUpRight size={14} />
+            <span
+              aria-hidden="true"
+              className={`grid h-6 w-6 place-items-center rounded-[2px] border font-mono-retro text-[10px] transition-colors ${
+                homeActive
+                  ? "border-pulse-green bg-pulse-green/10 text-pulse-green"
+                  : "border-graphite bg-carbon text-chalk group-hover:border-pulse-green"
+              }`}
+            >
+              JE
+            </span>
+            <span>Jay Esmalla</span>
           </Link>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 lg:hidden">
+        {/* Middle Continuous Flow Track */}
+        <div className="flex flex-1 flex-col justify-center px-5 py-6">
+          <div className="mb-4 flex items-center justify-between">
+            <span className="meta-text text-smoke/60">INDEX</span>
+            <span className="font-mono-retro text-[10px] text-pulse-green">01–04</span>
+          </div>
+
+          <nav className="relative flex flex-col" aria-label="Primary navigation">
+            {/* Continuous vertical spine track */}
+            <div className="pointer-events-none absolute bottom-3 left-[4px] top-3 w-px bg-graphite" aria-hidden="true">
+              <motion.div
+                className="h-full w-full origin-top bg-pulse-green"
+                style={{ scaleY: scrollProgress }}
+              />
+            </div>
+
+            {NAV_ITEMS.map((item) => {
+              const active = isActive(item.sectionId, item.pageHref);
+              return (
+                <Link
+                  key={item.label}
+                  to={hrefFor(item.sectionId, item.pageHref)}
+                  aria-current={active ? isHome ? "location" : "page" : undefined}
+                  className={`group relative flex items-center gap-3.5 py-3 pl-5 font-mono-retro text-[11px] tracking-[0.06em] transition-colors ${
+                    active ? "text-chalk" : "text-smoke hover:text-chalk"
+                  }`}
+                >
+                  {/* Node point on the spine */}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute left-[1px] top-1/2 h-[7px] w-[7px] -translate-y-1/2 rounded-[1px] border transition-colors ${
+                      active
+                        ? "border-pulse-green bg-pulse-green shadow-[0_0_8px_var(--color-pulse-green)]"
+                        : "border-iron bg-carbon group-hover:border-chalk"
+                    }`}
+                  />
+                  <span aria-hidden="true" className={active ? "text-pulse-green" : "text-smoke/50 group-hover:text-smoke"}>
+                    {item.index}
+                  </span>
+                  <span>{item.label}</span>
+
+                  {/* Active bridge line on the right shared border */}
+                  {active && (
+                    <motion.span
+                      layoutId="desktop-nav-active"
+                      className="absolute -right-5 bottom-1.5 top-1.5 w-[2px] bg-pulse-green"
+                      transition={{ duration: reduced ? 0 : motionTokens.feedback, ease: motionTokens.ease }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Bottom Actions Cell */}
+        <div className="border-t border-graphite p-4">
+          <Link
+            to={contactHref}
+            aria-current={contactActive ? isHome ? "location" : "page" : undefined}
+            className={`w-full justify-between px-3.5 py-2.5 ${contactActive ? "ghost-button" : "primary-pill"}`}
+          >
+            <span>LET&apos;S CHAT</span>
+            <ArrowUpRight size={13} />
+          </Link>
+
+          <div className="mt-2.5 flex items-center gap-2">
+            <a
+              href="/Jay_Esmalla_Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View CV (opens in a new tab)"
+              className="ghost-button min-h-10 flex-1 justify-between px-3 py-2 text-[11px]"
+            >
+              <span>VIEW CV</span>
+              <FileText size={12} />
+            </a>
+            <ThemeSwitch />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Mobile & Tablet Connected Header Bar ── */}
+      <div className="flex h-14 items-center justify-between gap-4 px-5 lg:hidden">
+        <Link
+          to={isHome ? "/#home" : "/"}
+          onClick={() => setMobileOpen(false)}
+          className="flex items-center gap-2.5 text-[15px] font-normal tracking-[-0.02em] text-chalk"
+          aria-label="Jay Esmalla home"
+        >
+          <span className="grid h-6 w-6 place-items-center rounded-[2px] border border-graphite bg-carbon font-mono-retro text-[10px] text-pulse-green">
+            JE
+          </span>
+          <span>Jay Esmalla</span>
+        </Link>
+
+        <div className="flex shrink-0 items-center gap-2">
           <ThemeSwitch />
           <button
             ref={toggleRef}
             type="button"
             onClick={() => setMobileOpen((open) => !open)}
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-[8px] border border-graphite text-chalk transition-colors hover:border-iron lg:hidden"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-[4px] border border-graphite text-chalk transition-colors hover:border-iron"
             aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={mobileOpen}
             aria-controls="mobile-navigation"
           >
-            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+            {mobileOpen ? <X size={17} /> : <Menu size={17} />}
           </button>
         </div>
       </div>
 
+      {/* ── Reading Progress Bar ── */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-graphite" aria-hidden="true">
         <motion.div
           className="h-full origin-left bg-pulse-green"
@@ -221,6 +293,7 @@ const Navbar = () => {
         />
       </div>
 
+      {/* ── Mobile Navigation Drawer ── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -228,9 +301,9 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0, transition: { duration: reduced ? 0 : motionTokens.exit } }}
             transition={{ duration: reduced ? 0 : motionTokens.overlay, ease: motionTokens.ease }}
-            className="absolute inset-x-0 top-full max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-b border-t border-graphite bg-obsidian lg:hidden"
+            className="absolute inset-x-0 top-full max-h-[calc(100dvh-56px)] overflow-y-auto overscroll-contain border-b border-t border-graphite bg-carbon lg:hidden"
           >
-            <nav ref={mobileNavRef} id="mobile-navigation" aria-label="Mobile navigation" className="page-container flex flex-col py-5">
+            <nav ref={mobileNavRef} id="mobile-navigation" aria-label="Mobile navigation" className="flex flex-col px-5 py-4">
               {NAV_ITEMS.map((item) => {
                 const active = isActive(item.sectionId, item.pageHref);
                 return (
@@ -239,23 +312,37 @@ const Navbar = () => {
                     to={hrefFor(item.sectionId, item.pageHref)}
                     onClick={() => setMobileOpen(false)}
                     aria-current={active ? isHome ? "location" : "page" : undefined}
-                    className={`flex items-center justify-between border-b border-graphite py-4 text-[14px] transition-colors last:border-b-0 ${
+                    className={`flex items-center justify-between border-b border-graphite py-3.5 font-mono-retro text-[12px] tracking-[0.05em] transition-colors last:border-b-0 ${
                       active ? "text-chalk" : "text-smoke hover:text-chalk"
                     }`}
                   >
-                    {item.label}
-                    <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-chalk" : "bg-transparent"}`} aria-hidden="true" />
+                    <span className="flex items-center gap-3">
+                      <span aria-hidden="true" className="text-[11px] text-pulse-green">{item.index}</span>
+                      <span>{item.label}</span>
+                    </span>
+                    <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-pulse-green" : "bg-transparent"}`} aria-hidden="true" />
                   </Link>
                 );
               })}
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <a href="/Jay_Esmalla_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View CV (opens in a new tab)" className="ghost-button justify-center" onClick={() => {
-                  setMobileOpen(false);
-                  toggleRef.current?.focus();
-                }}>
+              <div className="mt-4 grid grid-cols-2 gap-2.5">
+                <a
+                  href="/Jay_Esmalla_Resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="View CV (opens in a new tab)"
+                  className="ghost-button justify-center"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    toggleRef.current?.focus();
+                  }}
+                >
                   VIEW CV <FileText size={13} />
                 </a>
-                <Link to={contactHref} onClick={() => setMobileOpen(false)} className={contactActive ? "ghost-button justify-center" : "primary-pill justify-center"}>
+                <Link
+                  to={contactHref}
+                  onClick={() => setMobileOpen(false)}
+                  className={contactActive ? "ghost-button justify-center" : "primary-pill justify-center"}
+                >
                   LET&apos;S CHAT <ArrowUpRight size={14} />
                 </Link>
               </div>

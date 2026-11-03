@@ -22,7 +22,7 @@ export default function Portrait() {
   return <figure
     aria-label="Portrait of Jay Factolarin Esmalla"
     data-portrait-theme={theme}
-    className="portrait-frame relative mx-auto aspect-[3/4] w-full max-w-[195px] overflow-hidden rounded-[8px] border border-graphite bg-portrait-surface sm:max-w-[240px] lg:mx-0 lg:max-w-none"
+    className="portrait-frame corner-ticks relative mx-auto aspect-[3/4] w-full max-w-[210px] overflow-hidden rounded-[4px] border border-graphite bg-portrait-surface sm:max-w-[250px] lg:mx-0 lg:max-w-none"
   >
     {images[theme] !== "ready" && <div className="absolute inset-0 grid place-items-center" role="status">
       <div className="text-center">
@@ -47,8 +47,8 @@ export default function Portrait() {
       className="portrait-image absolute inset-0 h-full w-full object-cover object-center"
     />)}
 
-    <figcaption className="portrait-caption absolute inset-x-0 bottom-0 px-3 pb-3 pt-12 lg:px-4 lg:pb-4">
-      <p className="text-[12px] font-normal leading-snug text-chalk lg:text-[13px]">Jay Factolarin Esmalla</p>
+    <figcaption className="portrait-caption absolute inset-x-0 bottom-0 px-3.5 pb-3.5 pt-12 lg:px-4 lg:pb-4">
+      <p className="text-[13px] font-normal leading-snug tracking-[-0.01em] text-chalk">Jay Esmalla</p>
       <p className="meta-text mt-1 text-smoke">CS / AI · Tagum City, PH</p>
     </figcaption>
   </figure>;

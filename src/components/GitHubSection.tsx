@@ -93,7 +93,6 @@ const buildColumns = (weeks: Week[]): (Day | null)[][] =>
     return column;
   });
 
-// Counter state stays here so each animation frame leaves the calendar untouched.
 const ContributionTotal = ({ total }: { total: number }) => {
   const { reduced } = useMotionSettings();
   const [displayTotal, setDisplayTotal] = useState(reduced ? total : 0);
@@ -123,7 +122,6 @@ const ContributionTotal = ({ total }: { total: number }) => {
 const GitHubSection = () => {
   const reveal = useReveal();
   const [activeTab, setActiveTab] = useState("last");
-  // GitHub Pages serves static files, so production uses the public feed directly.
   const publicUrl = import.meta.env.DEV
     ? `/api/github-public/${githubConfig.username}`
     : `https://github-contributions-api.jogruber.de/v4/${githubConfig.username}`;
@@ -176,8 +174,9 @@ const GitHubSection = () => {
   const activeDays = days.filter((day) => day.count > 0).length;
 
   return (
-    <section id="github" className="section-shell scroll-mt-[72px]">
-      <div className="page-container">
+    <section id="github" className="section-shell scroll-mt-6">
+      {/* ── Connected Section Header Band ── */}
+      <div className="section-header-band">
         <Reveal className="section-heading-grid">
           <div>
             <p className="section-kicker">03 / GITHUB ACTIVITY</p>
@@ -192,129 +191,124 @@ const GitHubSection = () => {
             </a>
           </div>
         </Reveal>
+      </div>
 
-        <motion.div
-          {...reveal(1, 8)}
-          className="mt-8 rounded-[8px] border border-graphite p-4 md:mt-10 md:p-5"
-        >
-          {/* ── Header: number + label + tabs in one compact row ── */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-graphite pb-3">
-            <div className="flex items-baseline gap-2.5">
-              <p className="text-[26px] font-normal tracking-[-0.03em] text-chalk leading-none">
-                {loading || error ? "—" : <ContributionTotal total={data?.total ?? 0} />}
-              </p>
-              <div className="leading-none">
-                <span className="meta-text text-smoke">CONTRIBUTIONS</span>
-                {!loading && !error && (
-                  <span className="meta-text ml-2 text-smoke/50">· PUBLIC ONLY</span>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Contribution period">
-              {YEAR_TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  aria-pressed={activeTab === tab.key}
-                  onClick={() => { setActiveTab(tab.key); loadFeed(); }}
-                  className={`rounded-[4px] border px-2.5 py-1 text-[11px] tracking-[0.03em] transition-colors ${
-                    activeTab === tab.key
-                      ? "border-pulse-green text-pulse-green"
-                      : "border-graphite text-smoke hover:border-iron hover:text-chalk"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* ── Loading ── */}
-          {loading && (
-            <div role="status" className="flex h-[120px] items-center justify-center gap-2.5 text-smoke">
-              <Loader2 size={13} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
-              <span className="meta-text">QUERYING GITHUB</span>
-            </div>
-          )}
-
-          {/* ── Error ── */}
-          {!loading && error && (
-            <div role="status" className="flex min-h-[120px] flex-col items-center justify-center gap-3 py-4 text-smoke">
-              <div className="flex max-w-md items-start gap-2 text-[13px] leading-relaxed">
-                <AlertCircle size={15} className="mt-0.5 shrink-0" aria-hidden="true" /> {error}
-              </div>
-              <a href={githubConfig.profileUrl} target="_blank" rel="noopener noreferrer" className="ghost-button">
-                OPEN PROFILE <ArrowUpRight size={13} />
-              </a>
-            </div>
-          )}
-
-          {/* ── Calendar ── */}
-          {!loading && !error && data && (
-            <div className="mt-3">
-              {/* Hidden accessibility hint */}
-              <p id="github-calendar-help" className="sr-only">
-                Swipe or use the arrow keys to scroll the calendar.
-              </p>
-
-              {days.length > 0 ? (
-                <>
-                  <div
-                    role="region"
-                    aria-label="Contribution calendar"
-                    aria-describedby="github-calendar-summary github-calendar-help"
-                    tabIndex={0}
-                    className="scroll-fade-right overflow-x-auto rounded-[2px] pb-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pulse-green"
-                  >
-                    <div aria-hidden="true" className="flex min-w-max gap-[3px]">
-                      {columns.map((column, columnIndex) => (
-                        <div key={columnIndex} className="flex flex-col gap-[3px]">
-                          {column.map((day, rowIndex) => (
-                            day ? (
-                              <div
-                                key={`${day.date}-${rowIndex}`}
-                                title={`${day.count} contribution${day.count === 1 ? "" : "s"} on ${day.date}`}
-                                className="rounded-[2px] border border-graphite"
-                                style={{ width: CELL, height: CELL, background: LEVELS[countToLevel(day.count)] }}
-                              />
-                            ) : (
-                              <div key={`empty-${rowIndex}`} style={{ width: CELL, height: CELL }} />
-                            )
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* ── Footer: summary + legend on same row ── */}
-                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                    <p id="github-calendar-summary" className="text-[12px] text-smoke">
-                      {firstDate && lastDate
-                        ? `${activeDays} active day${activeDays === 1 ? "" : "s"} · ${formatDate(firstDate)} – ${formatDate(lastDate)}`
-                        : "No activity recorded for this period."}
-                    </p>
-                    <div aria-hidden="true" className="flex items-center gap-1">
-                      <span className="meta-text mr-1 text-smoke">LESS</span>
-                      {LEVELS.map((level) => (
-                        <span
-                          key={level}
-                          className="rounded-[2px] border border-graphite"
-                          style={{ width: CELL, height: CELL, background: level }}
-                        />
-                      ))}
-                      <span className="meta-text ml-1 text-smoke">MORE</span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <p id="github-calendar-summary" className="py-4 text-[13px] text-smoke">
-                  No activity recorded for this period yet.
-                </p>
+      {/* ── Connected Telemetry Panel ── */}
+      <motion.div
+        {...reveal(1, 8)}
+        className="bg-carbon px-5 py-6 sm:px-8 lg:px-10 lg:py-8"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-graphite pb-4">
+          <div className="flex items-baseline gap-2.5">
+            <p className="text-[28px] font-normal tracking-[-0.04em] text-chalk leading-none">
+              {loading || error ? "—" : <ContributionTotal total={data?.total ?? 0} />}
+            </p>
+            <div className="leading-none">
+              <span className="meta-text text-smoke">CONTRIBUTIONS</span>
+              {!loading && !error && (
+                <span className="meta-text ml-2 text-smoke/50">· PUBLIC ONLY</span>
               )}
             </div>
-          )}
-        </motion.div>
-      </div>
+          </div>
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Contribution period">
+            {YEAR_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                aria-pressed={activeTab === tab.key}
+                onClick={() => { setActiveTab(tab.key); loadFeed(); }}
+                className={`rounded-[3px] border px-2.5 py-1 font-mono-retro text-[11px] tracking-[0.04em] transition-colors ${
+                  activeTab === tab.key
+                    ? "border-pulse-green bg-pulse-green/10 text-pulse-green"
+                    : "border-graphite text-smoke hover:border-iron hover:text-chalk"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {loading && (
+          <div role="status" className="flex h-[120px] items-center justify-center gap-2.5 text-smoke">
+            <Loader2 size={13} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
+            <span className="meta-text">QUERYING GITHUB</span>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div role="status" className="flex min-h-[120px] flex-col items-center justify-center gap-3 py-4 text-smoke">
+            <div className="flex max-w-md items-start gap-2 text-[13px] leading-relaxed">
+              <AlertCircle size={15} className="mt-0.5 shrink-0" aria-hidden="true" /> {error}
+            </div>
+            <a href={githubConfig.profileUrl} target="_blank" rel="noopener noreferrer" className="ghost-button">
+              OPEN PROFILE <ArrowUpRight size={13} />
+            </a>
+          </div>
+        )}
+
+        {!loading && !error && data && (
+          <div className="mt-4">
+            <p id="github-calendar-help" className="sr-only">
+              Swipe or use the arrow keys to scroll the calendar.
+            </p>
+
+            {days.length > 0 ? (
+              <>
+                <div
+                  role="region"
+                  aria-label="Contribution calendar"
+                  aria-describedby="github-calendar-summary github-calendar-help"
+                  tabIndex={0}
+                  className="scroll-fade-right overflow-x-auto rounded-[2px] pb-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pulse-green"
+                >
+                  <div aria-hidden="true" className="flex min-w-max gap-[3px]">
+                    {columns.map((column, columnIndex) => (
+                      <div key={columnIndex} className="flex flex-col gap-[3px]">
+                        {column.map((day, rowIndex) => (
+                          day ? (
+                            <div
+                              key={`${day.date}-${rowIndex}`}
+                              title={`${day.count} contribution${day.count === 1 ? "" : "s"} on ${day.date}`}
+                              className="rounded-[2px] border border-graphite"
+                              style={{ width: CELL, height: CELL, background: LEVELS[countToLevel(day.count)] }}
+                            />
+                          ) : (
+                            <div key={`empty-${rowIndex}`} style={{ width: CELL, height: CELL }} />
+                          )
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-graphite pt-3">
+                  <p id="github-calendar-summary" className="font-mono-retro text-[11px] text-smoke">
+                    {firstDate && lastDate
+                      ? `${activeDays} active day${activeDays === 1 ? "" : "s"} · ${formatDate(firstDate)} – ${formatDate(lastDate)}`
+                      : "No activity recorded for this period."}
+                  </p>
+                  <div aria-hidden="true" className="flex items-center gap-1">
+                    <span className="meta-text mr-1 text-smoke">LESS</span>
+                    {LEVELS.map((level) => (
+                      <span
+                        key={level}
+                        className="rounded-[2px] border border-graphite"
+                        style={{ width: CELL, height: CELL, background: level }}
+                      />
+                    ))}
+                    <span className="meta-text ml-1 text-smoke">MORE</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p id="github-calendar-summary" className="py-4 text-[13px] text-smoke">
+                No activity recorded for this period yet.
+              </p>
+            )}
+          </div>
+        )}
+      </motion.div>
     </section>
   );
 };

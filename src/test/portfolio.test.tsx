@@ -85,9 +85,9 @@ describe("ProjectsSection", () => {
       </MemoryRouter>,
     );
     expect(screen.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
-      "1561 VULSHOP", "Aralytics", "LakBai", "PRISM", "Thryfto", "LolasKusina",
+      "1561 VULSHOP", "Aralytics", "LakBai", "PRISM", "Thryfto",
     ]);
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 6 of 7 projects");
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 5 of 7 projects");
     const allProjectsLink = screen.getByRole("link", { name: "VIEW ALL 7 PROJECTS" });
     expect(allProjectsLink).toHaveAttribute("href", "/projects");
     fireEvent.click(allProjectsLink);

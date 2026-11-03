@@ -70,7 +70,8 @@ export const ScrollToHash = () => {
       const awaitingHeight = savedTop !== undefined && (maxTop < savedTop || hasPendingSections) && !allowFallback;
 
       const destination = target ?? main;
-      const headerHeight = document.querySelector("header")?.getBoundingClientRect().height ?? 72;
+      const header = document.querySelector<HTMLElement>("header");
+      const headerHeight = header?.hasAttribute("data-floating-nav") ? 0 : (header?.getBoundingClientRect().height ?? 72);
       const sectionPaddingTop = Number.parseFloat(window.getComputedStyle(destination).paddingTop) || 0;
       const sectionContentTop = window.scrollY + destination.getBoundingClientRect().top + sectionPaddingTop;
       const top = savedTop !== undefined

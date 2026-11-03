@@ -52,23 +52,27 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
   }, [pathname]);
 
   return (
-  <div className="min-h-screen bg-background text-foreground flex flex-col">
-    <a
-      href="#main-content"
-      className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-chalk focus:px-5 focus:py-3 focus:text-obsidian"
-      onClick={(event) => {
-        event.preventDefault();
-        const main = document.getElementById("main-content");
-        main?.focus({ preventScroll: true });
-        main?.scrollIntoView({ block: "start", behavior: "instant" });
-      }}
-    >
-      Skip to content
-    </a>
-    <Navbar />
-    <main id="main-content" tabIndex={-1} className="flex-1 scroll-mt-[88px]">{children}</main>
-    <Footer />
-  </div>
+    <div className="min-h-screen bg-obsidian text-foreground">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-[4px] focus:bg-chalk focus:px-5 focus:py-3 focus:text-obsidian"
+        onClick={(event) => {
+          event.preventDefault();
+          const main = document.getElementById("main-content");
+          main?.focus({ preventScroll: true });
+          main?.scrollIntoView({ block: "start", behavior: "instant" });
+        }}
+      >
+        Skip to content
+      </a>
+      <div className="mx-auto flex min-h-screen max-w-[1380px] flex-col border-x border-graphite bg-carbon lg:grid lg:grid-cols-[216px_minmax(0,1fr)]">
+        <Navbar />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <main id="main-content" tabIndex={-1} className="flex-1 scroll-mt-6">{children}</main>
+          <Footer />
+        </div>
+      </div>
+    </div>
   );
 };
 
