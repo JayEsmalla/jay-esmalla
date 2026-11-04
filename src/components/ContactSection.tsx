@@ -171,13 +171,14 @@ const ContactSection = () => {
           onSubmit={handleSubmit}
           noValidate
           aria-busy={isSending}
-          className="bg-carbon p-6 sm:p-8 lg:p-10"
+          className="bg-carbon p-6 sm:p-8 lg:p-10 xl:p-12"
         >
-          <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+          <div className="max-w-3xl">
+            <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
 
-          <p className="section-kicker mb-5">SEND A MESSAGE</p>
+            <p className="section-kicker mb-5">SEND A MESSAGE</p>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label htmlFor="contact-name" className="mb-1.5 block text-[13px] text-smoke">
                 Name <span className="text-pulse-green">*</span>
@@ -292,6 +293,7 @@ const ContactSection = () => {
               </motion.div>
             )}
           </AnimatePresence>
+          </div>
         </motion.form>
       </div>
     </section>

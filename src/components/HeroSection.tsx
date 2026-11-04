@@ -35,14 +35,14 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
       </motion.div>
 
       {/* ── Main Connected Editorial Grid ── */}
-      <div className="grid border-b border-graphite bg-carbon lg:grid-cols-[minmax(0,1.42fr)_minmax(260px,0.58fr)]">
+      <div className="grid border-b border-graphite bg-carbon lg:grid-cols-[minmax(0,1.42fr)_minmax(260px,0.58fr)] xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.5fr)]">
         {/* ── Left: Editorial Headline + Bio (No buttons) ── */}
-        <div className="editorial-grid-bg relative flex flex-col justify-center p-6 sm:p-8 lg:p-11">
+        <div className="editorial-grid-bg relative flex flex-col justify-center p-6 sm:p-8 lg:p-11 xl:p-14">
           <motion.p {...entrance(0.03)} className="section-kicker">
             MOBILE + WEB DEVELOPER
           </motion.p>
 
-          <h1 className="mt-5 max-w-[680px] font-display text-balance text-[42px] font-bold leading-[0.95] tracking-[-0.04em] text-chalk [font-variation-settings:'opsz'_96] sm:text-[54px] md:text-[62px] lg:text-[68px]">
+          <h1 className="mt-5 max-w-[760px] font-display text-balance text-[42px] font-bold leading-[0.95] tracking-[-0.04em] text-chalk [font-variation-settings:'opsz'_96] sm:text-[54px] md:text-[62px] lg:text-[68px] xl:text-[76px]">
             {HERO_LINES.map((line, index) => (
               <span key={line} className="block overflow-hidden pb-[0.08em] -mb-[0.08em]">
                 <motion.span

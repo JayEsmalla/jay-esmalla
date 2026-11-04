@@ -121,7 +121,7 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
       >
         Skip to content
       </a>
-      <div className="mx-auto flex min-h-screen max-w-[1380px] flex-col border-x border-graphite bg-carbon lg:grid lg:grid-cols-[216px_minmax(0,1fr)]">
+      <div className="flex min-h-screen w-full flex-col bg-carbon lg:grid lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)]">
         <Navbar onSectionChange={setActiveSection} />
         <div className="flex min-w-0 flex-1 flex-col">
           <main id="main-content" tabIndex={-1} className="flex-1 scroll-mt-6">{children}</main>

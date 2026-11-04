@@ -22,7 +22,7 @@ export default function Portrait() {
   return <figure
     aria-label="Portrait of Jay Esmalla"
     data-portrait-theme={theme}
-    className="portrait-frame corner-ticks relative mx-auto aspect-[3/4] w-full max-w-[210px] overflow-hidden rounded-[4px] border border-graphite bg-portrait-surface sm:max-w-[250px] lg:mx-0 lg:max-w-none"
+    className="portrait-frame corner-ticks relative mx-auto aspect-[3/4] w-full max-w-[210px] overflow-hidden rounded-[4px] border border-graphite bg-portrait-surface sm:max-w-[250px] lg:max-w-[280px] xl:max-w-[320px]"
   >
     {images[theme] !== "ready" && <div className="absolute inset-0 grid place-items-center" role="status">
       <div className="text-center">
