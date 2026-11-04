@@ -28,7 +28,7 @@ const filters: { key: ProjectFilter; label: string }[] = [
   { key: "web", label: "WEB" },
 ];
 
-const featuredOrder = ["vulshop", "aralytics", "lakbai", "prism", "thryfto"];
+const featuredOrder = ["prism", "vulshop", "aralytics", "lakbai", "thryfto"];
 const projectRank = (project: Project) => {
   const rank = featuredOrder.indexOf(project.id);
   return rank === -1 ? featuredOrder.length : rank;
@@ -130,7 +130,7 @@ export interface ProjectsSectionProps {
   showAllByDefault?: boolean;
 }
 
-const ProjectsSection = ({ initialVisibleCount = 5, showAllByDefault = false }: ProjectsSectionProps = {}) => {
+const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: ProjectsSectionProps = {}) => {
   const reveal = useReveal();
   const { reduced, compact } = useMotionSettings();
   const animateLayout = !reduced && !compact && !showAllByDefault;

@@ -56,7 +56,7 @@ describe("ProjectsSection", () => {
   });
 
   it("opens project case-study details and restores the originating focus", async () => {
-    render(<MemoryRouter><ProjectsSection /></MemoryRouter>);
+    render(<MemoryRouter><ProjectsSection showAllByDefault /></MemoryRouter>);
     const thryftoCard = screen.getByRole("heading", { name: "Thryfto" }).closest("article");
     expect(thryftoCard).not.toBeNull();
 
@@ -85,9 +85,9 @@ describe("ProjectsSection", () => {
       </MemoryRouter>,
     );
     expect(screen.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
-      "1561 VULSHOP", "Aralytics", "LakBai", "PRISM", "Thryfto",
+      "PRISM", "1561 VULSHOP", "Aralytics",
     ]);
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 5 of 7 projects");
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 3 of 7 projects");
     const allProjectsLink = screen.getByRole("link", { name: "VIEW ALL 7 PROJECTS" });
     expect(allProjectsLink).toHaveAttribute("href", "/projects");
     fireEvent.click(allProjectsLink);
