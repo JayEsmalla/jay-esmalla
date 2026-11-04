@@ -55,21 +55,21 @@ const FOCUS_AREAS = [
     icon: Braces,
     title: "Product Engineering",
     description:
-      "Turning requirements into mobile and web apps, from the interface to the systems and data behind it.",
+      "End-to-end mobile and web builds, from client state to relational data models.",
   },
   {
     index: "02",
     icon: BrainCircuit,
     title: "AI & Intelligent Systems",
     description:
-      "Studying AI, with an interest in machine learning and automation that improve real workflows.",
+      "Machine learning, simulation, and practical automation applied to real operational problems.",
   },
   {
     index: "03",
     icon: Sparkles,
     title: "Systems with Clear UX",
     description:
-      "Clear flows, readable interfaces, and maintainable code that make complex systems easier to use.",
+      "Direct workflows and self-explanatory interfaces that teams can adopt without training.",
   },
 ];
 
@@ -101,11 +101,7 @@ const AboutSection = () => {
   return (
     <section id="about" className="section-shell scroll-mt-6 overflow-hidden">
       {/* ── Connected Section Header Band ── */}
-      <SectionHeader number="02" kicker="ABOUT" title="How I approach a build.">
-        <p className="text-[16px] leading-[1.65] text-smoke">
-          I start with the workflow, choose tools that fit, and connect clear interfaces to reliable backend systems.
-        </p>
-      </SectionHeader>
+      <SectionHeader number="02" kicker="ABOUT" title="How I approach a build." />
 
       {/* ── Connected Education & Focus Matrix ── */}
       <motion.div {...reveal(1)} className="border-b border-graphite bg-carbon">
@@ -163,18 +159,13 @@ const AboutSection = () => {
 
       {/* ── Connected Build Toolkit Grid ── */}
       <div className="grid bg-carbon lg:grid-cols-[0.55fr_1.45fr]">
-        <div className="flex flex-col justify-between border-b border-graphite p-5 sm:p-8 lg:border-b-0 lg:border-r lg:p-10">
-          <div>
-            <p className="section-kicker">BUILD TOOLKIT</p>
-            <h3 className="mt-3 font-heading text-[26px] font-bold leading-[1.08] tracking-[-0.03em] text-chalk">
-              Tools I work with.
-            </h3>
-            <p className="mt-3 max-w-md text-[14px] leading-[1.65] text-smoke">
-              Technologies from my mobile and web work, grouped by purpose.
-            </p>
-          </div>
-          <p className="meta-text mt-6 hidden text-smoke/50 lg:block">
-            SPECIFICATION // STACK MATRIX
+        <div className="flex flex-col justify-center border-b border-graphite p-5 sm:p-8 lg:border-b-0 lg:border-r lg:p-10">
+          <p className="section-kicker">BUILD TOOLKIT</p>
+          <h3 className="mt-3 font-heading text-[26px] font-bold leading-[1.08] tracking-[-0.03em] text-chalk">
+            Tools I work with.
+          </h3>
+          <p className="mt-3 max-w-md text-[14px] leading-[1.65] text-smoke">
+            Core languages, frameworks, and infrastructure across mobile and web.
           </p>
         </div>
 

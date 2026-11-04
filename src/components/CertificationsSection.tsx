@@ -16,8 +16,8 @@ const CertificationsSection = () => {
     <section id="certifications" className="section-shell scroll-mt-6">
       {/* ── Connected Section Header Band ── */}
       <SectionHeader number="04" kicker="CREDENTIALS" title="Certifications & participation.">
-        <p className="text-[15px] leading-[1.6] text-smoke">
-          Technical certification and participation in local innovation events. Select a credential to inspect it full size.
+        <p className="text-[15px] leading-[1.6] text-smoke lg:text-right">
+          Select a credential to inspect it full size.
         </p>
       </SectionHeader>
 
@@ -136,7 +136,7 @@ const CertificationsSection = () => {
                 <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
                   <div className="font-mono-retro text-[11px] text-smoke">
                     {selectedCert.recognition ? `${selectedCert.recognition} · ` : ""}
-                    {selectedCert.expiryDate ? `Valid through ${selectedCert.expiryDate}` : `Issued ${selectedCert.issuedDate}`}
+                    {selectedCert.expiryDate ? `Valid through ${selectedCert.expiryDate}` : selectedCert.type}
                   </div>
                   <a
                     href={selectedCert.fullImage}

@@ -42,10 +42,10 @@ const FLOW_ICONS = {
 const ProjectPreview = ({ project, featured = false }: { project: Project; featured?: boolean }) => {
   if (project.preview === "screen" && project.imageFit === "contain") {
     return (
-      <figure className={`flex min-w-0 shrink-0 flex-col bg-obsidian/70 p-4 sm:p-5 ${featured ? "lg:h-full lg:justify-between lg:p-6" : ""}`}>
+      <figure className={`flex min-w-0 shrink-0 flex-col bg-obsidian/70 p-4 sm:p-5 ${featured ? "lg:h-full lg:justify-center lg:p-6" : ""}`}>
         <div
           className={`relative w-full overflow-hidden rounded-[4px] border border-graphite/80 bg-[#f5f3f5] transition-transform duration-500 group-hover:-translate-y-1 ${
-            featured ? "h-52 sm:h-64 lg:h-[280px]" : "h-44 sm:h-52"
+            featured ? "h-52 sm:h-64 lg:h-[296px]" : "h-44 sm:h-52"
           }`}
           style={{ backgroundColor: project.imageBackground }}
         >
@@ -63,10 +63,6 @@ const ProjectPreview = ({ project, featured = false }: { project: Project; featu
             className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.025]"
           />
         </div>
-        <figcaption className="meta-text mt-3 flex items-center justify-between text-smoke/75">
-          <span className="truncate">{project.previewLabel}</span>
-          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-pulse-green/70 transition-transform group-hover:scale-125" aria-hidden="true" />
-        </figcaption>
       </figure>
     );
   }
@@ -177,10 +173,7 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
         kicker={showAllByDefault ? "PROJECT COLLECTION" : "SELECTED WORK"}
         title={showAllByDefault ? "All projects. One place." : "Selected work. Real-world problems."}
       >
-        <p className="max-w-md text-[16px] leading-[1.6] text-smoke">
-          {projects.length} mobile and web builds for local businesses, study, travel, hospital teams, and safety simulation.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label="Filter projects">
+        <div className="flex flex-wrap gap-2 lg:justify-end" role="group" aria-label="Filter projects">
           {filters.map((item) => (
             <button
               key={item.key}
@@ -393,8 +386,8 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
                         FLAGSHIP BUILD
                       </span>
                     ) : (
-                      <span className="font-mono-retro text-[11px] text-smoke/40" aria-hidden="true">
-                        {project.role}
+                      <span className="font-mono-retro text-[11px] tabular-nums text-smoke/50" aria-hidden="true">
+                        {project.year ?? "2026"}
                       </span>
                     )}
                   </div>
@@ -505,9 +498,8 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
       )}
 
       {!showAllByDefault && (
-        <div className="flex items-center justify-between border-t border-graphite bg-obsidian/30 px-5 py-5 sm:px-8 lg:px-10">
-          <span className="meta-text hidden text-smoke sm:inline">COMPLETE ARCHIVE · {projects.length} BUILDS</span>
-          <Link to="/projects" className="ghost-button ml-auto">
+        <div className="flex items-center justify-end border-t border-graphite bg-obsidian/30 px-5 py-5 sm:px-8 lg:px-10">
+          <Link to="/projects" className="ghost-button">
             VIEW ALL {projects.length} PROJECTS <ArrowRight size={15} />
           </Link>
         </div>

@@ -181,10 +181,7 @@ const GitHubSection = () => {
         kicker="GITHUB ACTIVITY"
         title="A public trail of experiments, commits, and shipped code."
       >
-        <div className="flex flex-col justify-end gap-5">
-          <p className="text-[15px] leading-[1.6] text-smoke">
-            Recent public activity across product work, technical experiments, and steady improvements to shipped repositories.
-          </p>
+        <div className="flex lg:justify-end">
           <a href={githubConfig.profileUrl} target="_blank" rel="noopener noreferrer" className="ghost-button w-fit">
             VIEW GITHUB <ArrowUpRight size={13} />
           </a>

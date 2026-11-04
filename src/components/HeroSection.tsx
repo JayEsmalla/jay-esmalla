@@ -64,9 +64,9 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
 
           <motion.p
             {...entrance(0.12)}
-            className="mt-6 max-w-[560px] text-[16px] leading-[1.65] text-smoke md:text-[17px]"
+            className="mt-6 max-w-[540px] text-[16px] leading-[1.65] text-smoke md:text-[17px]"
           >
-            I&apos;m Jay, a full-stack developer building mobile and web apps with Flutter, React, React Native, and TypeScript.
+            Full-stack developer working with Flutter, React, React Native, and TypeScript.
           </motion.p>
         </div>
 

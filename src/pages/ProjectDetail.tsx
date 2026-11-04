@@ -110,9 +110,8 @@ export default function ProjectDetail() {
             className="h-full w-full object-contain"
           />
         </div>
-        <figcaption className="meta-text mt-3.5 flex flex-wrap items-center justify-between gap-2 text-smoke">
-          <span>FIG. 01 — {project.previewLabel}</span>
-          <span>{project.title.toUpperCase()}</span>
+        <figcaption className="meta-text mt-3.5 text-smoke">
+          FIG. 01 — {project.previewLabel}
         </figcaption>
       </figure>
 

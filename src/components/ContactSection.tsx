@@ -98,17 +98,14 @@ const ContactSection = () => {
         kicker="CONTACT"
         title="Have a project, collaboration, or idea worth building?"
       >
-        <div className="flex flex-col justify-end gap-4">
-          <div className="flex items-start gap-3">
-            <MapPin size={16} strokeWidth={1.5} className="icon-gold mt-0.5 shrink-0" />
+        <div className="flex flex-col justify-end gap-3 lg:items-end lg:text-right">
+          <div className="flex items-start gap-2.5">
+            <MapPin size={15} strokeWidth={1.5} className="icon-gold mt-0.5 shrink-0" />
             <div>
-              <p className="text-[14px] text-chalk">Based in Tagum City</p>
-              <p className="meta-text mt-1 text-smoke">DAVAO DEL NORTE, PHILIPPINES</p>
+              <p className="text-[14px] text-chalk">Tagum City, Davao del Norte</p>
+              <p className="meta-text mt-1 text-smoke">TYPICALLY RESPONDS WITHIN 24H</p>
             </div>
           </div>
-          <p className="text-[15px] leading-[1.6] text-smoke">
-            Reach out directly or use the form below. I typically respond within 24 hours.
-          </p>
         </div>
       </SectionHeader>
 
