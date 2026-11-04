@@ -151,14 +151,13 @@ describe("Projects collection pagination", () => {
     expect(screen.getByRole("button", { name: "WEB" })).toHaveAttribute("aria-pressed", "true");
   });
 
-  it("closes a case study through history when its originating card disappears", async () => {
+  it("links paginated cards directly to their dedicated case study route", async () => {
     showCollection();
     fireEvent.click(screen.getByRole("link", { name: "Page 2" }));
-    fireEvent.click(screen.getByRole("button", { name: "View ComLab V3 Egress Simulation case study" }));
-    expect(screen.getByRole("dialog", { name: "ComLab V3 Egress Simulation" })).toBeInTheDocument();
+    const caseStudyLink = screen.getByRole("link", { name: "View ComLab V3 Egress Simulation case study" });
+    expect(caseStudyLink).toHaveAttribute("href", "/projects/simulation-comlab-v3");
     fireEvent.click(screen.getByText("History back"));
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(screen.getByRole("status")).toHaveFocus();
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Page 1 of 2"));
   });
 
   it("keeps homepage selection and local filters independent of collection query parameters", () => {

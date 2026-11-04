@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import ContactSection from "@/components/ContactSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import { projects, socialLinks } from "@/data/portfolio";
+import ProjectDetail from "@/pages/ProjectDetail";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -55,24 +56,28 @@ describe("ProjectsSection", () => {
     });
   });
 
-  it("opens project case-study details and restores the originating focus", async () => {
-    render(<MemoryRouter><ProjectsSection showAllByDefault /></MemoryRouter>);
+  it("links each project card directly to its dedicated /projects/:id case study route", async () => {
+    render(
+      <MemoryRouter initialEntries={["/projects"]}>
+        <Routes>
+          <Route path="/projects" element={<ProjectsSection showAllByDefault />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
+        </Routes>
+      </MemoryRouter>,
+    );
     const thryftoCard = screen.getByRole("heading", { name: "Thryfto" }).closest("article");
     expect(thryftoCard).not.toBeNull();
 
-    const trigger = within(thryftoCard as HTMLElement).getByRole("button", { name: "View Thryfto case study" });
-    trigger.focus();
+    const trigger = within(thryftoCard as HTMLElement).getByRole("link", { name: "View Thryfto case study" });
+    expect(trigger).toHaveAttribute("href", "/projects/thryfto");
     fireEvent.click(trigger);
-    const dialog = screen.getByRole("dialog", { name: "Thryfto" });
-    expect(within(dialog).getByText("Real-time feed")).toBeInTheDocument();
-    expect(within(dialog).getByRole("heading", { name: "Thryfto" })).toHaveFocus();
-    expect(within(dialog).getByText("MY ROLE")).toBeInTheDocument();
-    expect(within(dialog).getByRole("link", { name: "PUBLIC SOURCE" })).toHaveAttribute(
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Thryfto" })).toBeInTheDocument();
+    expect(screen.getByText("Real-time feed")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /PUBLIC SOURCE/i })).toHaveAttribute(
       "href",
       "https://github.com/JayEsmalla/thryfto-app",
     );
-    fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
-    await waitFor(() => expect(trigger).toHaveFocus());
   });
 
   it("features the new projects while keeping all work discoverable", async () => {
@@ -102,17 +107,26 @@ describe("ProjectsSection", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Showing 1–5 of 5 web projects");
   });
 
-  it("shows VULSHOP's supplied dashboard and README-based case study without invented links", () => {
-    render(<MemoryRouter><ProjectsSection showAllByDefault /></MemoryRouter>);
+  it("shows VULSHOP's supplied dashboard and dedicated case study without invented external links", async () => {
+    render(
+      <MemoryRouter initialEntries={["/projects"]}>
+        <Routes>
+          <Route path="/projects" element={<ProjectsSection showAllByDefault />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
+        </Routes>
+      </MemoryRouter>,
+    );
     const card = screen.getByRole("heading", { name: "1561 VULSHOP" }).closest("article") as HTMLElement;
     expect(within(card).getByRole("img", { name: /1561 VULSHOP dashboard/ })).toHaveAttribute("src", "/projects/vulshop-800.webp");
-    expect(within(card).queryByRole("link")).not.toBeInTheDocument();
-    fireEvent.click(within(card).getByRole("button", { name: "View 1561 VULSHOP case study" }));
-    const dialog = screen.getByRole("dialog", { name: "1561 VULSHOP" });
-    expect(within(dialog).getByText("Four-stage job queue & split payments")).toBeInTheDocument();
-    expect(within(dialog).getByText("Transactional stock deductions & audited reversals")).toBeInTheDocument();
-    expect(within(dialog).getByText("MySQL 8")).toBeInTheDocument();
-    expect(within(dialog).getByText("TanStack Start")).toBeInTheDocument();
+    expect(within(card).queryByRole("link", { name: /live|source/i })).not.toBeInTheDocument();
+    const caseStudyLink = within(card).getByRole("link", { name: "View 1561 VULSHOP case study" });
+    expect(caseStudyLink).toHaveAttribute("href", "/projects/vulshop");
+    fireEvent.click(caseStudyLink);
+    expect(await screen.findByRole("heading", { level: 1, name: "1561 VULSHOP" })).toBeInTheDocument();
+    expect(screen.getByText("Four-stage job queue & split payments")).toBeInTheDocument();
+    expect(screen.getByText("Transactional stock deductions & audited reversals")).toBeInTheDocument();
+    expect(screen.getByText("MySQL 8")).toBeInTheDocument();
+    expect(screen.getByText("TanStack Start")).toBeInTheDocument();
   });
 });
 

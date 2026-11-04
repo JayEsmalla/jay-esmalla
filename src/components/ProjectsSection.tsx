@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { projects, type Project } from "@/data/portfolio";
 import { PROJECTS_PER_PAGE, projectPageNumbers, projectPagination, projectSearch, readProjectFilter, type ProjectFilter } from "@/lib/project-pagination";
@@ -140,9 +139,6 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
   const navigate = useNavigate();
   const location = useLocation();
   const filter = showAllByDefault ? readProjectFilter(searchParams) : localFilter;
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const dialogTitleRef = useRef<HTMLHeadingElement | null>(null);
   const resultsRef = useRef<HTMLParagraphElement | null>(null);
 
   const filtered = useMemo(() => filter === "all" ? orderedProjects : orderedProjects.filter((project) =>
@@ -158,10 +154,6 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
       navigate({ pathname: location.pathname, search: canonicalSearch, hash: location.hash }, { replace: true, state: { ...location.state, projectNavigation: "normalize" } });
     }
   }, [showAllByDefault, searchParams, canonicalSearch, navigate, location.pathname, location.hash, location.state]);
-
-  useEffect(() => {
-    if (selectedProject && !visibleProjects.some((project) => project.id === selectedProject.id)) setSelectedProject(null);
-  }, [visibleProjects, selectedProject]);
 
   const selectFilter = (next: ProjectFilter) => {
     if (next === filter) return;
@@ -295,18 +287,17 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
                 </span>
 
                 <div className="flex items-center justify-end gap-1.5">
-                  <button
-                    type="button"
+                  <Link
+                    to={`/projects/${project.id}`}
                     data-cursor="project"
                     data-cursor-preview={project.image}
                     data-cursor-bg={project.imageBackground ?? "#121212"}
-                    onClick={(event) => { triggerRef.current = event.currentTarget; setSelectedProject(project); }}
                     className="inline-flex min-h-10 items-center gap-1.5 rounded-[3px] border border-graphite px-3 py-1.5 font-mono-retro text-[11px] uppercase tracking-[0.05em] text-chalk transition-colors hover:border-pulse-green hover:text-pulse-green"
                     aria-label={`View ${project.title} case study`}
                   >
                     <span>CASE STUDY</span>
                     <ArrowUpRight size={13} className="text-pulse-green" />
-                  </button>
+                  </Link>
                   {project.liveUrl && (
                     <a
                       href={project.liveUrl}
@@ -424,15 +415,14 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
                   </div>
 
                   <div className="mt-auto flex items-center gap-1.5 border-t border-graphite pt-3.5">
-                    <button
-                      type="button"
+                    <Link
+                      to={`/projects/${project.id}`}
                       data-cursor="project"
-                      onClick={(event) => { triggerRef.current = event.currentTarget; setSelectedProject(project); }}
                       className="mr-auto inline-flex min-h-11 items-center gap-2 rounded-sm pr-3 font-mono-retro text-[11px] uppercase tracking-[0.05em] text-chalk transition-colors hover:text-pulse-green"
                       aria-label={`View ${project.title} case study`}
                     >
                       CASE STUDY <ArrowUpRight size={14} className="text-pulse-green" />
-                    </button>
+                    </Link>
                     {project.liveUrl && (
                       <a
                         href={project.liveUrl}
@@ -503,103 +493,6 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
           </Link>
         </div>
       )}
-
-      <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => !open && setSelectedProject(null)}>
-        <DialogContent
-          className="flex max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] flex-col gap-0 overflow-hidden rounded-[6px] border-iron bg-carbon p-0 text-chalk shadow-none sm:max-w-4xl"
-          onOpenAutoFocus={(event) => { event.preventDefault(); dialogTitleRef.current?.focus(); }}
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            (triggerRef.current?.isConnected ? triggerRef.current : resultsRef.current)?.focus({ preventScroll: true });
-          }}
-        >
-          {selectedProject && (
-            <>
-              <DialogHeader className="shrink-0 border-b border-graphite p-5 pr-16 text-left sm:px-8 sm:py-6">
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="section-kicker">PROJECT CASE STUDY</p>
-                  <span className="h-3 w-px bg-graphite" aria-hidden="true" />
-                  <span className="meta-text text-smoke">{selectedProject.previewLabel}</span>
-                </div>
-                <DialogTitle ref={dialogTitleRef} tabIndex={-1} className="mt-2 text-[26px] font-normal leading-tight tracking-[-0.03em] text-chalk sm:text-[34px]">
-                  {selectedProject.title}
-                </DialogTitle>
-                <DialogDescription className="sr-only">{selectedProject.description}</DialogDescription>
-              </DialogHeader>
-
-              <div className="no-scrollbar min-h-0 overflow-y-auto overscroll-contain p-5 sm:p-8">
-                <div className="mb-6 overflow-hidden rounded-[4px] border border-graphite bg-obsidian p-4">
-                  <div
-                    className="relative h-48 w-full overflow-hidden rounded-[2px] sm:h-64"
-                    style={{ backgroundColor: selectedProject.imageBackground ?? "#121212" }}
-                  >
-                    <img
-                      src={selectedProject.image}
-                      srcSet={selectedProject.imageSrcSet}
-                      alt={selectedProject.imageAlt ?? selectedProject.title}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
-                </div>
-
-                <p className="text-[16px] leading-relaxed text-chalk">{selectedProject.description}</p>
-                <div className="mt-6 divide-y divide-graphite border-y border-graphite">
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">MY ROLE</p>
-                    <p className="text-[14px] leading-[1.6] text-chalk">{selectedProject.role}</p>
-                  </div>
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">PROBLEM</p>
-                    <p className="text-[14px] leading-[1.6] text-smoke">{selectedProject.problemSolved}</p>
-                  </div>
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">WHAT I BUILT</p>
-                    <p className="text-[14px] leading-[1.6] text-smoke">{selectedProject.outcome}</p>
-                  </div>
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">IMPLEMENTED</p>
-                    <div className="space-y-2">
-                      {selectedProject.proofPoints.map((point) => (
-                        <p key={point} className="flex items-center gap-2.5 text-[14px] text-chalk">
-                          <span className="h-1.5 w-1.5 bg-pulse-green" aria-hidden="true" /> {point}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="grid gap-3 py-5 sm:grid-cols-[140px_1fr]">
-                    <p className="meta-text text-smoke">STACK</p>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedProject.technologies.map((tech) => <span key={tech} className="tech-tag">{tech}</span>)}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Link
-                    to={`/projects/${selectedProject.id}`}
-                    onClick={() => setSelectedProject(null)}
-                    className="primary-pill"
-                  >
-                    FULL CASE STUDY <ArrowRight size={13} />
-                  </Link>
-                  {selectedProject.liveUrl && (
-                    <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="ghost-button">
-                      OPEN PROJECT <ExternalLink size={13} />
-                    </a>
-                  )}
-                  {selectedProject.githubUrl && (
-                    <a href={selectedProject.githubUrl} target="_blank" rel="noopener noreferrer" className="ghost-button">
-                      PUBLIC SOURCE <Github size={13} />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </section>
   );
 };

@@ -29,12 +29,8 @@ describe("compact project interactions", () => {
     expect(mobileFilter).toHaveFocus();
     expect(screen.getByRole("status")).toHaveTextContent("Showing 1–2 of 2 mobile projects");
 
-    const trigger = screen.getByRole("button", { name: "View Thryfto case study" });
-    fireEvent.click(trigger);
-    const dialog = screen.getByRole("dialog", { name: "Thryfto" });
-    expect(within(dialog).getByRole("heading", { name: "Thryfto" })).toHaveFocus();
-    fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
-    await waitFor(() => expect(trigger).toHaveFocus());
+    const caseStudyLink = screen.getByRole("link", { name: "View Thryfto case study" });
+    expect(caseStudyLink).toHaveAttribute("href", "/projects/thryfto");
 
     fireEvent.click(screen.getByRole("button", { name: "WEB" }));
     await waitFor(() => expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(5));
