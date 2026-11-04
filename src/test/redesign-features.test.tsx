@@ -126,45 +126,25 @@ describe("HeroSection, SignalStrip, and Navbar Local Time Sticker", () => {
 });
 
 describe("latest GitHub commit helper", () => {
-  it("reads the serverless payload, falls back to public events, and degrades to FALLBACK_COMMIT", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          repo: "vulshop",
-          message: "fix: payroll overtime rounding",
-          pushedAt: "2026-11-03T14:00:00Z",
-          url: "https://github.com/JayEsmalla/vulshop",
-        }),
-      });
+  it("reads public GitHub push events directly without hitting /api/github-latest and degrades to FALLBACK_COMMIT", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        {
+          type: "PushEvent",
+          created_at: "2026-11-03T12:00:00Z",
+          repo: { name: "JayEsmalla/thryfto-app" },
+          payload: { commits: [{ message: "feat: chat image attachments\n\nDetails" }] },
+        },
+      ],
+    });
     vi.stubGlobal("fetch", fetchMock);
 
-    const first = await fetchLatestCommit();
-    expect(first).toEqual({
-      repo: "vulshop",
-      message: "fix: payroll overtime rounding",
-      pushedAt: "2026-11-03T14:00:00Z",
-      url: "https://github.com/JayEsmalla/vulshop",
-    });
-
-    clearLatestCommitCache();
-    fetchMock.mockReset();
-    fetchMock
-      .mockResolvedValueOnce({ ok: false, status: 404 })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => [
-          {
-            type: "PushEvent",
-            created_at: "2026-11-03T12:00:00Z",
-            repo: { name: "JayEsmalla/thryfto-app" },
-            payload: { commits: [{ message: "feat: chat image attachments\n\nDetails" }] },
-          },
-        ],
-      });
-
     const fromEvents = await fetchLatestCommit();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.github.com/users/JayEsmalla/events/public?per_page=20",
+      expect.any(Object),
+    );
     expect(fromEvents).toEqual({
       repo: "thryfto-app",
       message: "feat: chat image attachments",

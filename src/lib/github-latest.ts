@@ -86,17 +86,12 @@ export async function fetchLatestCommit(signal?: AbortSignal): Promise<LatestCom
     return cached.value;
   }
 
-  // In local Vite dev (`:8080`), `vercel dev` (:3000) is usually not running, so call GitHub's CORS-enabled public Events API directly.
-  const isLocalViteDev = Boolean(import.meta.env.DEV && !import.meta.env.VITEST);
+  // GitHub Pages serves static files (`./dist`), so query GitHub's CORS-enabled public Events API directly.
   const publicEventsUrl = `https://api.github.com/users/${githubConfig.username}/events/public?per_page=20`;
-  const endpoints = isLocalViteDev
-    ? [publicEventsUrl]
-    : ["/api/github-latest", publicEventsUrl];
 
-  for (const endpoint of endpoints) {
-    try {
-      const response = await fetch(endpoint, { signal });
-      if (!response.ok) continue;
+  try {
+    const response = await fetch(publicEventsUrl, { signal });
+    if (response.ok) {
       const body = (await response.json()) as unknown;
 
       if (body && typeof body === "object" && !Array.isArray(body) && "repo" in body && "message" in body) {
@@ -118,9 +113,9 @@ export async function fetchLatestCommit(signal?: AbortSignal): Promise<LatestCom
         cached = { value: parsed, fetchedAt: Date.now() };
         return parsed;
       }
-    } catch {
-      if (signal?.aborted) break;
     }
+  } catch {
+    // Fall back to static commit metadata below when offline or rate-limited.
   }
 
   return FALLBACK_COMMIT;
