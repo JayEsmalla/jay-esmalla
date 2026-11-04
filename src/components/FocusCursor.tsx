@@ -9,7 +9,10 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
   const dotRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const previewStageRef = useRef<HTMLDivElement>(null);
   const previewImgRef = useRef<HTMLImageElement>(null);
+  const previewLabelRef = useRef<HTMLSpanElement>(null);
+  const previewTitleRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (!enabled) return;
@@ -61,7 +64,8 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
     const move = (event: PointerEvent) => {
       if (!mouse.matches || reduced.matches || event.pointerType !== "mouse") return hide();
       const target = event.target instanceof Element ? event.target : null;
-      const action = target?.closest(INTERACTIVE);
+      const previewHost = target?.closest("[data-cursor-preview]");
+      const action = target?.closest(INTERACTIVE) ?? previewHost;
       const native = target?.closest(NATIVE)
         || action?.matches(':disabled, [aria-disabled="true"]')
         || (!action && target?.closest('p, h1, h2, h3, h4, li, blockquote, pre, code, label'));
@@ -70,23 +74,43 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
       x = event.clientX;
       y = event.clientY;
       dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      const nextMode = action?.getAttribute("data-cursor") ?? (action ? "action" : "default");
+      const nextMode = action?.getAttribute("data-cursor")
+        ?? previewHost?.getAttribute("data-cursor")
+        ?? (action ? "action" : "default");
       if (cursor.dataset.mode !== nextMode) {
         cursor.dataset.mode = nextMode;
       }
-      const previewSrc = action?.getAttribute("data-cursor-preview");
+
+      const previewOwner = action?.hasAttribute("data-cursor-preview") ? action : previewHost;
+      const previewSrc = previewOwner?.getAttribute("data-cursor-preview");
       if (previewSrc && previewRef.current && previewImgRef.current) {
         if (cursor.dataset.preview !== "true") cursor.dataset.preview = "true";
+        const side = x > (window.innerWidth || 1280) - 340 ? "left" : "right";
+        if (cursor.dataset.previewSide !== side) cursor.dataset.previewSide = side;
+
         if (previewImgRef.current.getAttribute("src") !== previewSrc) {
           previewImgRef.current.src = previewSrc;
         }
-        const nextBg = action?.getAttribute("data-cursor-bg") || "rgb(var(--preview-surface))";
-        if (previewRef.current.style.backgroundColor !== nextBg) {
-          previewRef.current.style.backgroundColor = nextBg;
+        const nextBg = previewOwner?.getAttribute("data-cursor-bg") || "rgb(var(--preview-surface))";
+        if (previewStageRef.current && previewStageRef.current.style.backgroundColor !== nextBg) {
+          previewStageRef.current.style.backgroundColor = nextBg;
+        }
+        if (previewLabelRef.current) {
+          const nextLabel = previewOwner?.getAttribute("data-cursor-label") || "PREVIEW";
+          if (previewLabelRef.current.textContent !== nextLabel) {
+            previewLabelRef.current.textContent = nextLabel;
+          }
+        }
+        if (previewTitleRef.current) {
+          const nextTitle = previewOwner?.getAttribute("data-cursor-title") || "CASE STUDY";
+          if (previewTitleRef.current.textContent !== nextTitle) {
+            previewTitleRef.current.textContent = nextTitle;
+          }
         }
       } else if (cursor.dataset.preview !== "false") {
         cursor.dataset.preview = "false";
       }
+
       if (!visible) {
         followX = x;
         followY = y;
@@ -141,7 +165,17 @@ export default function FocusCursor({ enabled }: { enabled: boolean }) {
           <path d="M4 12 12 4M4 4h8v8" stroke="currentColor" strokeWidth="1.5" />
         </svg>
         <div ref={previewRef} className="focus-cursor-preview">
-          <img ref={previewImgRef} alt="" decoding="async" />
+          <div className="focus-cursor-preview-bar">
+            <span className="focus-cursor-preview-dot" />
+            <span ref={previewLabelRef} className="focus-cursor-preview-label">PREVIEW</span>
+          </div>
+          <div ref={previewStageRef} className="focus-cursor-preview-stage">
+            <img ref={previewImgRef} alt="" decoding="async" />
+          </div>
+          <div className="focus-cursor-preview-foot">
+            <span ref={previewTitleRef} className="focus-cursor-preview-title">CASE STUDY</span>
+            <span className="focus-cursor-preview-cta">INSPECT ↗</span>
+          </div>
         </div>
       </div>
     </div>, document.body,

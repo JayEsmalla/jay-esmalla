@@ -240,12 +240,11 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
 
       {/* ── Dense Index Table View (available on /projects) ── */}
       {showAllByDefault && viewMode === "index" ? (
-        <div id="project-list" className="divide-y divide-graphite bg-carbon">
-          <div className="hidden grid-cols-[52px_minmax(0,1.6fr)_110px_minmax(0,1.4fr)_64px_auto] items-center gap-4 px-5 py-3 sm:px-8 lg:grid lg:px-10">
+        <div id="project-list" className="group/index divide-y divide-graphite bg-carbon">
+          <div className="hidden items-center gap-6 bg-obsidian/50 px-5 py-3.5 sm:px-8 lg:grid lg:grid-cols-[52px_minmax(0,1fr)_140px_80px_212px] lg:px-10">
             <span className="meta-text text-smoke">NO.</span>
             <span className="meta-text text-smoke">PROJECT</span>
             <span className="meta-text text-smoke">TYPE</span>
-            <span className="meta-text text-smoke">STACK</span>
             <span className="meta-text text-smoke">YEAR</span>
             <span className="meta-text text-right text-smoke">INSPECT</span>
           </div>
@@ -255,31 +254,49 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
             return (
               <article
                 key={project.id}
-                className="group grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 transition-colors hover:bg-obsidian/80 sm:px-8 lg:grid-cols-[52px_minmax(0,1.6fr)_110px_minmax(0,1.4fr)_64px_auto] lg:px-10"
+                data-cursor="project"
+                data-cursor-preview={project.image}
+                data-cursor-bg={project.imageBackground ?? "#141414"}
+                data-cursor-label={`${projectNumber} · ${project.previewLabel}`}
+                data-cursor-title={project.title}
+                className="group relative grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-4 px-5 py-5 transition-[background-color,opacity] duration-200 before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:origin-center before:scale-y-0 before:bg-pulse-green before:transition-transform before:duration-200 hover:bg-obsidian/90 hover:!opacity-100 hover:before:scale-y-100 group-hover/index:opacity-50 sm:px-8 lg:grid-cols-[52px_minmax(0,1fr)_140px_80px_212px] lg:gap-6 lg:px-10"
               >
-                <span className="font-mono-retro text-[11px] tabular-nums text-smoke">{projectNumber}</span>
+                <span className="font-mono-retro text-[11px] tabular-nums text-smoke transition-colors group-hover:text-pulse-green">
+                  {projectNumber}
+                </span>
 
                 <div className="min-w-0">
-                  <h3 className="truncate text-[20px] font-normal tracking-[-0.025em] text-chalk transition-colors group-hover:text-pulse-green sm:text-[22px]">
-                    <Link
-                      to={`/projects/${project.id}`}
-                      data-cursor="project"
-                      data-cursor-preview={project.image}
-                      data-cursor-bg={project.imageBackground ?? "#121212"}
-                      className="block truncate"
-                    >
-                      {project.title}
-                    </Link>
-                  </h3>
+                  <div className="flex items-baseline gap-3">
+                    <h3 className="truncate text-[20px] font-normal tracking-[-0.025em] text-chalk transition-[color,transform] duration-200 group-hover:translate-x-1.5 group-hover:text-pulse-green sm:text-[22px]">
+                      <Link
+                        to={`/projects/${project.id}`}
+                        data-cursor="project"
+                        data-cursor-preview={project.image}
+                        data-cursor-bg={project.imageBackground ?? "#141414"}
+                        data-cursor-label={`${projectNumber} · ${project.previewLabel}`}
+                        data-cursor-title={project.title}
+                        className="block truncate"
+                      >
+                        {project.title}
+                      </Link>
+                    </h3>
+                    {project.client && (
+                      <span className="hidden truncate font-mono-retro text-[10px] uppercase tracking-[0.04em] text-smoke/50 transition-opacity duration-200 group-hover:text-smoke xl:inline">
+                        / {project.client}
+                      </span>
+                    )}
+                  </div>
                   <p className="mt-0.5 truncate text-[13px] text-smoke lg:hidden">{project.summary}</p>
                 </div>
 
-                <span className="meta-text hidden text-smoke lg:inline">
-                  {isMobile ? "Mobile app" : "Web app"}
-                </span>
-
-                <span className="hidden truncate text-[13px] text-smoke lg:inline">
-                  {project.technologies.slice(0, 3).join(" · ")}
+                <span className="hidden items-center gap-2 font-mono-retro text-[11px] uppercase tracking-[0.04em] text-smoke lg:inline-flex">
+                  <span
+                    className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors ${
+                      isMobile ? "bg-compass-gold group-hover:bg-pulse-green" : "bg-iron group-hover:bg-pulse-green"
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <span>{isMobile ? "MOBILE APP" : "WEB APP"}</span>
                 </span>
 
                 <span className="font-mono-retro hidden text-[11px] tabular-nums text-smoke lg:inline">
@@ -291,12 +308,14 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
                     to={`/projects/${project.id}`}
                     data-cursor="project"
                     data-cursor-preview={project.image}
-                    data-cursor-bg={project.imageBackground ?? "#121212"}
-                    className="inline-flex min-h-10 items-center gap-1.5 rounded-[3px] border border-graphite px-3 py-1.5 font-mono-retro text-[11px] uppercase tracking-[0.05em] text-chalk transition-colors hover:border-pulse-green hover:text-pulse-green"
+                    data-cursor-bg={project.imageBackground ?? "#141414"}
+                    data-cursor-label={`${projectNumber} · ${project.previewLabel}`}
+                    data-cursor-title={project.title}
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-[3px] border border-graphite bg-obsidian/40 px-3 py-1.5 font-mono-retro text-[11px] uppercase tracking-[0.05em] text-chalk transition-colors group-hover:border-pulse-green/60 hover:!border-pulse-green hover:!bg-pulse-green hover:!text-obsidian"
                     aria-label={`View ${project.title} case study`}
                   >
                     <span>CASE STUDY</span>
-                    <ArrowUpRight size={13} className="text-pulse-green" />
+                    <ArrowUpRight size={13} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                   {project.liveUrl && (
                     <a

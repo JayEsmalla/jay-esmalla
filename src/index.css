@@ -53,27 +53,99 @@
 .focus-cursor[data-pressed="true"] .focus-cursor-brackets { width: 20px; height: 20px; }
 .focus-cursor-preview {
   position: absolute;
-  left: 26px;
-  top: -86px;
-  width: 248px;
-  height: 158px;
-  border-radius: 4px;
+  left: 28px;
+  top: -112px;
+  display: flex;
+  flex-direction: column;
+  width: 296px;
+  height: 214px;
+  border-radius: 6px;
   border: 1px solid var(--color-iron);
-  background: var(--color-carbon);
+  background: var(--color-obsidian);
   overflow: hidden;
   opacity: 0;
-  transform: scale(0.92) rotate(-1.5deg);
-  transition: opacity 180ms ease, transform 240ms cubic-bezier(.22, 1, .36, 1);
-  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.38);
+  transform: translate3d(0, 8px, 0) scale(0.94);
+  transition:
+    opacity 180ms cubic-bezier(.22, 1, .36, 1),
+    transform 240ms cubic-bezier(.22, 1, .36, 1),
+    left 200ms cubic-bezier(.22, 1, .36, 1);
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(152, 255, 56, 0.14);
+}
+.focus-cursor[data-preview-side="left"] .focus-cursor-preview {
+  left: -324px;
 }
 .focus-cursor[data-preview="true"] .focus-cursor-preview {
   opacity: 1;
-  transform: scale(1) rotate(-1.5deg);
+  transform: translate3d(0, 0, 0) scale(1);
+}
+.focus-cursor-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 26px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--color-graphite);
+  background: var(--color-carbon);
+}
+.focus-cursor-preview-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--color-pulse-green);
+  box-shadow: 0 0 6px var(--color-pulse-green);
+  flex-shrink: 0;
+}
+.focus-cursor-preview-label {
+  font-family: var(--font-input);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-smoke);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.focus-cursor-preview-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: 8px;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid var(--color-graphite);
+  background: rgb(var(--preview-surface));
+  overflow: hidden;
 }
 .focus-cursor-preview img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+.focus-cursor-preview-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 28px;
+  padding: 0 10px;
+  border-top: 1px solid var(--color-graphite);
+  background: var(--color-carbon);
+  font-family: var(--font-input);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.focus-cursor-preview-title {
+  color: var(--color-chalk);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.focus-cursor-preview-cta {
+  color: var(--color-pulse-green);
+  flex-shrink: 0;
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   html.focus-cursor-active,
@@ -149,18 +221,6 @@
     --font-display: var(--font-aeonik);
     --font-heading: var(--font-aeonik);
     --font-mono: var(--font-input);
-
-    --neon-yellow: var(--secondary);
-    --neon-orange: var(--text-secondary);
-    --neon-green: var(--signal);
-    --sidebar-background: var(--background);
-    --sidebar-foreground: var(--foreground);
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--accent);
-    --sidebar-accent-foreground: var(--foreground);
-    --sidebar-border: var(--border);
-    --sidebar-ring: var(--ring);
   }
 
   :root.light {
@@ -250,14 +310,6 @@
 }
 
 @layer components {
-  .page-container {
-    @apply w-full;
-  }
-
-  .section-pad {
-    @apply px-5 sm:px-8 lg:px-10;
-  }
-
   .section-header-band {
     @apply border-b border-graphite bg-obsidian/40 px-5 py-8 sm:px-8 lg:px-10 lg:py-10;
   }
@@ -289,20 +341,6 @@
     @apply text-[38px] font-normal leading-[0.98] tracking-[-0.04em] text-chalk sm:text-[48px] md:text-[58px];
   }
 
-  /* Large outlined section index that gives each chapter a visual anchor. */
-  .outline-numeral {
-    font-family: var(--font-aeonik);
-    font-variant-numeric: tabular-nums;
-    @apply select-none text-[72px] font-normal leading-[0.8] tracking-[-0.06em] text-transparent sm:text-[96px] lg:text-[120px];
-    -webkit-text-stroke: 1px rgb(var(--border-strong));
-  }
-
-  /* Footer signature that echoes the intro screen. */
-  .footer-wordmark {
-    @apply block whitespace-nowrap font-normal leading-[1.08] tracking-[-0.06em] text-smoke;
-    font-size: clamp(48px, 11vw, 148px);
-  }
-
   .meta-text {
     font-family: var(--font-input);
     @apply text-[11px] font-normal uppercase tracking-[0.02em];
@@ -327,14 +365,6 @@
     @apply inline-block h-1.5 w-1.5 rounded-full;
     background: var(--color-pulse-green);
     box-shadow: 0 0 8px var(--color-pulse-green);
-  }
-
-  .hairline-card {
-    @apply rounded-[4px] border border-graphite bg-transparent;
-  }
-
-  .editorial-panel {
-    @apply relative border border-graphite bg-carbon;
   }
 
   .corner-ticks {
@@ -387,13 +417,6 @@
     background-size: 44px 44px;
   }
 
-  .editorial-grid-bg {
-    background-image:
-      linear-gradient(to right, rgb(var(--border) / 0.42) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(var(--border) / 0.42) 1px, transparent 1px);
-    background-size: 64px 64px;
-  }
-
   /* Keep meaningful small text readable without changing its dark appearance. */
   .light :is(.text-smoke\/40, .text-smoke\/50, .text-smoke\/60, .text-smoke\/70) {
     color: var(--color-smoke);
@@ -412,25 +435,8 @@
     transition-timing-function: var(--motion-ease);
   }
 
-
-  /* Compatibility aliases for remaining utility-based components. */
   .font-display, .font-heading { font-family: var(--font-aeonik); }
   .font-mono-retro { font-family: var(--font-input); }
-  .neon-text-pink, .neon-text-pink-bold, .neon-text-blue, .neon-text-blue-bold, .neon-text-purple, .neon-text-yellow {
-    color: var(--color-chalk);
-    text-shadow: none;
-  }
-  .neon-border-pink, .neon-border-blue { border-color: var(--color-graphite); box-shadow: none; }
-  .retro-card { @apply rounded-[8px] border border-graphite bg-transparent p-6; box-shadow: none; }
-  .retro-card:hover { border-color: var(--color-iron); transform: none; box-shadow: none; }
-  .neon-button, .neon-button-blue {
-    @apply inline-flex items-center gap-2 rounded-[8px] border border-chalk bg-transparent px-5 py-[11px] text-[13px] font-normal text-chalk;
-    text-shadow: none;
-    box-shadow: none;
-  }
-  .neon-button:hover, .neon-button-blue:hover { background: var(--color-chalk); color: var(--color-obsidian); box-shadow: none; }
-  .scanlines::after { content: none; }
-  .glitch { animation: none; }
 }
 
 @layer utilities {
