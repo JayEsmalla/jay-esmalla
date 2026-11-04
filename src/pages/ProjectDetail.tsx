@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { projects } from "@/data/portfolio";
 import NotFound from "./NotFound";
 
-const featuredOrder = ["vulshop", "aralytics", "lakbai", "prism", "thryfto"];
+const featuredOrder = ["prism", "vulshop", "aralytics", "lakbai", "thryfto"];
 const projectRank = (id: string) => {
   const rank = featuredOrder.indexOf(id);
   return rank === -1 ? featuredOrder.length : rank;
@@ -45,7 +45,7 @@ export default function ProjectDetail() {
         <p className="section-kicker">
           CASE STUDY · {isMobile ? "MOBILE APP" : "WEB APP"} · {project.year ?? "2026"}
         </p>
-        <h1 className="mt-4 max-w-[860px] text-balance text-[38px] font-normal leading-[0.98] tracking-[-0.045em] text-chalk sm:text-[52px] lg:text-[64px]">
+        <h1 className="mt-4 max-w-[860px] font-display text-balance text-[38px] font-bold leading-[0.96] tracking-[-0.04em] text-chalk [font-variation-settings:'opsz'_96] sm:text-[52px] lg:text-[64px]">
           {project.title}
         </h1>
         <p className="mt-5 max-w-[680px] text-[17px] leading-[1.6] text-smoke sm:text-[19px]">
@@ -120,19 +120,19 @@ export default function ProjectDetail() {
       <div className="grid border-b border-graphite bg-carbon lg:grid-cols-3">
         <section className="p-6 sm:p-8">
           <p className="meta-text text-pulse-green">01 · PROBLEM</p>
-          <h2 className="mt-3 text-[20px] font-normal tracking-[-0.02em] text-chalk">What needed solving</h2>
+          <h2 className="mt-3 font-heading text-[20px] font-bold tracking-[-0.025em] text-chalk">What needed solving</h2>
           <p className="mt-3 text-[15px] leading-[1.65] text-smoke">{project.problemSolved}</p>
         </section>
 
         <section className="border-t border-graphite p-6 sm:p-8 lg:border-l lg:border-t-0">
           <p className="meta-text text-pulse-green">02 · WHAT I BUILT</p>
-          <h2 className="mt-3 text-[20px] font-normal tracking-[-0.02em] text-chalk">Architecture &amp; outcome</h2>
+          <h2 className="mt-3 font-heading text-[20px] font-bold tracking-[-0.025em] text-chalk">Architecture &amp; outcome</h2>
           <p className="mt-3 text-[15px] leading-[1.65] text-smoke">{project.outcome}</p>
         </section>
 
         <section className="border-t border-graphite p-6 sm:p-8 lg:border-l lg:border-t-0">
           <p className="meta-text text-pulse-green">03 · IMPLEMENTED</p>
-          <h2 className="mt-3 text-[20px] font-normal tracking-[-0.02em] text-chalk">Key capabilities &amp; stack</h2>
+          <h2 className="mt-3 font-heading text-[20px] font-bold tracking-[-0.025em] text-chalk">Key capabilities &amp; stack</h2>
           <ul className="mt-3 space-y-2">
             {project.proofPoints.map((point) => (
               <li key={point} className="flex items-center gap-2.5 text-[14px] text-chalk">
@@ -159,7 +159,7 @@ export default function ProjectDetail() {
       >
         <div>
           <p className="meta-text text-smoke">NEXT CASE STUDY</p>
-          <p className="mt-2 text-[28px] font-normal leading-tight tracking-[-0.035em] text-chalk transition-colors group-hover:text-pulse-green sm:text-[38px]">
+          <p className="mt-2 font-display text-[28px] font-bold leading-tight tracking-[-0.035em] text-chalk transition-colors group-hover:text-pulse-green [font-variation-settings:'opsz'_72] sm:text-[38px]">
             {nextProject.title}
           </p>
           <p className="mt-1 text-[14px] text-smoke">{nextProject.summary}</p>

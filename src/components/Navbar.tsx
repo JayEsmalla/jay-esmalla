@@ -225,7 +225,7 @@ const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => 
           <Link
             to={isHome ? "/#home" : "/"}
             onClick={() => setMobileOpen(false)}
-            className="group flex items-center gap-3 text-[15px] font-normal tracking-[-0.02em] text-chalk"
+            className="group flex items-center gap-3 font-heading text-[15px] font-bold tracking-[-0.025em] text-chalk"
             aria-label="Jay Esmalla home"
           >
             <span
@@ -332,7 +332,7 @@ const Navbar = ({ onSectionChange }: { onSectionChange?: (sectionId: string) => 
         <Link
           to={isHome ? "/#home" : "/"}
           onClick={() => setMobileOpen(false)}
-          className="flex items-center gap-2.5 text-[15px] font-normal tracking-[-0.02em] text-chalk"
+          className="flex items-center gap-2.5 font-heading text-[15px] font-bold tracking-[-0.025em] text-chalk"
           aria-label="Jay Esmalla home"
         >
           <span className="grid h-6 w-6 place-items-center rounded-[2px] border border-graphite bg-carbon font-mono-retro text-[10px] text-pulse-green">

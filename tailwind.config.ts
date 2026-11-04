@@ -13,8 +13,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["'Space Grotesk Variable'", "ui-sans-serif", "system-ui", "sans-serif"],
-        heading: ["'Space Grotesk Variable'", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["'Plus Jakarta Sans Variable'", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["'Bricolage Grotesque Variable'", "'Plus Jakarta Sans Variable'", "ui-sans-serif", "system-ui", "sans-serif"],
+        heading: ["'Bricolage Grotesque Variable'", "'Plus Jakarta Sans Variable'", "ui-sans-serif", "system-ui", "sans-serif"],
         "mono-retro": ["'JetBrains Mono Variable'", "ui-monospace", "monospace"],
       },
       colors: {

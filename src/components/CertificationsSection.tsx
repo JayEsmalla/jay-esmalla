@@ -79,7 +79,7 @@ const CertificationsSection = () => {
                   <span className="font-mono-retro text-[11px] text-smoke/50" aria-hidden="true">{certIndex}</span>
                 </div>
 
-                <h3 className="mt-3.5 text-[20px] font-normal leading-tight tracking-[-0.02em] text-chalk">{certification.name}</h3>
+                <h3 className="mt-3.5 font-heading text-[20px] font-bold leading-tight tracking-[-0.025em] text-chalk">{certification.name}</h3>
                 {certification.recognition && <p className="mt-2 text-[14px] leading-relaxed text-ash">{certification.recognition}</p>}
                 <p className="mt-2.5 text-[14px] leading-relaxed text-smoke">{certification.issuer}</p>
 
@@ -118,7 +118,7 @@ const CertificationsSection = () => {
             <>
               <DialogHeader className="shrink-0 border-b border-graphite p-5 pr-16 text-left sm:px-7 sm:py-5">
                 <p className="section-kicker">{selectedCert.type}</p>
-                <DialogTitle ref={dialogTitleRef} tabIndex={-1} className="mt-2 text-[22px] font-normal leading-tight tracking-[-0.02em] text-chalk sm:text-[28px]">
+                <DialogTitle ref={dialogTitleRef} tabIndex={-1} className="mt-2 font-heading text-[22px] font-bold leading-tight tracking-[-0.025em] text-chalk sm:text-[28px]">
                   {selectedCert.name}
                 </DialogTitle>
                 <DialogDescription className="mt-1 text-[13px] text-smoke">

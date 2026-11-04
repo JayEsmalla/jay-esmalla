@@ -267,7 +267,7 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
 
                 <div className="min-w-0">
                   <div className="flex items-baseline gap-3">
-                    <h3 className="truncate text-[20px] font-normal tracking-[-0.025em] text-chalk transition-[color,transform] duration-200 group-hover:translate-x-1.5 group-hover:text-pulse-green sm:text-[22px]">
+                    <h3 className="truncate font-heading text-[20px] font-bold tracking-[-0.025em] text-chalk transition-[color,transform] duration-200 group-hover:translate-x-1.5 group-hover:text-pulse-green sm:text-[22px]">
                       <Link
                         to={`/projects/${project.id}`}
                         data-cursor="project"
@@ -400,8 +400,8 @@ const ProjectsSection = ({ initialVisibleCount = 3, showAllByDefault = false }: 
                   </div>
 
                   <h3
-                    className={`mt-3 font-normal leading-tight tracking-[-0.03em] text-chalk transition-colors group-hover:text-pulse-green ${
-                      isLeadFlagship ? "text-[26px] sm:text-[30px]" : "text-[21px] sm:text-[23px]"
+                    className={`mt-3 font-heading font-bold leading-tight tracking-[-0.03em] text-chalk transition-colors group-hover:text-pulse-green ${
+                      isLeadFlagship ? "text-[26px] sm:text-[32px]" : "text-[21px] sm:text-[24px]"
                     }`}
                   >
                     {project.title}

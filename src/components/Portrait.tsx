@@ -48,7 +48,7 @@ export default function Portrait() {
     />)}
 
     <figcaption className="portrait-caption absolute inset-x-0 bottom-0 px-3.5 pb-3.5 pt-12 lg:px-4 lg:pb-4">
-      <p className="text-[13px] font-normal leading-snug tracking-[-0.01em] text-chalk">Jay Esmalla</p>
+      <p className="font-heading text-[14px] font-bold leading-snug tracking-[-0.015em] text-chalk">Jay Esmalla</p>
       <p className="meta-text mt-1 text-smoke">CS / AI · Tagum City, PH</p>
     </figcaption>
   </figure>;

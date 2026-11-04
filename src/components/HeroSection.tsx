@@ -42,7 +42,7 @@ const HeroSection = ({ ready = true }: { ready?: boolean }) => {
             MOBILE + WEB DEVELOPER
           </motion.p>
 
-          <h1 className="mt-5 max-w-[680px] text-balance text-[42px] font-normal leading-[0.96] tracking-[-0.045em] text-chalk sm:text-[54px] md:text-[62px] lg:text-[68px]">
+          <h1 className="mt-5 max-w-[680px] font-display text-balance text-[42px] font-bold leading-[0.95] tracking-[-0.04em] text-chalk [font-variation-settings:'opsz'_96] sm:text-[54px] md:text-[62px] lg:text-[68px]">
             {HERO_LINES.map((line, index) => (
               <span key={line} className="block overflow-hidden pb-[0.08em] -mb-[0.08em]">
                 <motion.span

@@ -215,11 +215,11 @@
     --color-pulse-green: rgb(var(--signal));
     --radius: 0.5rem;
 
-    /* Self-hosted Space Grotesk + JetBrains Mono via @fontsource-variable. */
-    --font-aeonik: 'Space Grotesk Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* Self-hosted Bricolage Grotesque (Display/Heading) + Plus Jakarta Sans (Body) + JetBrains Mono via @fontsource-variable. */
+    --font-aeonik: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-input: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    --font-display: var(--font-aeonik);
-    --font-heading: var(--font-aeonik);
+    --font-display: 'Bricolage Grotesque Variable', var(--font-aeonik);
+    --font-heading: 'Bricolage Grotesque Variable', var(--font-aeonik);
     --font-mono: var(--font-input);
   }
 
@@ -282,8 +282,10 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-aeonik);
-    font-weight: 400;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 48;
   }
 
   button, input, textarea, select {
@@ -334,11 +336,15 @@
   }
 
   .section-title {
-    @apply mt-3 max-w-[780px] text-[30px] leading-[1.08] tracking-[-0.035em] text-chalk sm:text-[36px] md:text-[42px];
+    font-family: var(--font-display);
+    font-variation-settings: "opsz" 72;
+    @apply mt-3 max-w-[780px] text-[30px] font-bold leading-[1.05] tracking-[-0.035em] text-chalk sm:text-[36px] md:text-[44px];
   }
 
   .display-title {
-    @apply text-[38px] font-normal leading-[0.98] tracking-[-0.04em] text-chalk sm:text-[48px] md:text-[58px];
+    font-family: var(--font-display);
+    font-variation-settings: "opsz" 96;
+    @apply text-[38px] font-bold leading-[0.96] tracking-[-0.04em] text-chalk sm:text-[48px] md:text-[58px];
   }
 
   .meta-text {

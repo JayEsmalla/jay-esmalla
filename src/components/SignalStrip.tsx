@@ -19,7 +19,7 @@ export default function SignalStrip() {
           href={commit.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2.5 block truncate text-[16px] leading-snug tracking-[-0.02em] text-chalk transition-colors hover:text-pulse-green sm:text-[17px]"
+          className="mt-2.5 block truncate font-heading text-[16px] font-bold leading-snug tracking-[-0.02em] text-chalk transition-colors hover:text-pulse-green sm:text-[17px]"
           title={`${commit.repo}: ${commit.message}`}
         >
           {commit.message}
@@ -37,7 +37,7 @@ export default function SignalStrip() {
         </div>
         <Link
           to={`/projects/${nowBuilding.projectId}`}
-          className="mt-2.5 block truncate text-[16px] leading-snug tracking-[-0.02em] text-chalk transition-colors hover:text-pulse-green sm:text-[17px]"
+          className="mt-2.5 block truncate font-heading text-[16px] font-bold leading-snug tracking-[-0.02em] text-chalk transition-colors hover:text-pulse-green sm:text-[17px]"
         >
           {nowBuilding.title}
         </Link>

@@ -198,7 +198,7 @@ const GitHubSection = () => {
       >
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-graphite pb-4">
           <div className="flex items-baseline gap-2.5">
-            <p className="text-[28px] font-normal leading-none tracking-[-0.04em] tabular-nums text-chalk">
+            <p className="font-display text-[30px] font-bold leading-none tracking-[-0.04em] tabular-nums text-chalk [font-variation-settings:'opsz'_72]">
               {loading || error ? "—" : <ContributionTotal total={data?.total ?? 0} />}
             </p>
             <div className="leading-none">

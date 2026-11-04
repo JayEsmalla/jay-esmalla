@@ -116,7 +116,7 @@ const AboutSection = () => {
           <div className="grid flex-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8">
             <div>
               <h3 className="section-kicker">EDUCATION</h3>
-              <p className="mt-2 text-[17px] leading-relaxed tracking-[-0.015em] text-chalk">
+              <p className="mt-2 font-heading text-[18px] font-bold leading-relaxed tracking-[-0.02em] text-chalk">
                 4th Year · BS Computer Science
               </p>
               <p className="mt-1 text-[14px] leading-relaxed text-smoke">
@@ -149,7 +149,7 @@ const AboutSection = () => {
                     {area.index}
                   </span>
                 </div>
-                <h4 className="mt-4 text-[18px] font-normal tracking-[-0.02em] text-chalk">
+                <h4 className="mt-4 font-heading text-[19px] font-bold tracking-[-0.025em] text-chalk">
                   {area.title}
                 </h4>
                 <p className="mt-2.5 text-[14px] leading-[1.65] text-smoke">
@@ -166,7 +166,7 @@ const AboutSection = () => {
         <div className="flex flex-col justify-between border-b border-graphite p-5 sm:p-8 lg:border-b-0 lg:border-r lg:p-10">
           <div>
             <p className="section-kicker">BUILD TOOLKIT</p>
-            <h3 className="mt-3 text-[26px] font-normal leading-[1.1] tracking-[-0.03em] text-chalk">
+            <h3 className="mt-3 font-heading text-[26px] font-bold leading-[1.08] tracking-[-0.03em] text-chalk">
               Tools I work with.
             </h3>
             <p className="mt-3 max-w-md text-[14px] leading-[1.65] text-smoke">
